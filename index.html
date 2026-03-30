@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TalkScore Hub — User Documentation</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,300..700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #FAF8F5;
+    --card: #FFFFFF;
+    --fg: #1A1A1A;
+    --muted: #6B6B6B;
+    --border: #E8E4DF;
+    --sage: #B8D4C8;
+    --sage-dk: #4A8B6E;
+    --lav: #C5CAE9;
+    --lav-dk: #5C6BC0;
+    --pink: #F0B8D0;
+    --pink-dk: #AD5D7E;
+    --amber: #F0A830;
+    --amber-dk: #B07A10;
+    --gradient: linear-gradient(90deg, #F0A830, #F0B8D0, #C5CAE9, #B8D4C8);
+  }
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--fg);
+    background: var(--bg);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+  }
+  a { color: var(--lav-dk); font-weight: 600; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* Layout */
+  .top-bar {
+    height: 4px;
+    background: var(--gradient);
+  }
+  .header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 40px 0 36px;
+  }
+  .header-inner {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+  .header h1 { font-size: 36px; margin-bottom: 8px; }
+  .header .subtitle { color: var(--muted); font-size: 17px; }
+  .header .meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .header .meta span { display: flex; align-items: center; gap: 6px; }
+
+  .container { max-width: 980px; margin: 0 auto; padding: 32px; }
+
+  /* TOC */
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin-bottom: 40px;
+  }
+  .toc h2 { font-size: 16px; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 6px; }
+  .toc a { color: var(--lav-dk); }
+
+  /* Sections */
+  .section { margin-bottom: 48px; }
+  .section h2 {
+    font-size: 26px;
+    padding-bottom: 12px;
+    border-bottom: 3px solid var(--sage);
+    margin-bottom: 20px;
+  }
+  .section h3 {
+    font-size: 19px;
+    margin: 28px 0 12px;
+    color: var(--fg);
+  }
+  .section h4 {
+    font-size: 15px;
+    margin: 20px 0 8px;
+    color: var(--pink-dk);
+  }
+  .section p { margin-bottom: 14px; }
+  .section ul, .section ol { margin: 8px 0 16px 20px; }
+  .section li { margin-bottom: 6px; }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 700px) { .card-grid { grid-template-columns: 1fr; } }
+
+  .card-sm {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 20px;
+  }
+  .card-sm h4 {
+    margin: 0 0 6px;
+    font-size: 14px;
+    color: var(--fg);
+  }
+  .card-sm p { font-size: 13px; color: var(--muted); margin: 0; }
+
+  /* Accent cards */
+  .accent-sage { border-left: 4px solid var(--sage); }
+  .accent-lav { border-left: 4px solid var(--lav); }
+  .accent-pink { border-left: 4px solid var(--pink); }
+  .accent-amber { border-left: 4px solid var(--amber); }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .badge-sage { background: rgba(184,212,200,.15); color: var(--sage-dk); }
+  .badge-lav { background: rgba(197,202,233,.18); color: var(--lav-dk); }
+  .badge-pink { background: rgba(240,184,208,.15); color: var(--pink-dk); }
+  .badge-amber { background: rgba(240,168,48,.12); color: var(--amber-dk); }
+
+  /* Tables */
+  .table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 16px 0;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #F5F2ED; }
+  thead th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(250,248,245,.7); }
+  tbody td { padding: 10px 16px; font-size: 14px; }
+
+  /* Callout boxes */
+  .callout {
+    padding: 16px 20px;
+    border-radius: 6px;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .callout-info { background: rgba(197,202,233,.12); border: 1px solid rgba(197,202,233,.35); }
+  .callout-tip { background: rgba(184,212,200,.12); border: 1px solid rgba(184,212,200,.35); }
+  .callout-warn { background: rgba(240,168,48,.08); border: 1px solid rgba(240,168,48,.25); }
+  .callout-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .callout-info .callout-label { color: var(--lav-dk); }
+  .callout-tip .callout-label { color: var(--sage-dk); }
+  .callout-warn .callout-label { color: var(--amber-dk); }
+
+  /* Role tags */
+  .role-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 6px;
+  }
+  .role-support { background: rgba(184,212,200,.18); color: var(--sage-dk); }
+  .role-am { background: rgba(197,202,233,.18); color: var(--lav-dk); }
+  .role-marketing { background: rgba(240,184,208,.18); color: var(--pink-dk); }
+  .role-admin { background: rgba(240,168,48,.12); color: var(--amber-dk); }
+
+  /* Nav diagram */
+  .nav-diagram {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 24px;
+    margin: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+  .nav-item {
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    border: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .nav-item.active {
+    background: rgba(240,184,208,.12);
+    border-color: rgba(240,184,208,.4);
+    color: var(--pink-dk);
+  }
+
+  /* Footer */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 0;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 40px;
+  }
+
+  /* Screenshots */
+  .screenshot {
+    margin: 20px 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--card);
+  }
+  .screenshot img {
+    width: 100%;
+    display: block;
+  }
+  .screenshot-caption {
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: #F5F2ED;
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .screenshot-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+  @media (max-width: 700px) { .screenshot-group { grid-template-columns: 1fr; } }
+  .screenshot-group .screenshot { margin: 0; }
+
+  /* Print */
+  @media print {
+    body { background: #fff; }
+    .header { padding: 20px 0; }
+    .section { page-break-inside: avoid; }
+    .toc { page-break-after: always; }
+    .screenshot img { max-height: 400px; object-fit: contain; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top-bar"></div>
+
+<div class="header">
+  <div class="header-inner">
+    <h1>TalkScore Hub</h1>
+    <p class="subtitle">AI-Powered Assessment Quality Management Platform — User Documentation</p>
+    <div class="meta">
+      <span>Product: TalkScore</span>
+      <span>Version: 1.0</span>
+      <span>Last Updated: March 2026</span>
+      <span>Audience: Support, Account Management, Marketing</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">What Is TalkScore Hub?</a></li>
+    <li><a href="#value">Why It Matters — User Value</a></li>
+    <li><a href="#audience">Who Uses It</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
+    <li><a href="#features">Features Guide</a>
+      <ol style="margin-top:6px">
+        <li><a href="#snapshot">Snapshot Dashboard</a></li>
+        <li><a href="#agent-health">Agent Health</a></li>
+        <li><a href="#calibration">Score Calibration</a></li>
+        <li><a href="#ai-insights">AI Insights & Alerts</a></li>
+        <li><a href="#metrics">Metrics</a></li>
+        <li><a href="#assessments">Assessments</a></li>
+        <li><a href="#reports">Candidate Reports</a></li>
+        <li><a href="#ai-assistant">AI Assistant</a></li>
+        <li><a href="#settings">Settings & Configuration</a></li>
+      </ol>
+    </li>
+    <li><a href="#scoring">How TalkScore Scoring Works</a></li>
+    <li><a href="#alerts">Alert System</a></li>
+    <li><a href="#admin">Administration</a></li>
+    <li><a href="#integrations">Integrations</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#glossary">Glossary</a></li>
+  </ol>
+</div>
+
+<!-- 1. OVERVIEW -->
+<div class="section" id="overview">
+  <h2>1. What Is TalkScore Hub?</h2>
+
+  <p><strong>TalkScore Hub</strong> is a web-based platform that monitors, analyzes, and reports on AI-conducted candidate assessments at scale. It serves as the <strong>quality control center</strong> for every AI interview powered by Talkpush's SAM (Smart Assessment Module) voice interviewer.</p>
+
+  <p>When SAM conducts a voice interview with a candidate, it produces a transcript, scores, and language proficiency data. TalkScore Hub ingests all of that data automatically and then:</p>
+
+  <ul>
+    <li><strong>Runs secondary AI analysis</strong> on every interview transcript to detect quality issues, agent errors, and potential bias</li>
+    <li><strong>Presents real-time dashboards</strong> with assessment volume, scores, CEFR language levels, and completion rates</li>
+    <li><strong>Generates alerts</strong> when quality thresholds are breached — such as dropout spikes, scoring inconsistencies, or bias flags</li>
+    <li><strong>Provides an AI Assistant</strong> that answers natural-language questions about assessment data ("What was the average score for Alorica Philippines last week?")</li>
+    <li><strong>Tracks AI costs</strong> so administrators can monitor usage across all clients</li>
+  </ul>
+
+  <div class="callout callout-info">
+    <div class="callout-label">In One Sentence</div>
+    TalkScore Hub is the quality assurance and analytics dashboard for every AI interview Talkpush conducts — it ensures assessments are fair, consistent, and high-quality across all clients and agents.
+  </div>
+</div>
+
+<!-- 2. VALUE -->
+<div class="section" id="value">
+  <h2>2. Why It Matters — User Value</h2>
+
+  <div class="card-grid">
+    <div class="card-sm accent-sage">
+      <h4>Quality Assurance at Scale</h4>
+      <p>Automatically monitors thousands of AI interviews for 25+ quality issues including robotic behavior, hallucinations, and bias — without manual review of every call.</p>
+    </div>
+    <div class="card-sm accent-lav">
+      <h4>Bias Detection & Fairness</h4>
+      <p>Screens every interview for 9 bias categories (gender, age, accent, cultural, etc.) and immediately alerts teams when bias is detected. This protects clients from compliance risk.</p>
+    </div>
+    <div class="card-sm accent-pink">
+      <h4>Scoring Consistency</h4>
+      <p>Tracks whether AI agents score candidates consistently over time and across agents. Detects score drift and calibration issues before they impact hiring decisions.</p>
+    </div>
+    <div class="card-sm accent-amber">
+      <h4>Actionable AI Insights</h4>
+      <p>Generates AI-written explanations for every metric — why dropout rates increased, which agents need attention, and what to improve. No data analysis skills required.</p>
+    </div>
+    <div class="card-sm accent-sage">
+      <h4>Client Transparency</h4>
+      <p>Account managers can share real data about assessment performance with clients: completion rates, score distributions, CEFR levels, and outcome correlations.</p>
+    </div>
+    <div class="card-sm accent-lav">
+      <h4>Cost Visibility</h4>
+      <p>Tracks AI model usage (tokens, cost) per company and per feature, enabling accurate billing and resource planning.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-tip">
+    <div class="callout-label">For Marketing</div>
+    TalkScore Hub is a powerful differentiator: Talkpush doesn't just run AI interviews — it continuously audits them for quality, bias, and consistency. No competitor offers this level of automated AI interview governance.
+  </div>
+</div>
+
+<!-- 3. AUDIENCE -->
+<div class="section" id="audience">
+  <h2>3. Who Uses It</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>What They Do in TalkScore Hub</th>
+          <th>Key Pages</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="role-tag role-admin">Platform Admin</span><br><strong>Talkpush Owner</strong></td>
+          <td>Manages all clients, creates user accounts, configures system-wide scoring thresholds, monitors AI costs, manages evaluators</td>
+          <td>Client Management, User Management, System Settings, AI Usage, Evaluators</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-am">Account Manager</span><br><strong>Recruiter (Company-scoped)</strong></td>
+          <td>Reviews assessment performance for their assigned client(s), monitors quality alerts, shares reports with client stakeholders</td>
+          <td>Snapshot, Agent Health, Reports, Score Calibration, AI Insights</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-support">Support</span><br><strong>Recruiter (Company-scoped)</strong></td>
+          <td>Investigates individual candidate issues, reviews flagged interviews, checks agent health status, troubleshoots quality problems</td>
+          <td>Reports (individual candidate), Agent Health, AI Insights, AI Assistant</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-marketing">Marketing</span><br><strong>Read-only access</strong></td>
+          <td>Extracts metrics for case studies, reviews CEFR distribution data, pulls outcome correlation stats</td>
+          <td>Snapshot, Metrics, Score Calibration (outcome analysis)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 4. GETTING STARTED -->
+<div class="section" id="getting-started">
+  <h2>4. Getting Started</h2>
+
+  <h3>Logging In</h3>
+  <p>TalkScore Hub uses <strong>Google Single Sign-On</strong>. Click "Sign in with Google" and use your Talkpush Google Workspace account. No password to remember — your Google credentials are your login.</p>
+
+  <h3>Selecting a Client</h3>
+  <p>After login, you'll see the <strong>Client Selection</strong> screen. This lists all companies you have access to. Click on a company to enter their assessment dashboard. You can switch clients at any time using the company name in the sidebar.</p>
+
+  <div class="callout callout-info">
+    <div class="callout-label">Multi-Tenant</div>
+    Each client's data is completely isolated. When you select "Alorica Philippines," you only see Alorica Philippines assessments, scores, and alerts. Switch to "Concentrix" and you see an entirely separate dataset.
+  </div>
+
+  <h3>Navigation</h3>
+  <p>The left sidebar contains all main navigation items. It can be collapsed for more screen space.</p>
+
+  <div class="nav-diagram">
+    <div class="nav-item active">Snapshot</div>
+    <div class="nav-item">Agent Health</div>
+    <div class="nav-item">Score Calibration</div>
+    <div class="nav-item">AI Insights</div>
+    <div class="nav-item">Metrics</div>
+    <div class="nav-item">Assessments</div>
+    <div class="nav-item">Reports</div>
+    <div class="nav-item">AI Assistant</div>
+    <div class="nav-item">Settings</div>
+    <div class="nav-item">How It Works</div>
+  </div>
+</div>
+
+<!-- 5. FEATURES -->
+<div class="section" id="features">
+  <h2>5. Features Guide</h2>
+
+  <!-- 5.1 SNAPSHOT -->
+  <div id="snapshot">
+    <h3>5.1 Snapshot Dashboard</h3>
+    <p><span class="badge badge-sage">Default Landing Page</span></p>
+
+    <p>The Snapshot is the <strong>executive overview</strong> of assessment performance. It answers the question: "How are assessments performing right now?" at a glance.</p>
+
+    <h4>What You See</h4>
+    <ul>
+      <li><strong>Total Assessments</strong> — count of all interviews received in the selected period</li>
+      <li><strong>Completed vs. Incomplete</strong> — how many candidates finished the full interview</li>
+      <li><strong>Average Score</strong> — mean job matching score (0–5 scale)</li>
+      <li><strong>Completion Rate</strong> — percentage of interviews fully completed</li>
+      <li><strong>CEFR Distribution</strong> — breakdown of candidate language proficiency levels (A1 through C2)</li>
+      <li><strong>Daily Volume Trends</strong> — chart showing assessment volume over time</li>
+      <li><strong>AI-Generated Executive Summary</strong> — a 4–6 sentence narrative written by AI that highlights the most important trends and anomalies</li>
+    </ul>
+
+    <h4>Filters</h4>
+    <p>All data on the Snapshot can be filtered by:</p>
+    <ul>
+      <li><strong>Time Period</strong> — last 7, 14, 30, 60, 90, or 365 days; or custom date range</li>
+      <li><strong>Agent</strong> — filter by a specific AI interviewer agent</li>
+      <li><strong>Campaign</strong> — filter by job campaign (e.g., "Customer Service Agent — Manila")</li>
+    </ul>
+
+    <div class="screenshot">
+      <img src="screenshots/01_snapshot_top.jpeg" alt="Snapshot Dashboard — Performance Intelligence and dropout by stage">
+      <div class="screenshot-caption">Snapshot — AI executive summary, KPI cards, and dropout-by-stage funnel</div>
+    </div>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/02_snapshot_middle.jpeg" alt="Snapshot — daily volume and score trends">
+        <div class="screenshot-caption">Daily volume trends & score distribution</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/03_snapshot_cefr_softskills.jpeg" alt="Snapshot — CEFR distribution and soft skills breakdown">
+        <div class="screenshot-caption">CEFR distribution & soft skills radar</div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-label">Tip for Account Managers</div>
+      Use the Snapshot to prepare for client review meetings. The AI-generated summary gives you a ready-made narrative of the client's assessment performance. Export it as PDF for sharing.
+    </div>
+  </div>
+
+  <!-- 5.2 AGENT HEALTH -->
+  <div id="agent-health">
+    <h3>5.2 Agent Health</h3>
+    <p><span class="badge badge-pink">Quality Monitoring</span></p>
+
+    <p>Agent Health is the <strong>quality control center</strong>. It shows what's going wrong in AI interviews and where to focus attention.</p>
+
+    <h4>Three Analysis Sections</h4>
+
+    <div class="card accent-pink">
+      <h4>Quality Flags</h4>
+      <p>Every completed interview is analyzed by AI (Claude 3.5 Sonnet) for <strong>25 quality flag types</strong> across three categories:</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Category</th><th>Flags Detected</th><th>Examples</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Agent Quality</strong> (12 flags)</td>
+              <td>Problems with how the AI interviewer behaved</td>
+              <td>Robotic repetition, ignoring candidate responses, hallucinating information, language mismatch, premature question advancement</td>
+            </tr>
+            <tr>
+              <td><strong>Bias & Fairness</strong> (9 flags)</td>
+              <td>Potential discrimination or unfair treatment — all flagged as <span class="badge badge-amber">Critical</span></td>
+              <td>Gender bias, age bias, accent discrimination, name-based bias, cultural bias, disability bias</td>
+            </tr>
+            <tr>
+              <td><strong>Candidate Behavior</strong> (4 flags)</td>
+              <td>Notable candidate reactions during the interview</td>
+              <td>Candidate frustration, confusion, disengagement, inappropriate behavior</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Each flag includes: <strong>severity level</strong>, an <strong>explanation</strong> of what happened, <strong>evidence</strong> quoted from the transcript, and a <strong>timestamp</strong>.</p>
+    </div>
+
+    <div class="card accent-amber" style="margin-top:16px">
+      <h4>Dropout Analysis</h4>
+      <p>Shows where and why candidates are abandoning interviews before completion:</p>
+      <ul>
+        <li><strong>Stage Funnel</strong> — visual showing which interview stage candidates drop off at (introduction, question 1, question 2, etc.)</li>
+        <li><strong>Dropout Reasons</strong> — AI-categorized reasons grouped with transcript excerpts</li>
+        <li><strong>AI Analysis</strong> — click any dropout reason to get an AI-written analysis with root cause, impact summary, and recommended fixes</li>
+      </ul>
+    </div>
+
+    <div class="card accent-lav" style="margin-top:16px">
+      <h4>Stage Deep Dive</h4>
+      <p>Per-stage analysis of the interview funnel:</p>
+      <ul>
+        <li>How many candidates reached each stage</li>
+        <li>Average duration per stage</li>
+        <li>Dropout count and reasons per stage</li>
+        <li>Quality flags that occur at each stage</li>
+        <li>Transcript excerpts from problematic interactions</li>
+      </ul>
+    </div>
+
+    <div class="screenshot">
+      <img src="screenshots/04_agent_health_top.jpeg" alt="Agent Health — overview with quality flags summary">
+      <div class="screenshot-caption">Agent Health — quality flags overview with counts by category</div>
+    </div>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/05_agent_health_quality_issues.jpeg" alt="Agent Health — detailed quality issue list with counts">
+        <div class="screenshot-caption">Quality flags ranked by frequency — hallucinations, bias, candidate behavior</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/06_agent_health_dropout_stage.jpeg" alt="Agent Health — dropout analysis by stage">
+        <div class="screenshot-caption">Dropout analysis — stage funnel and AI-generated reasons</div>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">For Support Teams</div>
+      When a client reports "candidates are complaining about the interview," go to Agent Health first. Check Quality Flags for the specific agent and campaign. Look for <code>robotic_repetition</code>, <code>agent_loop_suspected</code>, or <code>candidate_frustration</code> flags — these are the most common causes of candidate complaints.
+    </div>
+  </div>
+
+  <!-- 5.3 CALIBRATION -->
+  <div id="calibration">
+    <h3>5.3 Score Calibration</h3>
+    <p><span class="badge badge-lav">Scoring Consistency</span></p>
+
+    <p>Score Calibration answers: "Are our AI agents scoring candidates consistently and fairly?"</p>
+
+    <h4>What It Shows</h4>
+    <ul>
+      <li><strong>Company Average Score</strong> — the mean score across all completed assessments</li>
+      <li><strong>Standard Deviation</strong> — how spread out scores are (lower = more consistent)</li>
+      <li><strong>Per-Agent Breakdown</strong> — each AI agent's average score, standard deviation, call count, min/max score. Flags agents that deviate significantly from the company mean.</li>
+      <li><strong>Wave Calibration</strong> — groups assessments into time periods ("waves") to show how scores trend over time. Detects <strong>score drift</strong> — when an agent starts scoring higher or lower than usual.</li>
+    </ul>
+
+    <h4>Outcome Analysis</h4>
+    <p>This powerful sub-feature compares assessment scores against actual hiring outcomes:</p>
+    <ul>
+      <li><strong>Hired vs. Rejected</strong> — do candidates who score higher actually get hired more often?</li>
+      <li><strong>Score by Pipeline Stage</strong> — average score for candidates at each Talkpush status (Applied, Interviewed, Offered, Hired, Rejected)</li>
+      <li><strong>CEFR by Outcome</strong> — do language proficiency levels correlate with hiring decisions?</li>
+      <li><strong>Soft Skills by Outcome</strong> — which soft skill dimensions predict success?</li>
+    </ul>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/07_score_calibration_top.jpeg" alt="Score Calibration — standard deviation chart and wave analysis">
+        <div class="screenshot-caption">Score Calibration — std deviation over time with healthy/warning/poor zones</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/08_score_calibration_cefr.jpeg" alt="Score Calibration — CEFR and soft skills calibration">
+        <div class="screenshot-caption">CEFR distribution & soft skills calibration by outcome</div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-label">For Marketing & Sales</div>
+      The Outcome Analysis data is gold for case studies. It proves that TalkScore assessments predict real hiring outcomes. Example: "Candidates who scored 4.0+ were 3x more likely to be hired" — this is the kind of ROI data clients love.
+    </div>
+  </div>
+
+  <!-- 5.4 AI INSIGHTS -->
+  <div id="ai-insights">
+    <h3>5.4 AI Insights & Alerts</h3>
+    <p><span class="badge badge-amber">Proactive Monitoring</span></p>
+
+    <p>AI Insights is the <strong>alert center</strong>. Instead of requiring users to manually check every metric, TalkScore Hub automatically monitors 9 alert rules and surfaces problems when thresholds are breached.</p>
+
+    <h4>Alert Types</h4>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Alert</th><th>What It Detects</th><th>Default Threshold</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Quality Flag Spike</td><td>Quality flags exceed a % of calls</td><td>15%</td></tr>
+          <tr><td>Dropout Spike</td><td>Incomplete interview rate too high</td><td>30%</td></tr>
+          <tr><td>Score Deviation</td><td>An agent's avg score differs from company mean</td><td>1.0 point</td></tr>
+          <tr><td>Completion Drop</td><td>Completion rate falls below threshold</td><td>20%</td></tr>
+          <tr><td>New Flag Type</td><td>A previously unseen quality flag appears</td><td>3 occurrences</td></tr>
+          <tr><td>Stage Dropout Spike</td><td>A specific stage has excessive dropout</td><td>25%</td></tr>
+          <tr><td>Bias Flag Spike</td><td>Bias/fairness flags detected</td><td>5%</td></tr>
+          <tr><td>Not Taken Spike</td><td>Candidates not taking the interview (no-shows)</td><td>40%</td></tr>
+          <tr><td>Conversation Length Spike</td><td>Abnormally long or short conversations</td><td>50%</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Alerts have three severity levels: <span class="badge badge-sage">Info</span>, <span class="badge badge-amber">Warning</span>, and <span class="badge badge-pink">Critical</span>. Each alert shows the specific agents, metrics, and data that triggered it.</p>
+
+    <h4>Alert Actions</h4>
+    <ul>
+      <li><strong>Mark as Read</strong> — acknowledge the alert without dismissing it</li>
+      <li><strong>Dismiss</strong> — remove the alert from the active list</li>
+      <li><strong>Navigate to Source</strong> — click through to Agent Health or Reports to investigate</li>
+    </ul>
+
+    <div class="screenshot">
+      <img src="screenshots/09_ai_insights_alerts.jpeg" alt="AI Insights — alert list showing critical and warning alerts">
+      <div class="screenshot-caption">AI Insights — alerts sorted by severity with bias spikes, completion drops, and scoring flags</div>
+    </div>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/10_ai_insights_warnings.jpeg" alt="AI Insights — warning alerts detail">
+        <div class="screenshot-caption">Warning-level alerts with scoring and stage dropout details</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/11_ai_insights_recommendations.jpeg" alt="AI Insights — AI-generated recommendations">
+        <div class="screenshot-caption">AI-generated recommendations for improving assessment quality</div>
+      </div>
+    </div>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/12_ai_insights_feedback.jpeg" alt="AI Insights — feedback analysis tab">
+        <div class="screenshot-caption">Feedback analysis — reviewer feedback aggregated and categorized</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/13_ai_insights_quality.jpeg" alt="AI Insights — quality analysis tab">
+        <div class="screenshot-caption">Quality analysis — AI-driven quality monitoring dashboard</div>
+      </div>
+    </div>
+
+    <h4>Email Notifications</h4>
+    <p>Users can opt in to receive email alerts for:</p>
+    <ul>
+      <li><strong>Critical alerts</strong> — sent immediately when critical issues are detected</li>
+      <li><strong>Weekly summary</strong> — aggregated digest of the week's alerts</li>
+      <li><strong>Calibration reports</strong> — scoring consistency reports</li>
+    </ul>
+  </div>
+
+  <!-- 5.5 METRICS -->
+  <div id="metrics">
+    <h3>5.5 Metrics</h3>
+    <p><span class="badge badge-sage">Performance KPIs</span></p>
+
+    <p>The Metrics page provides deeper analytical charts beyond the Snapshot:</p>
+    <ul>
+      <li><strong>Assessment Volume</strong> — total calls over time with completed/incomplete breakdown</li>
+      <li><strong>Score Distribution</strong> — histogram showing how scores are distributed (are most candidates clustering in the middle? bimodal?)</li>
+      <li><strong>CEFR Level Distribution</strong> — bar chart of language proficiency across all candidates</li>
+      <li><strong>Soft Skills Breakdown</strong> — average scores for fluency, grammar, vocabulary, pronunciation, active listening, comprehension</li>
+      <li><strong>Per-Agent Performance</strong> — compare metrics across different AI interviewer agents</li>
+      <li><strong>Per-Campaign Performance</strong> — compare metrics across job campaigns</li>
+      <li><strong>Daily Trends</strong> — line charts for volume, scores, and completion rates over time</li>
+    </ul>
+
+    <p>Each chart includes an <strong>AI-generated insight</strong> — a brief narrative explaining what the chart shows and highlighting any anomalies.</p>
+
+    <div class="screenshot">
+      <img src="screenshots/14_metrics_outcome_analysis.jpeg" alt="Metrics — Outcome Analysis comparing hired vs not hired">
+      <div class="screenshot-caption">Outcome Analysis — hired vs. not-hired comparison with score, CEFR, and soft skill gaps</div>
+    </div>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/15_metrics_general.jpeg" alt="Metrics — general analytics charts">
+        <div class="screenshot-caption">General metrics — volume, completion, and score trends</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/16_metrics_call_status.jpeg" alt="Metrics — call status distribution">
+        <div class="screenshot-caption">Call status distribution — completed, not taken, unfinished breakdown</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5.6 ASSESSMENTS -->
+  <div id="assessments">
+    <h3>5.6 Assessments</h3>
+    <p><span class="badge badge-lav">Assessment Management</span></p>
+
+    <p>The Assessments section lets you view and manage individual assessment records:</p>
+
+    <h4>Assessment List</h4>
+    <ul>
+      <li>Searchable, sortable table of all assessments for the current client</li>
+      <li>Shows candidate name, agent, campaign, score, CEFR level, status, and date</li>
+      <li>Filter by status (completed, not taken, unfinished, rescheduled, etc.)</li>
+      <li>Click any row to see full assessment details</li>
+    </ul>
+
+    <h4>Assessment Detail</h4>
+    <ul>
+      <li><strong>Candidate Info</strong> — name, email, phone, campaign</li>
+      <li><strong>Score & CEFR Level</strong> — overall job matching score and language proficiency</li>
+      <li><strong>Transcript</strong> — full conversation between the AI agent and the candidate</li>
+      <li><strong>AI Quality Flags</strong> — any quality issues detected in this specific interview</li>
+      <li><strong>Stage Analysis</strong> — which interview stages were reached and their duration</li>
+      <li><strong>Extracted Data</strong> — structured answers from screening questions (education, work experience, availability, etc.)</li>
+      <li><strong>Interview Insights</strong> — AI-generated category-by-category analysis of the candidate</li>
+    </ul>
+
+    <div class="screenshot">
+      <img src="screenshots/17_assessments_page.jpeg" alt="Assessments — list of all assessment records">
+      <div class="screenshot-caption">Assessments list — searchable, sortable table with score, CEFR, status, and date</div>
+    </div>
+
+    <h4>Creating New Assessments</h4>
+    <p>Users can configure new assessment templates, though most assessments are automatically created when Talkpush sends webhook data.</p>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/18_new_assessment_form_top.jpeg" alt="New Assessment — configuration form top section">
+        <div class="screenshot-caption">New Assessment — configuration form (top)</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/19_new_assessment_form_bottom.jpeg" alt="New Assessment — configuration form bottom section">
+        <div class="screenshot-caption">New Assessment — scoring and evaluation settings</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5.7 REPORTS -->
+  <div id="reports">
+    <h3>5.7 Candidate Reports</h3>
+    <p><span class="badge badge-pink">Individual Candidate View</span></p>
+
+    <p>The Reports section provides detailed views of individual candidate assessments, designed for sharing with recruiters and hiring managers:</p>
+
+    <h4>Report Features</h4>
+    <ul>
+      <li><strong>Candidate Profile Card</strong> — name, contact info, campaign, assessment date</li>
+      <li><strong>Overall Score</strong> with visual gauge — 0 to 5 scale with color coding (green/amber/red)</li>
+      <li><strong>CEFR Language Level</strong> — mapped to proficiency labels (Expert, High Proficiency, Moderate, Low)</li>
+      <li><strong>Soft Skills Radar</strong> — visual breakdown of fluency, grammar, vocabulary, pronunciation, listening, comprehension</li>
+      <li><strong>Job Matching Explanation</strong> — AI-written justification for the score</li>
+      <li><strong>Category Insights</strong> — AI-generated notes per category (Educational Background, Experience Level, Communication Skills, etc.)</li>
+      <li><strong>Follow-up Questions</strong> — AI-suggested questions for the human interviewer to ask</li>
+      <li><strong>Full Transcript</strong> — complete conversation with timestamps</li>
+      <li><strong>PDF Export</strong> — download any report as a PDF for sharing</li>
+    </ul>
+
+    <h4>Feedback System</h4>
+    <p>Users can submit feedback on any report:</p>
+    <ul>
+      <li><strong>Score Feedback</strong> — "I think this candidate's communication skills should be rated higher/lower"</li>
+      <li><strong>General Feedback</strong> — notes about the overall assessment quality</li>
+    </ul>
+    <p>This feedback is tracked and used to improve assessment quality over time.</p>
+
+    <div class="screenshot">
+      <img src="screenshots/20_reports_list.jpeg" alt="Reports — candidate list with scores and CEFR levels">
+      <div class="screenshot-caption">Reports list — all candidates with score bars, CEFR badges, and filters</div>
+    </div>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/21_candidate_report_top.jpeg" alt="Candidate Report — profile, scores, recording, and AI summary">
+        <div class="screenshot-caption">Candidate report — profile card, category scores, recording player, and AI summary</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/22_candidate_report_sentiment.jpeg" alt="Candidate Report — sentiment analysis and skill assessment">
+        <div class="screenshot-caption">Candidate report — sentiment analysis, skill breakdown, and feedback tools</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-label">For Support</div>
+      When a candidate or recruiter questions a score, open their report in TalkScore Hub. The transcript, quality flags, and AI explanation will show exactly why the score was what it was. If the AI Assistant can't answer, use the "Report Chat" feature to ask AI questions about the specific report data.
+    </div>
+  </div>
+
+  <!-- 5.8 AI ASSISTANT -->
+  <div id="ai-assistant">
+    <h3>5.8 AI Assistant</h3>
+    <p><span class="badge badge-amber">Conversational Analytics</span></p>
+
+    <p>The AI Assistant is a <strong>chat interface powered by Claude 3.5 Sonnet</strong> that can answer natural-language questions about assessment data. It has direct access to the database through the Model Context Protocol (MCP).</p>
+
+    <h4>What You Can Ask</h4>
+    <ul>
+      <li>"What was the average score for completed assessments last week?"</li>
+      <li>"How many candidates scored above 4.0 in the last 30 days?"</li>
+      <li>"Show me the CEFR distribution for this client"</li>
+      <li>"Which agent has the most quality flags?"</li>
+      <li>"Look up candidate Maria Santos"</li>
+      <li>"Compare completion rates between campaigns"</li>
+      <li>"What's the overall database summary?"</li>
+    </ul>
+
+    <h4>How It Works</h4>
+    <p>The AI doesn't guess — it queries the actual database using specialized tools (count records, query assessments, compute averages, check distributions, look up candidates, etc.). Results are formatted in readable markdown with tables, numbers, and context.</p>
+
+    <div class="screenshot">
+      <img src="screenshots/23_ai_assistant.jpeg" alt="AI Assistant — conversational interface with quick-action buttons">
+      <div class="screenshot-caption">AI Assistant — chat interface with suggested queries and real-time database access</div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-label">Power Tip</div>
+      Use the AI Assistant for ad-hoc questions that don't have a dedicated dashboard view. It's faster than building a custom report — just ask in plain English.
+    </div>
+  </div>
+
+  <!-- 5.9 SETTINGS -->
+  <div id="settings">
+    <h3>5.9 Settings & Configuration</h3>
+
+    <h4>User Settings</h4>
+    <ul>
+      <li><strong>Email Notification Preferences</strong> — toggle critical alerts, weekly summaries, and calibration reports</li>
+      <li><strong>Profile</strong> — view your name, email, role, and last login</li>
+    </ul>
+
+    <h4>Alert Rule Configuration</h4>
+    <p>Administrators can customize alert thresholds per company:</p>
+    <ul>
+      <li>Enable/disable individual alert rules</li>
+      <li>Adjust threshold values (e.g., change dropout spike threshold from 30% to 25%)</li>
+      <li>Set lookback period (default 7 days)</li>
+      <li>Set severity level for each rule type</li>
+    </ul>
+
+    <div class="screenshot-group">
+      <div class="screenshot">
+        <img src="screenshots/24_settings_account.jpeg" alt="Settings — account profile">
+        <div class="screenshot-caption">Settings — account profile and preferences</div>
+      </div>
+      <div class="screenshot">
+        <img src="screenshots/26_settings_notifications.jpeg" alt="Settings — notification preferences">
+        <div class="screenshot-caption">Settings — email notification preferences</div>
+      </div>
+    </div>
+
+    <div class="screenshot">
+      <img src="screenshots/25_settings_users.jpeg" alt="Settings — user management">
+      <div class="screenshot-caption">Settings — user management with roles and company assignments</div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. SCORING -->
+<div class="section" id="scoring">
+  <h2>6. How TalkScore Scoring Works</h2>
+
+  <p>TalkScore evaluates spoken English across <strong>five dimensions</strong> using AI and speech analysis models. The scoring is holistic — not a simple penalty system.</p>
+
+  <div class="card-grid">
+    <div class="card-sm accent-sage">
+      <h4>Pronunciation</h4>
+      <p>Evaluates clarity and correctness of each phoneme (sound). Scale: 0–100 per word. Accents are NOT penalized unless they affect intelligibility.</p>
+    </div>
+    <div class="card-sm accent-lav">
+      <h4>Fluency</h4>
+      <p>Measures speech rate (syllables/second), pause frequency, pause duration, and run length between pauses. Natural flow = high score.</p>
+    </div>
+    <div class="card-sm accent-pink">
+      <h4>Grammar</h4>
+      <p>Checks accuracy AND complexity of sentence structures. Simple-but-correct may score lower than complex-with-minor-errors. Trained on human-rated samples.</p>
+    </div>
+    <div class="card-sm accent-amber">
+      <h4>Vocabulary</h4>
+      <p>Measures lexical diversity, word sophistication, word specificity, and use of collocations/idioms. Rewards precise, varied word choice.</p>
+    </div>
+    <div class="card-sm accent-sage">
+      <h4>Coherence</h4>
+      <p>Evaluates use of connective words (because, however, therefore), logical flow, lexical density, and pronoun clarity. Rewards organized, easy-to-follow responses.</p>
+    </div>
+    <div class="card-sm accent-lav">
+      <h4>Overall Score</h4>
+      <p>Composite AI evaluation aligned to IELTS-style band scale (0–10) and CEFR levels (A1–C2). Not a simple average — learned from human examiner ratings.</p>
+    </div>
+  </div>
+
+  <h3>CEFR Level Mapping</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>CEFR Level</th><th>Proficiency Label</th><th>What It Means</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C1, C2</td><td><span class="badge badge-sage">Expert</span></td><td>Near-native fluency, complex language with few errors</td></tr>
+        <tr><td>B2</td><td><span class="badge badge-lav">High Proficiency</span></td><td>Can handle complex topics, clear and detailed speech</td></tr>
+        <tr><td>B1</td><td><span class="badge badge-amber">Moderate Proficiency</span></td><td>Can deal with most everyday situations, some errors</td></tr>
+        <tr><td>A1, A2</td><td><span class="badge badge-pink">Low Proficiency</span></td><td>Basic phrases only, limited communication ability</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Job Matching Score</h3>
+  <p>Separate from language scoring, TalkScore also produces a <strong>Job Matching Score (1–5)</strong> that evaluates how well the candidate fits the specific role based on their interview responses, extracted data (education, experience, availability), and AI-generated insights.</p>
+
+  <div class="callout callout-info">
+    <div class="callout-label">Key Point for Support</div>
+    TalkScore does NOT simply subtract points for each mistake. It uses machine learning trained on human evaluators. A speaker who makes a few grammar errors but uses complex, varied sentences may score higher than someone who speaks simply but error-free. The scoring mirrors what a trained human interviewer would assess.
+  </div>
+</div>
+
+<!-- 7. ALERTS -->
+<div class="section" id="alerts">
+  <h2>7. Alert System — Deep Dive</h2>
+
+  <p>The alert system runs <strong>automatically after every incoming assessment</strong>. When thresholds are breached, alerts are generated and optionally sent via email.</p>
+
+  <h3>Alert Lifecycle</h3>
+  <ol>
+    <li><strong>Detection</strong> — system checks all 9 rules against recent data (within the configured lookback period)</li>
+    <li><strong>Deduplication</strong> — if the same alert was generated in the last 24 hours, it's not duplicated</li>
+    <li><strong>Notification</strong> — critical/high alerts trigger email to subscribed users</li>
+    <li><strong>Review</strong> — user sees alert badge on "AI Insights" in sidebar, reviews and investigates</li>
+    <li><strong>Resolution</strong> — user marks as read or dismisses; can navigate to Agent Health for deeper analysis</li>
+  </ol>
+
+  <h3>Alert Severity Guide</h3>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Severity</th><th>When It Fires</th><th>Recommended Action</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-sage">Info</span></td>
+          <td>Metrics show minor deviation from normal</td>
+          <td>Monitor — no immediate action needed</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-amber">Warning</span></td>
+          <td>Threshold exceeded, potential quality issue</td>
+          <td>Investigate within 24-48 hours. Check affected agents/campaigns.</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-pink">Critical</span></td>
+          <td>Bias flags detected, or critical thresholds breached</td>
+          <td>Investigate immediately. May require disabling the affected agent or escalating to the client.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 8. ADMIN -->
+<div class="section" id="admin">
+  <h2>8. Administration</h2>
+  <p><span class="badge badge-amber">Platform Admin Only</span></p>
+
+  <p>Platform administrators (role: <code>talkpush_owner</code>) have access to global management features from the Client Selection screen:</p>
+
+  <h3>Manage Clients</h3>
+  <ul>
+    <li>Create, edit, and deactivate client companies</li>
+    <li>Configure each client's Talkpush <strong>tenant identifier</strong>, <strong>subdomain</strong>, and <strong>API key</strong></li>
+    <li>View assessment volume and user count per client</li>
+    <li>New clients are auto-created when webhook data arrives from an unknown tenant</li>
+  </ul>
+
+  <h3>Manage Users</h3>
+  <ul>
+    <li>Create user accounts and assign them to companies</li>
+    <li>Set roles: <code>talkpush_owner</code> (platform admin) or <code>recruiter</code> (company-scoped)</li>
+    <li>Activate/deactivate user accounts</li>
+    <li>View last login timestamps</li>
+  </ul>
+
+  <h3>System Settings</h3>
+  <ul>
+    <li>Configure scoring thresholds: <strong>score standard deviation</strong>, <strong>average score</strong>, <strong>completion rate</strong>, <strong>hallucination flags threshold</strong>, <strong>CEFR B2+ target</strong></li>
+    <li>Edit AI system prompts — customize how the AI Assistant behaves</li>
+    <li>Manage global alert rules and default thresholds</li>
+  </ul>
+
+  <h3>AI Usage</h3>
+  <ul>
+    <li>Platform-wide view of AI model usage: total tokens, total cost, breakdown by model (Claude, GPT-4o-mini, Gemini)</li>
+    <li>Per-company AI usage details</li>
+    <li>Cost breakdown by feature (Stage Analysis, Quality Flags, AI Assistant, Chart Insights, etc.)</li>
+  </ul>
+
+  <h3>Evaluators</h3>
+  <ul>
+    <li>Create and manage <strong>AI evaluator configurations</strong></li>
+    <li>Each evaluator has a name, AI model, system prompt, and user prompt</li>
+    <li>Enable/disable evaluators for different assessment pipelines</li>
+    <li>Track evaluator performance and results</li>
+  </ul>
+</div>
+
+<!-- 9. INTEGRATIONS -->
+<div class="section" id="integrations">
+  <h2>9. Integrations</h2>
+
+  <div class="card-grid">
+    <div class="card-sm accent-sage">
+      <h4>Talkpush CRM</h4>
+      <p>Assessment data flows in automatically via webhooks. Candidate pipeline status is fetched from the Talkpush API for outcome analysis. No manual data entry needed.</p>
+    </div>
+    <div class="card-sm accent-lav">
+      <h4>ElevenLabs</h4>
+      <p>AI voice agents from ElevenLabs are tracked and managed. Agent configurations, languages, and models are synced from the ElevenLabs API.</p>
+    </div>
+    <div class="card-sm accent-pink">
+      <h4>OpenRouter AI</h4>
+      <p>AI analysis uses multiple models via OpenRouter: Claude 3.5 Sonnet (quality flags), GPT-4o-mini (stage analysis), and Gemini 2.5 Flash (chart insights and summaries).</p>
+    </div>
+    <div class="card-sm accent-amber">
+      <h4>Google OAuth</h4>
+      <p>User authentication via Google Workspace. No separate passwords — users sign in with their Google account.</p>
+    </div>
+  </div>
+
+  <h3>Data Flow</h3>
+  <div class="card">
+    <p style="font-family:'Space Grotesk',monospace; font-size:14px; line-height:2; text-align:center;">
+      <strong>Candidate takes AI interview in Talkpush (SAM)</strong><br>
+      &darr;<br>
+      <strong>Talkpush sends webhook to TalkScore Hub</strong> (transcript, scores, candidate data)<br>
+      &darr;<br>
+      <strong>TalkScore Hub saves data</strong> + fetches candidate pipeline status from Talkpush API<br>
+      &darr;<br>
+      <strong>AI Analysis Pipeline runs</strong> (quality flags via Claude, stage analysis via GPT-4o-mini)<br>
+      &darr;<br>
+      <strong>Alerts generated</strong> if thresholds exceeded &rarr; email notifications sent<br>
+      &darr;<br>
+      <strong>Data available in dashboard</strong> — Snapshot, Agent Health, Reports, Calibration
+    </p>
+  </div>
+
+  <h3>How It Works — Built-in Reference</h3>
+  <p>TalkScore Hub includes a comprehensive "How It Works" section accessible from the sidebar. It visually explains the system architecture, quality flag definitions, scoring anomaly detection, stage analysis, and alert logic.</p>
+
+  <div class="screenshot">
+    <img src="screenshots/27_how_it_works_overview.jpeg" alt="How It Works — system overview and architecture">
+    <div class="screenshot-caption">How It Works — system overview explaining the data flow and analysis pipeline</div>
+  </div>
+
+  <div class="screenshot-group">
+    <div class="screenshot">
+      <img src="screenshots/28_how_it_works_quality_flags.jpeg" alt="How It Works — quality flag definitions">
+      <div class="screenshot-caption">Quality flag reference — all 25+ flag types with definitions</div>
+    </div>
+    <div class="screenshot">
+      <img src="screenshots/29_how_it_works_scoring_anomalies.jpeg" alt="How It Works — scoring anomaly detection">
+      <div class="screenshot-caption">Scoring anomaly detection — how calibration and deviation work</div>
+    </div>
+  </div>
+
+  <div class="screenshot-group">
+    <div class="screenshot">
+      <img src="screenshots/30_how_it_works_stage_analysis.jpeg" alt="How It Works — stage analysis explanation">
+      <div class="screenshot-caption">Stage analysis — how dropout tracking and funnel analysis work</div>
+    </div>
+    <div class="screenshot">
+      <img src="screenshots/31_how_it_works_alerts.jpeg" alt="How It Works — alert system explanation">
+      <div class="screenshot-caption">Alert system — rule types, thresholds, and notification flow</div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. FAQ -->
+<div class="section" id="faq">
+  <h2>10. Frequently Asked Questions</h2>
+
+  <div class="card accent-sage">
+    <h4>Q: How quickly does data appear after an assessment completes?</h4>
+    <p>Assessment data appears within seconds of the webhook being received. AI analysis (quality flags and stage analysis) completes within 30–60 seconds after that.</p>
+  </div>
+
+  <div class="card accent-lav">
+    <h4>Q: Can I see the actual conversation transcript?</h4>
+    <p>Yes. Every assessment record includes the full transcript with timestamps, showing both the AI agent's questions and the candidate's responses. Access it from the Assessment Detail or Candidate Report view.</p>
+  </div>
+
+  <div class="card accent-pink">
+    <h4>Q: What does "Not Taken" status mean?</h4>
+    <p>"Not Taken" means the candidate was invited to take the assessment but never started it — essentially a no-show. "Unfinished" means they started but dropped out before completing all questions.</p>
+  </div>
+
+  <div class="card accent-amber">
+    <h4>Q: Can I customize what the AI checks for?</h4>
+    <p>Alert thresholds are fully configurable per company (e.g., change the dropout spike threshold from 30% to 20%). The 25 quality flag types are system-defined and cannot be changed, but they cover the most important quality dimensions.</p>
+  </div>
+
+  <div class="card accent-sage">
+    <h4>Q: Does TalkScore Hub penalize candidates for having an accent?</h4>
+    <p>No. TalkScore's pronunciation scoring measures intelligibility — how easily the speaker can be understood — not accent. A thick accent with clear pronunciation can score just as well as native pronunciation. Bias flag detection specifically monitors for accent discrimination.</p>
+  </div>
+
+  <div class="card accent-lav">
+    <h4>Q: Can I export reports?</h4>
+    <p>Yes. Individual candidate reports can be exported as PDF directly from the browser. Dashboard data can be viewed and shared by granting users access to the platform.</p>
+  </div>
+
+  <div class="card accent-pink">
+    <h4>Q: How is data security handled?</h4>
+    <p>All data is company-isolated (multi-tenant). Authentication uses Google OAuth with server-side session tokens. Webhooks are verified using HMAC SHA-256 signatures. API endpoints require session or API key authentication.</p>
+  </div>
+
+  <div class="card accent-amber">
+    <h4>Q: What if I see a bias flag? What should I do?</h4>
+    <p>Bias flags are always marked as critical. Review the flag's explanation and evidence (transcript excerpt). If confirmed, escalate to the product team — the AI agent's prompt or configuration may need adjustment. Document the finding for the client if their assessments were affected.</p>
+  </div>
+
+  <div class="card accent-sage">
+    <h4>Q: Can I ask the AI Assistant about data across multiple clients?</h4>
+    <p>The AI Assistant operates within the context of the currently selected client. To compare across clients, you would need to switch between clients or ask a platform admin to run cross-client queries.</p>
+  </div>
+</div>
+
+<!-- 11. GLOSSARY -->
+<div class="section" id="glossary">
+  <h2>11. Glossary</h2>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Term</th><th>Definition</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Assessment</strong></td><td>A single AI-conducted interview with a candidate, producing a transcript, scores, and quality analysis</td></tr>
+        <tr><td><strong>Agent</strong></td><td>An AI interviewer (SAM) configured for a specific client/campaign. Identified by a unique agent identifier.</td></tr>
+        <tr><td><strong>Campaign</strong></td><td>A job opening or requisition in Talkpush (e.g., "Customer Service Agent — Manila 2025")</td></tr>
+        <tr><td><strong>CEFR</strong></td><td>Common European Framework of Reference for Languages. A standardized scale from A1 (beginner) to C2 (mastery).</td></tr>
+        <tr><td><strong>Quality Flag</strong></td><td>An AI-detected issue in an interview transcript — could be an agent behavior problem, bias indicator, or candidate behavior note</td></tr>
+        <tr><td><strong>Dropout</strong></td><td>When a candidate starts but does not complete the full interview (status: "unfinished")</td></tr>
+        <tr><td><strong>Not Taken</strong></td><td>When a candidate was invited but never started the interview (no-show)</td></tr>
+        <tr><td><strong>Score Drift</strong></td><td>When an AI agent's average score gradually shifts higher or lower over time, indicating a potential calibration issue</td></tr>
+        <tr><td><strong>Wave</strong></td><td>A time period used in calibration analysis to track score trends (e.g., weekly or bi-weekly waves)</td></tr>
+        <tr><td><strong>Tenant</strong></td><td>A unique identifier linking a Talkpush client to their data in TalkScore Hub (composed of the base tenant name + company ID)</td></tr>
+        <tr><td><strong>Hallucination</strong></td><td>When the AI agent states false information during an interview (e.g., making up a company policy that doesn't exist)</td></tr>
+        <tr><td><strong>MCP</strong></td><td>Model Context Protocol — a standard for giving AI models access to external tools and data sources. Used by the AI Assistant.</td></tr>
+        <tr><td><strong>Evaluator</strong></td><td>A configured AI model + prompt combination used to analyze assessments. Multiple evaluators can run different types of analysis.</td></tr>
+        <tr><td><strong>Webhook</strong></td><td>An automated HTTP request sent by Talkpush to TalkScore Hub every time an assessment event occurs</td></tr>
+        <tr><td><strong>Soft Skills</strong></td><td>The language proficiency sub-dimensions: fluency, grammar, vocabulary, pronunciation, active listening, comprehension</td></tr>
+        <tr><td><strong>Outcome Analysis</strong></td><td>Comparing assessment scores against actual hiring decisions to validate that scores predict real-world outcomes</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div style="height:3px;background:var(--gradient);margin-bottom:20px;border-radius:2px;"></div>
+  <p>TalkScore Hub User Documentation &mdash; Talkpush &copy; 2026</p>
+  <p style="margin-top:4px;">For product questions, contact the Product team. For technical issues, contact Engineering.</p>
+</div>
+
+</div>
+</body>
+</html>
