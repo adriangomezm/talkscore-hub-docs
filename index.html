@@ -208,10 +208,10 @@
     font-weight: 700;
     margin-right: 6px;
   }
-  .role-support { background: rgba(184,212,200,.18); color: var(--sage-dk); }
-  .role-am { background: rgba(197,202,233,.18); color: var(--lav-dk); }
-  .role-marketing { background: rgba(240,184,208,.18); color: var(--pink-dk); }
-  .role-admin { background: rgba(240,168,48,.12); color: var(--amber-dk); }
+  .role-owner { background: rgba(240,168,48,.12); color: var(--amber-dk); }
+  .role-client-admin { background: rgba(184,212,200,.18); color: var(--sage-dk); }
+  .role-client-manager { background: rgba(197,202,233,.18); color: var(--lav-dk); }
+  .role-client-user { background: rgba(240,184,208,.18); color: var(--pink-dk); }
 
   /* Nav diagram */
   .nav-diagram {
@@ -403,38 +403,63 @@
 <div class="section" id="audience">
   <h2>3. Who Uses It</h2>
 
+  <p>TalkScore Hub has two categories of users: <strong>Talkpush Owner</strong> (the platform operator) and <strong>Clients</strong> (the companies whose candidates are being assessed). Each category has distinct access levels.</p>
+
+  <h3>Talkpush Owner</h3>
   <div class="table-wrap">
     <table>
       <thead>
         <tr>
           <th>Role</th>
-          <th>What They Do in TalkScore Hub</th>
+          <th>What They Do</th>
           <th>Key Pages</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><span class="role-tag role-admin">Platform Admin</span><br><strong>Talkpush Owner</strong></td>
-          <td>Manages all clients, creates user accounts, configures system-wide scoring thresholds, monitors AI costs, manages evaluators</td>
-          <td>Client Management, User Management, System Settings, AI Usage, Evaluators</td>
-        </tr>
-        <tr>
-          <td><span class="role-tag role-am">Account Manager</span><br><strong>Recruiter (Company-scoped)</strong></td>
-          <td>Reviews assessment performance for their assigned client(s), monitors quality alerts, shares reports with client stakeholders</td>
-          <td>Snapshot, Agent Health, Reports, Score Calibration, AI Insights</td>
-        </tr>
-        <tr>
-          <td><span class="role-tag role-support">Support</span><br><strong>Recruiter (Company-scoped)</strong></td>
-          <td>Investigates individual candidate issues, reviews flagged interviews, checks agent health status, troubleshoots quality problems</td>
-          <td>Reports (individual candidate), Agent Health, AI Insights, AI Assistant</td>
-        </tr>
-        <tr>
-          <td><span class="role-tag role-marketing">Marketing</span><br><strong>Read-only access</strong></td>
-          <td>Extracts metrics for case studies, reviews CEFR distribution data, pulls outcome correlation stats</td>
-          <td>Snapshot, Metrics, Score Calibration (outcome analysis)</td>
+          <td><span class="role-tag role-owner">Talkpush Owner</span></td>
+          <td>Full platform administrator. Manages all client companies, creates and manages user accounts across the entire system, configures system-wide scoring thresholds, monitors AI usage and costs, manages evaluators for human review calibration, and accesses all client data.</td>
+          <td>Global Users, Manage Companies, System Settings, AI Usage, Evaluators — plus all client-level pages</td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <h3>Clients (Company-Scoped Roles)</h3>
+  <p>Client users are scoped to their own company. They cannot see data from other companies. Within a client, there are three roles:</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>What They Do</th>
+          <th>Key Pages</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="role-tag role-client-admin">Admin</span></td>
+          <td>Full client-level access. Can create and edit assessment configurations, manage the Skills Prompt Editor, manage team users within their company, configure alert rules, and access all reports and dashboards.</td>
+          <td>All pages: Snapshot, Agent Health, Score Calibration, AI Insights, Metrics, Assessments, Reports, AI Assistant, Settings</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-client-manager">Manager</span></td>
+          <td>Can create and edit assessment configurations, access the Skills Prompt Editor, view all reports and dashboards, and configure alerts. Cannot manage users.</td>
+          <td>Snapshot, Agent Health, Score Calibration, AI Insights, Metrics, Assessments, Reports, AI Assistant, Settings</td>
+        </tr>
+        <tr>
+          <td><span class="role-tag role-client-user">User</span></td>
+          <td>Standard access. Can view reports, dashboards, and assessment data. Can use the AI Assistant for queries. Cannot create or edit assessment configurations or access the Skills Prompt Editor.</td>
+          <td>Snapshot, Agent Health, Score Calibration, AI Insights, Metrics, Reports, AI Assistant</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout callout-info">
+    <div class="callout-label">Role Assignment</div>
+    Client roles are assigned per company. A user's role is set when their account is provisioned and determines which features they can access within their company's TalkScore Hub workspace.
   </div>
 </div>
 
