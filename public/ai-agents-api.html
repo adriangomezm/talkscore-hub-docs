@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TalkScore AI Agents API Specification</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --sage: #B8D4C8;
+      --sage-dark: #8FB8A6;
+      --lavender: #C5CAE9;
+      --pink: #F0B8D0;
+      --amber: #F0A830;
+      --cream: #FAF8F5;
+      --near-black: #1A1A1A;
+      --warm-gray: #F5F2ED;
+      --border: #E8E4DF;
+      --text-secondary: #6B6560;
+      --code-bg: #2D2D2D;
+      --success: #B8D4C8;
+      --error: #E57373;
+      --warning: #F0A830;
+      --info: #C5CAE9;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--near-black);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .brand-strip {
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--pink), var(--lavender), var(--sage));
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 32px 0;
+    }
+    .header-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    .header-badge {
+      display: inline-block;
+      background: var(--sage);
+      color: var(--near-black);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 4px 12px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+    }
+    .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .header p { color: var(--text-secondary); font-size: 16px; max-width: 700px; }
+    .header-meta {
+      margin-top: 16px;
+      display: flex;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .header-meta span { font-weight: 500; color: var(--near-black); }
+    .content { max-width: 1080px; margin: 0 auto; padding: 40px; }
+    .section {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--warm-gray);
+    }
+    .section-header h2 { font-size: 18px; font-weight: 700; }
+    .section-header p { color: var(--text-secondary); font-size: 13px; margin-top: 4px; }
+    .section-body { padding: 28px; }
+    .endpoint {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .endpoint-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--warm-gray);
+    }
+    .method {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .method-get { background: var(--sage); color: var(--near-black); }
+    .method-post { background: var(--lavender); color: var(--near-black); }
+    .method-put { background: var(--amber); color: var(--near-black); }
+    .method-delete { background: var(--error); color: #fff; }
+    .endpoint-path {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    .endpoint-desc { font-size: 14px; color: var(--text-secondary); margin-left: auto; }
+    .endpoint-body { padding: 24px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--warm-gray);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--cream); }
+    .field-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--near-black);
+    }
+    .field-type {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+    .badge-required {
+      display: inline-block;
+      background: var(--pink);
+      color: var(--near-black);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+    .badge-optional {
+      display: inline-block;
+      background: var(--warm-gray);
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-left: 6px;
+    }
+    pre {
+      background: var(--code-bg);
+      color: #E0E0E0;
+      padding: 20px 24px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.7;
+      margin-top: 16px;
+    }
+    .json-key { color: #9CDCFE; }
+    .json-string { color: #CE9178; }
+    .json-number { color: #B5CEA8; }
+    .json-bool { color: #569CD6; }
+    .json-comment { color: #6A9955; font-style: italic; }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--warm-gray);
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .enum-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .enum-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; margin-top: 24px; }
+    h3:first-child { margin-top: 0; }
+    .callout {
+      padding: 14px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin: 16px 0;
+      border-left: 4px solid;
+    }
+    .callout-info { background: #F0EFF8; border-color: var(--lavender); }
+    .callout-warning { background: #FFF8E1; border-color: var(--amber); }
+    .callout-success { background: #EDF5F1; border-color: var(--sage); }
+    .toc { list-style: none; }
+    .toc li { padding: 6px 0; border-bottom: 1px solid var(--border); }
+    .toc li:last-child { border-bottom: none; }
+    .toc a { text-decoration: none; color: var(--near-black); font-weight: 500; font-size: 14px; }
+    .toc a:hover { color: var(--sage-dark); }
+    .toc .toc-method { margin-right: 8px; }
+    .status-code { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 13px; }
+    .status-2xx { color: #4CAF50; }
+    .status-4xx { color: var(--error); }
+  </style>
+</head>
+<body>
+
+<div class="brand-strip"></div>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge">API Specification</div>
+    <h1>TalkScore AI Agents API</h1>
+    <p>RESTful API for creating, managing, and configuring AI Agents that analyze candidate interactions across multiple interview and outreach scenarios.</p>
+    <div class="header-meta">
+      <div>Version: <span>1.0.0</span></div>
+      <div>Base URL: <span><code>/api/v1</code></span></div>
+      <div>Date: <span>2026-03-26</span></div>
+      <div>Auth: <span>Bearer Token</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+
+  <!-- Table of Contents -->
+  <div class="section" id="toc">
+    <div class="section-header">
+      <h2>Endpoints</h2>
+    </div>
+    <div class="section-body">
+      <ul class="toc">
+        <li><span class="method method-get toc-method">GET</span> <a href="#list-agents">/agents</a> &mdash; List all AI agents</li>
+        <li><span class="method method-post toc-method">POST</span> <a href="#create-agent">/agents</a> &mdash; Create a new AI agent</li>
+        <li><span class="method method-get toc-method">GET</span> <a href="#get-agent">/agents/{agent_id}</a> &mdash; Get agent details</li>
+        <li><span class="method method-put toc-method">PUT</span> <a href="#update-agent">/agents/{agent_id}</a> &mdash; Update an agent</li>
+        <li><span class="method method-delete toc-method">DEL</span> <a href="#delete-agent">/agents/{agent_id}</a> &mdash; Delete an agent</li>
+        <li><span class="method method-get toc-method">GET</span> <a href="#agent-changelog">/agents/{agent_id}/changelog</a> &mdash; Get agent change history</li>
+        <li><span class="method method-get toc-method">GET</span> <a href="#get-result">/results/{application_id}</a> &mdash; Get assessment result for an application</li>
+        <li><span class="method method-get toc-method">GET</span> <a href="#list-question-sets">/question-sets</a> &mdash; List available question sets</li>
+        <li><span class="method method-get toc-method">GET</span> <a href="#get-question-set">/question-sets/{question_set_id}</a> &mdash; Get question set details</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Data Model -->
+  <div class="section" id="data-model">
+    <div class="section-header">
+      <h2>Data Model: AI Agent</h2>
+      <p>Core entity representing a configured AI agent for candidate analysis</p>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">id</span></td>
+            <td><span class="field-type">uuid</span></td>
+            <td>Unique identifier. Auto-generated on creation.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">name</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Display name of the agent.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">description</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Brief description of the agent's purpose.</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="field-name">category</span>
+            </td>
+            <td><span class="field-type">enum</span></td>
+            <td>
+              The use-case category for this agent.
+              <div class="enum-list">
+                <span class="enum-value">screen_interview</span>
+                <span class="enum-value">phone_call</span>
+                <span class="enum-value">on_site_interview</span>
+                <span class="enum-value">event_invitation</span>
+                <span class="enum-value">passive_candidate_outreach</span>
+                <span class="enum-value">status_update</span>
+                <span class="enum-value">reminders</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="field-name">prompt</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>
+              The instruction prompt for the AI agent. Supports candidate variable interpolation using double-brace syntax: <code>{{candidate.first_name}}</code>, <code>{{candidate.email}}</code>, etc.
+            </td>
+          </tr>
+          <tr>
+            <td><span class="field-name">question_set_id</span></td>
+            <td><span class="field-type">uuid | null</span></td>
+            <td>Reference to a question set to use during the interaction. Retrieve available sets from <code>GET /question-sets</code>.</td>
+          </tr>
+          <tr>
+            <td>
+              <span class="field-name">provider</span>
+            </td>
+            <td><span class="field-type">enum</span></td>
+            <td>
+              The external AI provider that powers this agent's underlying interaction.
+              <div class="enum-list">
+                <span class="enum-value">elevenlabs</span>
+                <span class="enum-value">vapi</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="field-name">provider_agent_id</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>The agent/assistant ID on the external provider's platform. For example, an ElevenLabs conversational agent ID or a Vapi assistant ID. This links the TalkScore agent to the underlying AI agent that handles the actual candidate interaction.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">data_extractions</span></td>
+            <td><span class="field-type">DataExtraction[]</span></td>
+            <td>
+              Array defining what candidate attributes the agent should analyze and produce as output. At least one data extraction is required.
+            </td>
+          </tr>
+          <tr>
+            <td><span class="field-name">is_active</span></td>
+            <td><span class="field-type">boolean</span></td>
+            <td>Whether the agent is active and available for use. Default: <code>true</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">created_at</span></td>
+            <td><span class="field-type">datetime</span></td>
+            <td>ISO 8601 timestamp. Auto-generated.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">updated_at</span></td>
+            <td><span class="field-type">datetime</span></td>
+            <td>ISO 8601 timestamp. Auto-updated on changes.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-info">
+        <strong>Provider mapping:</strong> Each TalkScore agent wraps an external AI provider agent. The <code>provider</code> + <code>provider_agent_id</code> pair identifies which external agent powers the interaction. This allows TalkScore to orchestrate agents from different providers (e.g., ElevenLabs, Vapi) while maintaining a unified management interface.
+      </div>
+
+      <h3 id="data-extraction-model">Data Extraction Object</h3>
+      <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 12px;">Each data extraction defines one attribute the agent should evaluate and produce as a result.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">id</span></td>
+            <td><span class="field-type">uuid</span></td>
+            <td>Unique identifier. Auto-generated on creation.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">candidate_attribute</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Name of the candidate attribute to populate (e.g., <code>"english_level"</code>, <code>"years_experience"</code>, <code>"availability_score"</code>). This becomes the key in the analysis result.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">data_type</span></td>
+            <td><span class="field-type">enum</span></td>
+            <td>
+              The data type of the produced value.
+              <div class="enum-list">
+                <span class="enum-value">string</span>
+                <span class="enum-value">integer</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="field-name">description</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Human-readable description of what this data point measures and how the agent should evaluate it. This is passed to the AI as context.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">number_of_values</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>The number of distinct possible values this data extraction can produce. For example, a 1&ndash;5 rating scale would be <code>5</code>. A yes/no classification would be <code>2</code>. Min: <code>1</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">allowed_values</span></td>
+            <td><span class="field-type">(string | integer)[]</span></td>
+            <td>Explicit list of allowed output values. Length must match <code>number_of_values</code> when provided. If omitted, the agent can produce any value of the given <code>data_type</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-info">
+        <strong>Example:</strong> A data extraction for "English proficiency level" might be: <code>candidate_attribute: "english_level"</code>, <code>data_type: "string"</code>, <code>number_of_values: 6</code>, <code>allowed_values: ["A1", "A2", "B1", "B2", "C1", "C2"]</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- POST /agents -->
+  <div class="endpoint" id="create-agent">
+    <div class="endpoint-header">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/agents</span>
+      <span class="endpoint-desc">Create a new AI agent</span>
+    </div>
+    <div class="endpoint-body">
+      <h3>Request Body</h3>
+
+<pre><span class="json-comment">// POST /api/v1/agents</span>
+{
+  <span class="json-key">"name"</span>: <span class="json-string">"BPO English Screener"</span>,
+  <span class="json-key">"description"</span>: <span class="json-string">"Evaluates candidate English proficiency and customer service aptitude for BPO roles"</span>,
+  <span class="json-key">"category"</span>: <span class="json-string">"screen_interview"</span>,
+  <span class="json-key">"prompt"</span>: <span class="json-string">"You are an AI interviewer evaluating {{candidate.first_name}} {{candidate.last_name}} for a customer service role in the {{candidate.campaign_name}} campaign. Assess their English speaking ability and customer service aptitude based on their responses to the screening questions. Consider their location ({{candidate.location}}) for timezone compatibility."</span>,
+  <span class="json-key">"question_set_id"</span>: <span class="json-string">"f47ac10b-58cc-4372-a567-0e02b2c3d479"</span>,
+  <span class="json-key">"provider"</span>: <span class="json-string">"elevenlabs"</span>,
+  <span class="json-key">"provider_agent_id"</span>: <span class="json-string">"agent_abc123xyz456"</span>,
+  <span class="json-key">"data_extractions"</span>: [
+    {
+      <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"english_level"</span>,
+      <span class="json-key">"data_type"</span>: <span class="json-string">"string"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"CEFR English proficiency level based on the candidate's spoken responses. Evaluate pronunciation clarity, grammar accuracy, vocabulary range, and fluency."</span>,
+      <span class="json-key">"number_of_values"</span>: <span class="json-number">6</span>,
+      <span class="json-key">"allowed_values"</span>: [<span class="json-string">"A1"</span>, <span class="json-string">"A2"</span>, <span class="json-string">"B1"</span>, <span class="json-string">"B2"</span>, <span class="json-string">"C1"</span>, <span class="json-string">"C2"</span>]
+    },
+    {
+      <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"customer_service_score"</span>,
+      <span class="json-key">"data_type"</span>: <span class="json-string">"integer"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"Score from 1 to 10 rating the candidate's customer service aptitude based on empathy, problem-solving approach, and communication style demonstrated in their answers."</span>,
+      <span class="json-key">"number_of_values"</span>: <span class="json-number">10</span>,
+      <span class="json-key">"allowed_values"</span>: [<span class="json-number">1</span>, <span class="json-number">2</span>, <span class="json-number">3</span>, <span class="json-number">4</span>, <span class="json-number">5</span>, <span class="json-number">6</span>, <span class="json-number">7</span>, <span class="json-number">8</span>, <span class="json-number">9</span>, <span class="json-number">10</span>]
+    },
+    {
+      <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"recommendation"</span>,
+      <span class="json-key">"data_type"</span>: <span class="json-string">"string"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"Overall hiring recommendation based on the combined assessment of English level and customer service aptitude."</span>,
+      <span class="json-key">"number_of_values"</span>: <span class="json-number">3</span>,
+      <span class="json-key">"allowed_values"</span>: [<span class="json-string">"advance"</span>, <span class="json-string">"hold"</span>, <span class="json-string">"reject"</span>]
+    }
+  ]
+}</pre>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">201 Created</span></p>
+
+<pre>{
+  <span class="json-key">"id"</span>: <span class="json-string">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>,
+  <span class="json-key">"name"</span>: <span class="json-string">"BPO English Screener"</span>,
+  <span class="json-key">"description"</span>: <span class="json-string">"Evaluates candidate English proficiency and customer service aptitude for BPO roles"</span>,
+  <span class="json-key">"category"</span>: <span class="json-string">"screen_interview"</span>,
+  <span class="json-key">"prompt"</span>: <span class="json-string">"You are an AI interviewer evaluating {{candidate.first_name}} ..."</span>,
+  <span class="json-key">"question_set_id"</span>: <span class="json-string">"f47ac10b-58cc-4372-a567-0e02b2c3d479"</span>,
+  <span class="json-key">"provider"</span>: <span class="json-string">"elevenlabs"</span>,
+  <span class="json-key">"provider_agent_id"</span>: <span class="json-string">"agent_abc123xyz456"</span>,
+  <span class="json-key">"data_extractions"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"d1e2f3a4-b5c6-7890-1234-567890abcdef"</span>,
+      <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"english_level"</span>,
+      <span class="json-key">"data_type"</span>: <span class="json-string">"string"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"CEFR English proficiency level based on the candidate's spoken responses..."</span>,
+      <span class="json-key">"number_of_values"</span>: <span class="json-number">6</span>,
+      <span class="json-key">"allowed_values"</span>: [<span class="json-string">"A1"</span>, <span class="json-string">"A2"</span>, <span class="json-string">"B1"</span>, <span class="json-string">"B2"</span>, <span class="json-string">"C1"</span>, <span class="json-string">"C2"</span>]
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"e2f3a4b5-c6d7-8901-2345-67890abcdef1"</span>,
+      <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"customer_service_score"</span>,
+      <span class="json-key">"data_type"</span>: <span class="json-string">"integer"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"Score from 1 to 10 rating the candidate's customer service aptitude..."</span>,
+      <span class="json-key">"number_of_values"</span>: <span class="json-number">10</span>,
+      <span class="json-key">"allowed_values"</span>: [<span class="json-number">1</span>, <span class="json-number">2</span>, <span class="json-number">3</span>, <span class="json-number">4</span>, <span class="json-number">5</span>, <span class="json-number">6</span>, <span class="json-number">7</span>, <span class="json-number">8</span>, <span class="json-number">9</span>, <span class="json-number">10</span>]
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"f3a4b5c6-d7e8-9012-3456-7890abcdef12"</span>,
+      <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"recommendation"</span>,
+      <span class="json-key">"data_type"</span>: <span class="json-string">"string"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"Overall hiring recommendation based on the combined assessment..."</span>,
+      <span class="json-key">"number_of_values"</span>: <span class="json-number">3</span>,
+      <span class="json-key">"allowed_values"</span>: [<span class="json-string">"advance"</span>, <span class="json-string">"hold"</span>, <span class="json-string">"reject"</span>]
+    }
+  ],
+  <span class="json-key">"is_active"</span>: <span class="json-bool">true</span>,
+  <span class="json-key">"created_at"</span>: <span class="json-string">"2026-03-26T10:30:00Z"</span>,
+  <span class="json-key">"updated_at"</span>: <span class="json-string">"2026-03-26T10:30:00Z"</span>
+}</pre>
+
+      <h3>Error Responses</h3>
+      <table>
+        <thead>
+          <tr><th>Status</th><th>Condition</th><th>Body</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="status-code status-4xx">400</span></td>
+            <td>Missing required fields, invalid category/provider, empty data_extractions, or allowed_values length mismatch</td>
+            <td><code>{"error": "validation_error", "details": [...]}</code></td>
+          </tr>
+          <tr>
+            <td><span class="status-code status-4xx">404</span></td>
+            <td>Provided question_set_id does not exist</td>
+            <td><code>{"error": "question_set_not_found"}</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GET /agents -->
+  <div class="endpoint" id="list-agents">
+    <div class="endpoint-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/agents</span>
+      <span class="endpoint-desc">List all AI agents</span>
+    </div>
+    <div class="endpoint-body">
+      <h3>Query Parameters</h3>
+      <table>
+        <thead>
+          <tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">category</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Filter by category enum value</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">provider</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Filter by AI provider (e.g., <code>elevenlabs</code>, <code>vapi</code>)</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">is_active</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">boolean</span></td>
+            <td>Filter by active status. Default: returns all.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">page</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>Page number. Default: <code>1</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">per_page</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>Results per page. Default: <code>20</code>. Max: <code>100</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span></p>
+
+<pre>{
+  <span class="json-key">"data"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"BPO English Screener"</span>,
+      <span class="json-key">"description"</span>: <span class="json-string">"Evaluates candidate English proficiency and customer service aptitude for BPO roles"</span>,
+      <span class="json-key">"category"</span>: <span class="json-string">"screen_interview"</span>,
+      <span class="json-key">"provider"</span>: <span class="json-string">"elevenlabs"</span>,
+      <span class="json-key">"provider_agent_id"</span>: <span class="json-string">"agent_abc123xyz456"</span>,
+      <span class="json-key">"question_set_id"</span>: <span class="json-string">"f47ac10b-58cc-4372-a567-0e02b2c3d479"</span>,
+      <span class="json-key">"data_extractions_count"</span>: <span class="json-number">3</span>,
+      <span class="json-key">"is_active"</span>: <span class="json-bool">true</span>,
+      <span class="json-key">"created_at"</span>: <span class="json-string">"2026-03-26T10:30:00Z"</span>,
+      <span class="json-key">"updated_at"</span>: <span class="json-string">"2026-03-26T10:30:00Z"</span>
+    }
+  ],
+  <span class="json-key">"pagination"</span>: {
+    <span class="json-key">"page"</span>: <span class="json-number">1</span>,
+    <span class="json-key">"per_page"</span>: <span class="json-number">20</span>,
+    <span class="json-key">"total"</span>: <span class="json-number">1</span>,
+    <span class="json-key">"total_pages"</span>: <span class="json-number">1</span>
+  }
+}</pre>
+
+      <div class="callout callout-info">
+        The list endpoint returns a summary view without the full <code>prompt</code> or <code>data_extractions</code> array. Use <code>GET /agents/{agent_id}</code> for the complete object.
+      </div>
+    </div>
+  </div>
+
+  <!-- GET /agents/:id -->
+  <div class="endpoint" id="get-agent">
+    <div class="endpoint-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/agents/{agent_id}</span>
+      <span class="endpoint-desc">Get agent details</span>
+    </div>
+    <div class="endpoint-body">
+      <h3>Path Parameters</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">agent_id</span> <span class="badge-required">required</span></td>
+            <td><span class="field-type">uuid</span></td>
+            <td>The agent's unique identifier</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span> &mdash; Returns the full Agent object including <code>prompt</code>, <code>provider</code>, <code>provider_agent_id</code>, and <code>data_extractions</code>.</p>
+
+      <div class="callout callout-success">
+        <strong>Provider info included:</strong> The detail response always includes <code>provider</code> and <code>provider_agent_id</code>, allowing consumers to identify which external AI agent powers this TalkScore agent and make direct calls to the provider's API if needed.
+      </div>
+
+      <h3>Errors</h3>
+      <table>
+        <thead><tr><th>Status</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-code status-4xx">404</span></td><td>Agent not found</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PUT /agents/:id -->
+  <div class="endpoint" id="update-agent">
+    <div class="endpoint-header">
+      <span class="method method-put">PUT</span>
+      <span class="endpoint-path">/agents/{agent_id}</span>
+      <span class="endpoint-desc">Update an agent</span>
+    </div>
+    <div class="endpoint-body">
+      <p>Full replacement of the agent. All required fields must be provided, including <code>provider</code> and <code>provider_agent_id</code>. To update individual data extractions, send the complete <code>data_extractions</code> array with the desired state.</p>
+
+      <h3>Request Body</h3>
+      <p>Same schema as <code>POST /agents</code>. All required fields must be included.</p>
+
+      <h3>Data Extractions Behavior</h3>
+      <div class="callout callout-warning">
+        <strong>Replace semantics:</strong> The <code>data_extractions</code> array is replaced entirely on update. To add a new data extraction, include it alongside the existing ones. To remove one, omit it from the array. Existing instruction IDs are preserved when the <code>id</code> field is included; new instructions (without <code>id</code>) are created.
+      </div>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span> &mdash; Returns the updated full Agent object.</p>
+
+      <h3>Errors</h3>
+      <table>
+        <thead><tr><th>Status</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-code status-4xx">400</span></td><td>Validation error (same rules as POST)</td></tr>
+          <tr><td><span class="status-code status-4xx">404</span></td><td>Agent not found</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DELETE /agents/:id -->
+  <div class="endpoint" id="delete-agent">
+    <div class="endpoint-header">
+      <span class="method method-delete">DEL</span>
+      <span class="endpoint-path">/agents/{agent_id}</span>
+      <span class="endpoint-desc">Delete an agent</span>
+    </div>
+    <div class="endpoint-body">
+      <p>Permanently deletes the agent and all its data extractions. Does <strong>not</strong> delete the external provider agent &mdash; that must be managed directly on the provider's platform.</p>
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">204 No Content</span></p>
+      <h3>Errors</h3>
+      <table>
+        <thead><tr><th>Status</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-code status-4xx">404</span></td><td>Agent not found</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GET /agents/:id/changelog -->
+  <div class="endpoint" id="agent-changelog">
+    <div class="endpoint-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/agents/{agent_id}/changelog</span>
+      <span class="endpoint-desc">Get agent change history</span>
+    </div>
+    <div class="endpoint-body">
+      <p>Returns a chronological list of changes made to the agent. Each entry records what changed, the previous and new values, who made the change, and when.</p>
+
+      <h3>Path Parameters</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">agent_id</span></td>
+            <td><span class="field-type">uuid</span></td>
+            <td>The agent's unique identifier</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Query Parameters</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">page</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>Page number. Default: <code>1</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">per_page</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>Results per page. Default: <code>20</code>. Max: <code>100</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span></p>
+
+<pre>{
+  <span class="json-key">"agent_id"</span>: <span class="json-string">"a1b2c3d4-e5f6-7890-abcd-ef1234567890"</span>,
+  <span class="json-key">"data"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"cl-001"</span>,
+      <span class="json-key">"action"</span>: <span class="json-string">"updated"</span>,
+      <span class="json-key">"changed_at"</span>: <span class="json-string">"2026-03-26T14:20:00Z"</span>,
+      <span class="json-key">"changed_by"</span>: <span class="json-string">"user_92f1a..."</span>,
+      <span class="json-key">"changes"</span>: [
+        {
+          <span class="json-key">"field"</span>: <span class="json-string">"prompt"</span>,
+          <span class="json-key">"previous_value"</span>: <span class="json-string">"You are an AI interviewer evaluating..."</span>,
+          <span class="json-key">"new_value"</span>: <span class="json-string">"You are a senior AI interviewer. Be thorough when evaluating..."</span>
+        },
+        {
+          <span class="json-key">"field"</span>: <span class="json-string">"data_extractions"</span>,
+          <span class="json-key">"previous_value"</span>: [
+            { <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"english_level"</span>, <span class="json-key">"number_of_values"</span>: <span class="json-number">6</span> },
+            { <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"customer_service_score"</span>, <span class="json-key">"number_of_values"</span>: <span class="json-number">10</span> }
+          ],
+          <span class="json-key">"new_value"</span>: [
+            { <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"english_level"</span>, <span class="json-key">"number_of_values"</span>: <span class="json-number">6</span> },
+            { <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"customer_service_score"</span>, <span class="json-key">"number_of_values"</span>: <span class="json-number">10</span> },
+            { <span class="json-key">"candidate_attribute"</span>: <span class="json-string">"recommendation"</span>, <span class="json-key">"number_of_values"</span>: <span class="json-number">3</span> }
+          ]
+        }
+      ]
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"cl-000"</span>,
+      <span class="json-key">"action"</span>: <span class="json-string">"created"</span>,
+      <span class="json-key">"changed_at"</span>: <span class="json-string">"2026-03-26T10:30:00Z"</span>,
+      <span class="json-key">"changed_by"</span>: <span class="json-string">"user_92f1a..."</span>,
+      <span class="json-key">"changes"</span>: []
+    }
+  ],
+  <span class="json-key">"pagination"</span>: {
+    <span class="json-key">"page"</span>: <span class="json-number">1</span>,
+    <span class="json-key">"per_page"</span>: <span class="json-number">20</span>,
+    <span class="json-key">"total"</span>: <span class="json-number">2</span>,
+    <span class="json-key">"total_pages"</span>: <span class="json-number">1</span>
+  }
+}</pre>
+
+      <h3>Changelog Entry Object</h3>
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">id</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Unique identifier for the changelog entry.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">action</span></td>
+            <td><span class="field-type">enum</span></td>
+            <td>
+              The type of action performed.
+              <div class="enum-list">
+                <span class="enum-value">created</span>
+                <span class="enum-value">updated</span>
+                <span class="enum-value">deleted</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="field-name">changed_at</span></td>
+            <td><span class="field-type">datetime</span></td>
+            <td>ISO 8601 timestamp of when the change occurred.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">changed_by</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Identifier of the user who made the change.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">changes</span></td>
+            <td><span class="field-type">Change[]</span></td>
+            <td>Array of field-level changes. Empty for <code>created</code> actions. Each entry includes the field name, previous value, and new value.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Change Object</h3>
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">field</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Name of the field that changed (e.g., <code>"name"</code>, <code>"prompt"</code>, <code>"category"</code>, <code>"data_extractions"</code>, <code>"provider"</code>).</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">previous_value</span></td>
+            <td><span class="field-type">any</span></td>
+            <td>The value before the change. Type matches the field's data type.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">new_value</span></td>
+            <td><span class="field-type">any</span></td>
+            <td>The value after the change. Type matches the field's data type.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Errors</h3>
+      <table>
+        <thead><tr><th>Status</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-code status-4xx">404</span></td><td>Agent not found</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GET /results/:application_id -->
+  <div class="endpoint" id="get-result">
+    <div class="endpoint-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/results/{application_id}</span>
+      <span class="endpoint-desc">Get assessment result for an application</span>
+    </div>
+    <div class="endpoint-body">
+      <p>Returns the complete assessment result for a given application, including transcript, extracted data, and interview insights.</p>
+
+      <h3>Path Parameters</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">application_id</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>The application ID. Same ID used in the existing applications endpoint.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span></p>
+
+<pre>{
+  <span class="json-key">"agent"</span>: {
+    <span class="json-key">"talkpush_id"</span>: <span class="json-string">"2301abcde4fgh5ijkl6mnop7qrst"</span>,
+    <span class="json-key">"provider"</span>: <span class="json-string">"elevenlabs"</span>,
+    <span class="json-key">"identifier"</span>: <span class="json-string">"agent_2301abcde4fgh5ijkl6mnop7qrst"</span>
+  },
+  <span class="json-key">"status"</span>: <span class="json-string">"completed"</span>,
+  <span class="json-key">"identifier"</span>: <span class="json-string">"conv_7702xyz9ab1cdefgh2ijkl3mnop"</span>,
+  <span class="json-key">"summary"</span>: <span class="json-string">"The candidate expressed strong interest in the Customer Experience Agent role and demonstrated solid communication skills in both English and Tagalog. They confirmed 2 years of BPO experience at Concentrix handling voice accounts, willingness to work onsite in Cubao, possession of a valid government ID, and availability to start within two weeks."</span>,
+  <span class="json-key">"application"</span>: {
+    <span class="json-key">"id"</span>: <span class="json-number">5120847</span>,
+    <span class="json-key">"first_name"</span>: <span class="json-string">"Maria"</span>,
+    <span class="json-key">"last_name"</span>: <span class="json-string">"Santos"</span>,
+    <span class="json-key">"email"</span>: <span class="json-string">"maria.santos.1999@gmail.com"</span>,
+    <span class="json-key">"msisdn"</span>: <span class="json-string">"639171234567"</span>,
+    <span class="json-key">"candidate_id"</span>: <span class="json-number">8102334</span>,
+    <span class="json-key">"campaign_id"</span>: <span class="json-number">4439</span>,
+    <span class="json-key">"campaign_title"</span>: <span class="json-string">"SAM AI | Cubao | 2025 | Customer Experience Agent"</span>,
+    <span class="json-key">"scheduled_at"</span>: <span class="json-string">"2026-03-27T09:00:00+08:00"</span>,
+    <span class="json-key">"others"</span>: {
+      <span class="json-key">"source"</span>: <span class="json-string">"JobStreet"</span>
+    }
+  },
+  <span class="json-key">"recording_url"</span>: <span class="json-string">"https://storage.sg.talkpush.com/files/460069827795277328642152/0/sample_recording_id?response-content-disposition=attachment..."</span>,
+  <span class="json-key">"transcript"</span>: [
+    {
+      <span class="json-key">"role"</span>: <span class="json-string">"bot"</span>,
+      <span class="json-key">"message"</span>: <span class="json-string">"Hi Maria Santos! This is the Alorica Recruitment Team. Do you have 5 to 10 minutes to talk about the Customer Service Representative role?"</span>,
+      <span class="json-key">"start"</span>: <span class="json-number">0</span>,
+      <span class="json-key">"end"</span>: <span class="json-number">11</span>
+    },
+    {
+      <span class="json-key">"role"</span>: <span class="json-string">"user"</span>,
+      <span class="json-key">"message"</span>: <span class="json-string">"Yes po, I have time. I'm really interested in the position."</span>,
+      <span class="json-key">"start"</span>: <span class="json-number">11</span>,
+      <span class="json-key">"end"</span>: <span class="json-number">18</span>
+    },
+    {
+      <span class="json-key">"role"</span>: <span class="json-string">"bot"</span>,
+      <span class="json-key">"message"</span>: <span class="json-string">"Great! Let's get started. First, can you tell me about your previous work experience?"</span>,
+      <span class="json-key">"start"</span>: <span class="json-number">18</span>,
+      <span class="json-key">"end"</span>: <span class="json-number">35</span>
+    },
+    <span class="json-comment">// ... remaining transcript entries</span>
+  ],
+  <span class="json-key">"extracted_data"</span>: {
+    <span class="json-key">"booked_type"</span>: <span class="json-string">"interview"</span>,
+    <span class="json-key">"bpo_experience"</span>: <span class="json-string">"2 years at Concentrix, voice account for US telco client. Handled billing, activations, and troubleshooting."</span>,
+    <span class="json-key">"legal_working_age"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"has_primary_valid_id"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"willing_to_work_onsite"</span>: <span class="json-bool">true</span>,
+    <span class="json-key">"former_alorica_employee"</span>: <span class="json-bool">false</span>,
+    <span class="json-key">"interest_to_move_forward"</span>: <span class="json-string">"Yes"</span>,
+    <span class="json-key">"highest_educational_attainment"</span>: <span class="json-string">"College Graduate - BS Information Technology, PUP"</span>,
+    <span class="json-key">"candidate_questions"</span>: <span class="json-string">"Asked about available shift schedules and HMO benefits."</span>,
+    <span class="json-key">"candidate_responses"</span>: <span class="json-string">"Expressed strong interest throughout. Confirmed all eligibility criteria. Willing to work onsite. Available to start within two weeks."</span>,
+    <span class="json-key">"reason_for_backing_out"</span>: <span class="json-null">null</span>
+  },
+  <span class="json-key">"interview_insights"</span>: {
+    <span class="json-key">"insights"</span>: [
+      {
+        <span class="json-key">"category"</span>: <span class="json-string">"Communication Skills"</span>,
+        <span class="json-key">"notes"</span>: <span class="json-string">"The candidate demonstrated strong bilingual communication, switching naturally between English and Tagalog. Responses were clear, well-structured, and appropriately detailed."</span>
+      },
+      {
+        <span class="json-key">"category"</span>: <span class="json-string">"Customer Service Experience"</span>,
+        <span class="json-key">"notes"</span>: <span class="json-string">"With 2 years at Concentrix on a US voice account, the candidate has directly relevant BPO experience. They mentioned handling billing inquiries, service activations, and troubleshooting."</span>
+      },
+      {
+        <span class="json-key">"category"</span>: <span class="json-string">"Problem-Solving Ability"</span>,
+        <span class="json-key">"notes"</span>: <span class="json-string">"The candidate mentioned troubleshooting but did not elaborate on specific problem-solving scenarios or metrics. A follow-up interview should probe for examples."</span>
+      },
+      {
+        <span class="json-key">"category"</span>: <span class="json-string">"Preparedness and Interest"</span>,
+        <span class="json-key">"notes"</span>: <span class="json-string">"The candidate showed clear enthusiasm and preparedness. They answered promptly, asked informed questions about shifts and benefits, and confirmed interest without hesitation."</span>
+      }
+    ],
+    <span class="json-key">"job_matching_score"</span>: {
+      <span class="json-key">"score"</span>: <span class="json-number">8</span>,
+      <span class="json-key">"explanation"</span>: <span class="json-string">"The candidate scores 8 out of 10 based on strong relevant experience (2 years BPO voice), clear communication skills, confirmed eligibility on all screening criteria, and high enthusiasm. Points were deducted for lack of specific performance metrics and limited discussion of problem-solving."</span>
+    },
+    <span class="json-key">"follow_up_questions"</span>: {
+      <span class="json-key">"description"</span>: <span class="json-string">"Questions designed to probe deeper into the candidate's performance track record and conflict resolution skills during the next interview stage."</span>,
+      <span class="json-key">"questions"</span>: [
+        <span class="json-string">"Can you share a specific example of how you handled an irate or escalated customer at Concentrix?"</span>,
+        <span class="json-string">"What were your key performance metrics (AHT, CSAT, FCR) in your previous role?"</span>,
+        <span class="json-string">"How do you handle situations where you don't know the answer to a customer's question?"</span>,
+        <span class="json-string">"Are you comfortable working graveyard or rotating shifts long-term?"</span>,
+        <span class="json-string">"Why did you leave Concentrix, and what are you looking for in your next role?"</span>
+      ]
+    }
+  },
+  <span class="json-key">"created_at"</span>: <span class="json-string">"2026-03-27T01:15:00Z"</span>
+}</pre>
+
+      <h3>Result Object Fields</h3>
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">agent</span></td>
+            <td><span class="field-type">object</span></td>
+            <td>The agent that performed the assessment. Contains <code>talkpush_id</code>, <code>provider</code>, and <code>identifier</code> (the provider-side agent ID).</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">status</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>Assessment status (e.g., <code>completed</code>, <code>in_progress</code>, <code>failed</code>).</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">identifier</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>The conversation/session ID from the provider (e.g., ElevenLabs conversation ID).</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">summary</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>AI-generated summary of the interaction covering key points, strengths, and gaps.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">application</span></td>
+            <td><span class="field-type">object</span></td>
+            <td>Candidate and application information: <code>id</code>, <code>first_name</code>, <code>last_name</code>, <code>email</code>, <code>msisdn</code>, <code>candidate_id</code>, <code>campaign_id</code>, <code>campaign_title</code>, <code>scheduled_at</code>, <code>others</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">recording_url</span></td>
+            <td><span class="field-type">string</span></td>
+            <td>URL to the audio recording of the interaction.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">transcript</span></td>
+            <td><span class="field-type">TranscriptEntry[]</span></td>
+            <td>Full conversation transcript. Each entry has <code>role</code> (<code>bot</code> or <code>user</code>), <code>message</code>, <code>start</code> (seconds), and <code>end</code> (seconds).</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">extracted_data</span></td>
+            <td><span class="field-type">object</span></td>
+            <td>Key-value pairs produced by the agent's data extractions. Keys correspond to <code>candidate_attribute</code> names defined in the agent's configuration. Values are strings, integers, booleans, or null.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">interview_insights</span></td>
+            <td><span class="field-type">object</span></td>
+            <td>AI-generated analysis. Contains <code>insights</code> (category + notes), <code>job_matching_score</code> (score + explanation), and <code>follow_up_questions</code> (description + questions array).</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">created_at</span></td>
+            <td><span class="field-type">datetime</span></td>
+            <td>ISO 8601 timestamp when the result was recorded.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Errors</h3>
+      <table>
+        <thead><tr><th>Status</th><th>Condition</th></tr></thead>
+        <tbody>
+          <tr><td><span class="status-code status-4xx">404</span></td><td>Result not found</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GET /question-sets -->
+  <div class="endpoint" id="list-question-sets">
+    <div class="endpoint-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/question-sets</span>
+      <span class="endpoint-desc">List available question sets</span>
+    </div>
+    <div class="endpoint-body">
+      <p>Returns the question sets available for assignment to an agent. These are managed separately and referenced by ID when creating or editing an agent.</p>
+
+      <h3>Query Parameters</h3>
+      <table>
+        <thead><tr><th>Parameter</th><th>Type</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="field-name">page</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>Page number. Default: <code>1</code>.</td>
+          </tr>
+          <tr>
+            <td><span class="field-name">per_page</span> <span class="badge-optional">optional</span></td>
+            <td><span class="field-type">integer</span></td>
+            <td>Results per page. Default: <code>20</code>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span></p>
+
+<pre>{
+  <span class="json-key">"data"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"f47ac10b-58cc-4372-a567-0e02b2c3d479"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"BPO Customer Service Screening"</span>,
+      <span class="json-key">"question_count"</span>: <span class="json-number">5</span>,
+      <span class="json-key">"created_at"</span>: <span class="json-string">"2026-02-15T08:00:00Z"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"b8c9d0e1-f2a3-4567-890a-bcdef1234567"</span>,
+      <span class="json-key">"name"</span>: <span class="json-string">"Retail Associate General"</span>,
+      <span class="json-key">"question_count"</span>: <span class="json-number">8</span>,
+      <span class="json-key">"created_at"</span>: <span class="json-string">"2026-01-20T14:00:00Z"</span>
+    }
+  ],
+  <span class="json-key">"pagination"</span>: {
+    <span class="json-key">"page"</span>: <span class="json-number">1</span>,
+    <span class="json-key">"per_page"</span>: <span class="json-number">20</span>,
+    <span class="json-key">"total"</span>: <span class="json-number">2</span>,
+    <span class="json-key">"total_pages"</span>: <span class="json-number">1</span>
+  }
+}</pre>
+    </div>
+  </div>
+
+  <!-- GET /question-sets/:id -->
+  <div class="endpoint" id="get-question-set">
+    <div class="endpoint-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/question-sets/{question_set_id}</span>
+      <span class="endpoint-desc">Get question set details</span>
+    </div>
+    <div class="endpoint-body">
+      <h3>Response</h3>
+      <p><span class="status-code status-2xx">200 OK</span></p>
+
+<pre>{
+  <span class="json-key">"id"</span>: <span class="json-string">"f47ac10b-58cc-4372-a567-0e02b2c3d479"</span>,
+  <span class="json-key">"name"</span>: <span class="json-string">"BPO Customer Service Screening"</span>,
+  <span class="json-key">"questions"</span>: [
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"q1-uuid"</span>,
+      <span class="json-key">"order"</span>: <span class="json-number">1</span>,
+      <span class="json-key">"text"</span>: <span class="json-string">"Tell me about a time you dealt with a difficult customer."</span>,
+      <span class="json-key">"type"</span>: <span class="json-string">"open_ended"</span>
+    },
+    {
+      <span class="json-key">"id"</span>: <span class="json-string">"q2-uuid"</span>,
+      <span class="json-key">"order"</span>: <span class="json-number">2</span>,
+      <span class="json-key">"text"</span>: <span class="json-string">"How do you prioritize tasks when handling multiple customer requests?"</span>,
+      <span class="json-key">"type"</span>: <span class="json-string">"open_ended"</span>
+    }
+  ],
+  <span class="json-key">"created_at"</span>: <span class="json-string">"2026-02-15T08:00:00Z"</span>
+}</pre>
+    </div>
+  </div>
+
+  <!-- Validation Rules -->
+  <div class="section" id="validation">
+    <div class="section-header">
+      <h2>Validation Rules</h2>
+    </div>
+    <div class="section-body">
+      <table>
+        <thead><tr><th>Rule</th><th>Details</th></tr></thead>
+        <tbody>
+          <tr><td><span class="field-name">name</span></td><td>Required. Must be unique per account.</td></tr>
+          <tr><td><span class="field-name">description</span></td><td>Required.</td></tr>
+          <tr><td><span class="field-name">category</span></td><td>Required. Must be one of the 7 enum values.</td></tr>
+          <tr><td><span class="field-name">prompt</span></td><td>Required.</td></tr>
+          <tr><td><span class="field-name">question_set_id</span></td><td>Optional. When provided, must reference an existing question set.</td></tr>
+          <tr><td><span class="field-name">provider</span></td><td>Required. Must be one of: <code>elevenlabs</code>, <code>vapi</code>.</td></tr>
+          <tr><td><span class="field-name">provider_agent_id</span></td><td>Required. The external agent/assistant ID on the provider platform.</td></tr>
+          <tr><td><span class="field-name">data_extractions</span></td><td>Required. At least 1 data extraction per agent.</td></tr>
+          <tr><td><span class="field-name">data_extractions[].candidate_attribute</span></td><td>Required. Must be unique within the agent.</td></tr>
+          <tr><td><span class="field-name">data_extractions[].data_type</span></td><td>Required. Must be <code>"string"</code> or <code>"integer"</code>.</td></tr>
+          <tr><td><span class="field-name">data_extractions[].description</span></td><td>Required.</td></tr>
+          <tr><td><span class="field-name">data_extractions[].number_of_values</span></td><td>Required. Integer &ge; 1.</td></tr>
+          <tr><td><span class="field-name">data_extractions[].allowed_values</span></td><td>Optional. When provided, length must equal <code>number_of_values</code>. Values must match <code>data_type</code>.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Error Format -->
+  <div class="section" id="errors">
+    <div class="section-header">
+      <h2>Error Response Format</h2>
+    </div>
+    <div class="section-body">
+      <p>All errors return a consistent JSON structure:</p>
+
+<pre>{
+  <span class="json-key">"error"</span>: <span class="json-string">"validation_error"</span>,
+  <span class="json-key">"message"</span>: <span class="json-string">"Request body failed validation"</span>,
+  <span class="json-key">"details"</span>: [
+    {
+      <span class="json-key">"field"</span>: <span class="json-string">"data_extractions[1].allowed_values"</span>,
+      <span class="json-key">"message"</span>: <span class="json-string">"Length (4) does not match number_of_values (3)"</span>
+    }
+  ]
+}</pre>
+
+      <table>
+        <thead><tr><th>Error Code</th><th>HTTP Status</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>validation_error</code></td><td>400</td><td>Request body or query params failed validation</td></tr>
+          <tr><td><code>not_found</code></td><td>404</td><td>Requested resource does not exist</td></tr>
+          <tr><td><code>question_set_not_found</code></td><td>404</td><td>Referenced question_set_id does not exist</td></tr>
+
+          <tr><td><code>duplicate_name</code></td><td>409</td><td>Agent with this name already exists</td></tr>
+          <tr><td><code>unauthorized</code></td><td>401</td><td>Missing or invalid bearer token</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalkScore Hub - Scoring Calibration Audit</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --sage: #B8D4C8;
+      --sage-dark: #8FB8A8;
+      --sage-light: #E8F2ED;
+      --lavender: #C5CAE9;
+      --lavender-light: #E8EAF6;
+      --pink: #F0B8D0;
+      --pink-light: #FAE4EE;
+      --amber: #F0A830;
+      --amber-light: #FFF3DB;
+      --cream: #FAF8F5;
+      --near-black: #1A1A1A;
+      --text-secondary: #555;
+      --border: #E8E4DF;
+      --header-bg: #F5F2ED;
+      --code-bg: #2D2D2D;
+      --code-text: #E0E0E0;
+      --soft-red: #E57373;
+      --soft-red-light: #FFEBEE;
+      --gray-500: #6B6B6B;
+      --gray-400: #9B9B9B;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--near-black);
+      line-height: 1.6;
+      padding: 0;
+    }
+
+    /* Header */
+    .header {
+      background: var(--near-black);
+      color: white;
+      padding: 48px 64px;
+    }
+    .header-gradient {
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--pink), var(--lavender), var(--sage));
+    }
+    .header h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+    .header .subtitle { font-size: 16px; color: #aaa; }
+    .header .meta { margin-top: 16px; font-size: 13px; color: #888; }
+    .header .meta span { margin-right: 24px; }
+
+    /* Nav */
+    .nav {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav a {
+      color: var(--near-black);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-right: 24px;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav a:hover { border-bottom-color: var(--sage); }
+
+    /* Content */
+    .content { max-width: 960px; margin: 0 auto; padding: 48px 32px; }
+
+    /* Sections */
+    .section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 32px;
+    }
+    .section h2 {
+      font-size: 24px; font-weight: 700; margin-bottom: 24px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--sage);
+    }
+    .section h3 { font-size: 18px; font-weight: 600; margin: 24px 0 12px; }
+    .section h4 { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
+    .section p { margin-bottom: 12px; color: var(--text-secondary); font-size: 15px; }
+    .section ul, .section ol {
+      margin: 8px 0 16px 24px; color: var(--text-secondary); font-size: 15px;
+    }
+    .section li { margin-bottom: 6px; }
+
+    /* Code blocks */
+    pre {
+      background: var(--code-bg); color: var(--code-text);
+      padding: 20px 24px; border-radius: 6px; overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      line-height: 1.5; margin: 16px 0;
+    }
+    code { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    p code, li code, td code {
+      background: #f0eeeb; padding: 2px 6px; border-radius: 3px; font-size: 13px;
+    }
+
+    /* Syntax */
+    .kw { color: #C792EA; font-weight: 500; }
+    .type { color: #82AAFF; }
+    .str { color: #C3E88D; }
+    .cmt { color: #888; font-style: italic; }
+    .fn { color: #FFCB6B; }
+    .num { color: #F78C6C; }
+    .sql-kw { color: #C792EA; font-weight: 500; }
+    .sql-type { color: #82AAFF; }
+    .sql-str { color: #C3E88D; }
+    .sql-comment { color: #888; font-style: italic; }
+    .sql-fn { color: #FFCB6B; }
+    .sql-num { color: #F78C6C; }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th {
+      background: var(--header-bg); text-align: left; padding: 10px 14px;
+      font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:hover td { background: var(--cream); }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-sage { background: #e8f5e9; color: #2e7d32; }
+    .badge-lavender { background: #e8eaf6; color: #3949ab; }
+    .badge-pink { background: #fce4ec; color: #c62828; }
+    .badge-amber { background: #fff8e1; color: #f57f17; }
+    .badge-red { background: var(--soft-red-light); color: #C62828; }
+
+    /* Callout */
+    .callout { padding: 16px 20px; border-radius: 6px; margin: 16px 0; font-size: 14px; }
+    .callout-sage { background: #e8f5e9; border-left: 4px solid var(--sage); }
+    .callout-amber { background: #fff8e1; border-left: 4px solid var(--amber); }
+    .callout-lavender { background: #e8eaf6; border-left: 4px solid var(--lavender); }
+    .callout-pink { background: #fce4ec; border-left: 4px solid var(--pink); }
+    .callout-red { background: var(--soft-red-light); border-left: 4px solid var(--soft-red); }
+
+    /* Diagram */
+    .diagram {
+      background: var(--code-bg); color: var(--code-text);
+      padding: 24px 32px; border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      line-height: 1.6; overflow-x: auto; margin: 16px 0; white-space: pre;
+    }
+
+    /* Metric cards */
+    .metrics-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 16px; margin: 16px 0;
+    }
+    .metric-card {
+      background: var(--cream); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; text-align: center;
+    }
+    .metric-label {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 0.8px; color: var(--gray-500); margin-bottom: 6px;
+    }
+    .metric-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; line-height: 1; }
+    .metric-sub { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+    .val-red { color: var(--soft-red); }
+    .val-amber { color: var(--amber); }
+    .val-sage { color: #2E7D57; }
+
+    /* Footer */
+    .footer { text-align: center; padding: 32px; color: #999; font-size: 13px; }
+
+    @media print {
+      body { padding: 0; }
+      .nav { display: none; }
+      .header { padding: 32px; }
+      .content { padding: 24px; }
+      .section { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-gradient"></div>
+<div class="header">
+  <h1>TalkScore Hub</h1>
+  <p class="subtitle">Scoring Calibration Audit &mdash; Feature Specification</p>
+  <div class="meta">
+    <span>Version 1.0</span>
+    <span>March 19, 2026</span>
+    <span>Product: TalkScore</span>
+    <span>Module: Scoring Analysis</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#overview">Overview</a>
+  <a href="#what-it-measures">What It Measures</a>
+  <a href="#data-model">Data Model</a>
+  <a href="#computation">Computation Engine</a>
+  <a href="#ui-components">UI Components</a>
+  <a href="#api">API Endpoints</a>
+  <a href="#ai-analysis">AI Root Cause Analysis</a>
+  <a href="#reference">Reference: Voice Auditor</a>
+</nav>
+
+<div class="content">
+
+  <!-- ========================================== -->
+  <!-- 1. OVERVIEW                                 -->
+  <!-- ========================================== -->
+  <section class="section" id="overview">
+    <h2>1. Overview</h2>
+
+    <p>The <strong>Scoring Calibration Audit</strong> is an analysis module within TalkScore Hub that evaluates how well the AI scoring system is differentiating candidates. It detects <strong>score compression</strong> &mdash; when scores cluster in a narrow range, making it impossible to distinguish strong candidates from weak ones.</p>
+
+    <p>This is the central question: <strong>Is TalkScore producing useful scores, or is everyone getting a 3.5?</strong></p>
+
+    <h3>Why This Matters</h3>
+    <ul>
+      <li><strong>Score compression</strong> is the #1 silent failure mode in AI scoring. Everything looks fine until a hiring manager realizes they can't rank 50 candidates because they all scored between 6.8 and 7.2</li>
+      <li>A standard deviation below the target threshold means the scoring system has <strong>lost its ability to differentiate</strong> &mdash; scores are decorative, not predictive</li>
+      <li>Root causes are usually fixable: vague rubrics, behavioral (not situational) questions, or insufficient probing</li>
+    </ul>
+
+    <h3>Scope</h3>
+    <table>
+      <tr><th>Dimension</th><th>Description</th></tr>
+      <tr>
+        <td><strong>Date range</strong></td>
+        <td>User-selectable: last 7 days, 14 days, 30 days, custom range</td>
+      </tr>
+      <tr>
+        <td><strong>Filter: Assessment</strong></td>
+        <td>Single assessment, or all assessments under the tenant</td>
+      </tr>
+      <tr>
+        <td><strong>Filter: Skill</strong></td>
+        <td>Overall assessment score, or drill into a specific skill</td>
+      </tr>
+      <tr>
+        <td><strong>Minimum sample size</strong></td>
+        <td>Requires at least 20 analyzed calls to generate a calibration report</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. WHAT IT MEASURES                         -->
+  <!-- ========================================== -->
+  <section class="section" id="what-it-measures">
+    <h2>2. What It Measures</h2>
+
+    <p>The calibration audit evaluates scoring health across multiple statistical dimensions:</p>
+
+    <h3>Core Metrics</h3>
+    <table>
+      <tr><th>Metric</th><th>What It Tells You</th><th>Healthy Target</th><th>Red Flag</th></tr>
+      <tr>
+        <td><strong>Standard Deviation</strong></td>
+        <td>How spread out scores are around the mean</td>
+        <td>&gt; 1.5 (on 0-10 scale)</td>
+        <td>&lt; 0.8 &mdash; scores are compressed</td>
+      </tr>
+      <tr>
+        <td><strong>Score Range Used</strong></td>
+        <td>What % of the 0-10 scale is actually being used</td>
+        <td>&gt; 60% of scale (6+ point spread)</td>
+        <td>&lt; 30% &mdash; AI is only using a narrow band</td>
+      </tr>
+      <tr>
+        <td><strong>Differentiation Power</strong></td>
+        <td>Can we separate top 20% from bottom 20%?</td>
+        <td>Clear separation (&gt; 2 points between top/bottom quintiles)</td>
+        <td>&lt; 1 point gap &mdash; can't distinguish candidates</td>
+      </tr>
+      <tr>
+        <td><strong>Distribution Shape</strong></td>
+        <td>Is it bell-curve or lopsided?</td>
+        <td>Roughly normal, using full scale</td>
+        <td>Extreme clustering around one value</td>
+      </tr>
+      <tr>
+        <td><strong>Kurtosis</strong></td>
+        <td>How peaked/flat the distribution is</td>
+        <td>Near 3 (normal)</td>
+        <td>&gt; 6 &mdash; hyper-concentrated spike</td>
+      </tr>
+    </table>
+
+    <h3>Per-Skill Breakdown</h3>
+    <p>Each metric is computed both for the <strong>overall assessment score</strong> and <strong>per configured skill</strong>. This reveals which skills differentiate well (e.g., "Technical Knowledge" with SD = 1.8) vs. which are flat (e.g., "Empathy" with SD = 0.3).</p>
+
+    <div class="callout callout-amber">
+      <strong>Healthy scoring vs. compressed scoring:</strong> In a healthy system, a pool of 100 candidates will have scores genuinely spread across the range &mdash; some clearly strong, some clearly weak, most in between. In a compressed system, 89% of candidates score within 1 point of each other. The rubric is broken, not the candidates.
+    </div>
+
+    <h3>Expected Standard Deviation by Scale</h3>
+    <p>The target SD depends on the scoring scale configured for the assessment:</p>
+    <table>
+      <tr><th>Scale</th><th>Range</th><th>Target SD</th><th>Compression Threshold</th></tr>
+      <tr><td>0 - 5</td><td>5 points</td><td>&gt; 0.9</td><td>&lt; 0.5</td></tr>
+      <tr><td>0 - 10</td><td>10 points</td><td>&gt; 1.5</td><td>&lt; 0.8</td></tr>
+      <tr><td>1 - 5 (IELTS-style)</td><td>4 points effective</td><td>&gt; 0.7</td><td>&lt; 0.4</td></tr>
+    </table>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. DATA MODEL                               -->
+  <!-- ========================================== -->
+  <section class="section" id="data-model">
+    <h2>3. Data Model</h2>
+
+    <p>The calibration audit reads from existing tables and stores computed results in a new <code>calibration_reports</code> table for caching and historical tracking.</p>
+
+    <h3>New Table: calibration_reports</h3>
+<pre><span class="sql-kw">CREATE TABLE</span> calibration_reports (
+  id                        <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  company_id                <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> companies(id),
+  assessment_id             <span class="sql-type">UUID</span> <span class="sql-kw">REFERENCES</span> assessments(id),  <span class="sql-comment">-- null = all assessments</span>
+
+  <span class="sql-comment">-- ═══ Date Range ═══</span>
+  date_from                 <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">NOT NULL</span>,
+  date_to                   <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">NOT NULL</span>,
+  sample_size               <span class="sql-type">INTEGER</span> <span class="sql-kw">NOT NULL</span>,          <span class="sql-comment">-- total calls analyzed</span>
+
+  <span class="sql-comment">-- ═══ Overall Scoring Health ═══</span>
+  overall_mean              <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_std_dev           <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_min               <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_max               <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_range_pct         <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),              <span class="sql-comment">-- % of scale used</span>
+  overall_kurtosis          <span class="sql-type">NUMERIC</span>(<span class="sql-num">6</span>,<span class="sql-num">3</span>),
+  overall_skewness          <span class="sql-type">NUMERIC</span>(<span class="sql-num">6</span>,<span class="sql-num">3</span>),
+  differentiation_gap       <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),              <span class="sql-comment">-- top 20% avg - bottom 20% avg</span>
+  health_status             <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,             <span class="sql-comment">-- healthy | warning | compressed</span>
+
+  <span class="sql-comment">-- ═══ Score Distribution (histogram bins) ═══</span>
+  distribution_bins         <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{bin: "0-1", count: 5}, {bin: "1-2", count: 12}, ...]</span>
+  target_distribution       <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- expected healthy distribution for comparison</span>
+
+  <span class="sql-comment">-- ═══ Per-Skill Analysis ═══</span>
+  skill_calibrations        <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- see structure below</span>
+
+  <span class="sql-comment">-- ═══ AI Root Cause Analysis ═══</span>
+  root_causes               <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{cause, description, impact, category}]</span>
+  recommendations           <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{title, description, before, after, expected_impact}]</span>
+  ai_model_used             <span class="sql-type">TEXT</span>,
+  ai_tokens                 <span class="sql-type">INTEGER</span>,
+
+  created_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);
+
+<span class="sql-kw">CREATE INDEX</span> idx_calibration_company <span class="sql-kw">ON</span> calibration_reports(company_id, created_at <span class="sql-kw">DESC</span>);
+<span class="sql-kw">CREATE INDEX</span> idx_calibration_assessment <span class="sql-kw">ON</span> calibration_reports(assessment_id, created_at <span class="sql-kw">DESC</span>);
+
+<span class="sql-comment">-- RLS</span>
+<span class="sql-kw">ALTER TABLE</span> calibration_reports <span class="sql-kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="sql-kw">CREATE POLICY</span> tenant_calibration <span class="sql-kw">ON</span> calibration_reports
+  <span class="sql-kw">USING</span> (company_id <span class="sql-kw">IN</span> (
+    <span class="sql-kw">SELECT</span> client_id <span class="sql-kw">FROM</span> user_roles <span class="sql-kw">WHERE</span> user_id = auth.uid()
+  ));</pre>
+
+    <h3>skill_calibrations JSONB Structure</h3>
+    <p>Each skill configured in the assessment gets its own calibration analysis:</p>
+<pre><span class="cmt">// skill_calibrations: one entry per skill</span>
+[
+  {
+    <span class="str">"skill_id"</span>: <span class="str">"customer_empathy"</span>,
+    <span class="str">"name"</span>: <span class="str">"Customer Empathy"</span>,
+    <span class="str">"max_score"</span>: <span class="num">10</span>,
+    <span class="str">"mean"</span>: <span class="num">6.8</span>,
+    <span class="str">"std_dev"</span>: <span class="num">0.42</span>,
+    <span class="str">"min"</span>: <span class="num">5.5</span>,
+    <span class="str">"max"</span>: <span class="num">7.8</span>,
+    <span class="str">"range_pct"</span>: <span class="num">23</span>,             <span class="cmt">// only 23% of scale used</span>
+    <span class="str">"kurtosis"</span>: <span class="num">7.2</span>,
+    <span class="str">"health_status"</span>: <span class="str">"compressed"</span>,  <span class="cmt">// healthy | warning | compressed</span>
+    <span class="str">"target_std_dev"</span>: <span class="num">1.5</span>,
+    <span class="str">"variance_ratio"</span>: <span class="num">0.28</span>,       <span class="cmt">// actual_sd / target_sd (1.0 = perfect)</span>
+    <span class="str">"distribution"</span>: [<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>, <span class="num">2</span>, <span class="num">5</span>, <span class="num">38</span>, <span class="num">72</span>, <span class="num">21</span>, <span class="num">4</span>, <span class="num">0</span>, <span class="num">0</span>],  <span class="cmt">// histogram 0-10</span>
+    <span class="str">"sample_scores"</span>: [<span class="num">6.5</span>, <span class="num">7.0</span>, <span class="num">7.0</span>, <span class="num">6.8</span>, <span class="num">7.2</span>, <span class="num">6.5</span>, <span class="num">7.0</span>, <span class="num">6.8</span>, <span class="num">7.0</span>, <span class="num">6.5</span>]  <span class="cmt">// last 10</span>
+  },
+  {
+    <span class="str">"skill_id"</span>: <span class="str">"technical_knowledge"</span>,
+    <span class="str">"name"</span>: <span class="str">"Technical Knowledge"</span>,
+    <span class="str">"max_score"</span>: <span class="num">10</span>,
+    <span class="str">"mean"</span>: <span class="num">5.4</span>,
+    <span class="str">"std_dev"</span>: <span class="num">2.1</span>,
+    <span class="str">"min"</span>: <span class="num">1.0</span>,
+    <span class="str">"max"</span>: <span class="num">9.5</span>,
+    <span class="str">"range_pct"</span>: <span class="num">85</span>,
+    <span class="str">"kurtosis"</span>: <span class="num">2.8</span>,
+    <span class="str">"health_status"</span>: <span class="str">"healthy"</span>,
+    <span class="str">"target_std_dev"</span>: <span class="num">1.5</span>,
+    <span class="str">"variance_ratio"</span>: <span class="num">1.4</span>,
+    <span class="str">"distribution"</span>: [<span class="num">4</span>, <span class="num">8</span>, <span class="num">12</span>, <span class="num">18</span>, <span class="num">22</span>, <span class="num">26</span>, <span class="num">20</span>, <span class="num">16</span>, <span class="num">10</span>, <span class="num">4</span>, <span class="num">2</span>],
+    <span class="str">"sample_scores"</span>: [<span class="num">2.0</span>, <span class="num">8.5</span>, <span class="num">4.0</span>, <span class="num">1.5</span>, <span class="num">7.0</span>, <span class="num">5.5</span>, <span class="num">9.0</span>, <span class="num">3.5</span>, <span class="num">6.5</span>, <span class="num">5.0</span>]
+  }
+]</pre>
+
+    <h3>Data Sources</h3>
+    <p>The calibration engine reads from these existing tables:</p>
+    <table>
+      <tr><th>Table</th><th>Fields Used</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>analyses</code></td>
+        <td><code>talkscore_overall</code>, <code>skill_evaluations</code>, <code>skill_average_score</code>, <code>created_at</code></td>
+        <td>Source of all scores to analyze</td>
+      </tr>
+      <tr>
+        <td><code>calls</code></td>
+        <td><code>assessment_id</code>, <code>company_id</code>, <code>call_date</code></td>
+        <td>Filter by assessment and date range</td>
+      </tr>
+      <tr>
+        <td><code>assessments</code></td>
+        <td><code>skills</code>, <code>name</code></td>
+        <td>Know which skills to analyze, their max scores and criteria</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. COMPUTATION ENGINE                       -->
+  <!-- ========================================== -->
+  <section class="section" id="computation">
+    <h2>4. Computation Engine</h2>
+
+    <p>Calibration reports can be generated on-demand or scheduled. The computation runs server-side and stores results in <code>calibration_reports</code>.</p>
+
+    <h3>Step 1: Gather Scores</h3>
+<pre><span class="cmt">// src/services/calibration.ts</span>
+
+<span class="kw">export async function</span> <span class="fn">gatherScores</span>(
+  companyId: <span class="type">string</span>,
+  dateFrom: <span class="type">Date</span>,
+  dateTo: <span class="type">Date</span>,
+  assessmentId?: <span class="type">string</span>
+): <span class="type">Promise</span>&lt;CalibrationInput&gt; {
+  <span class="kw">let</span> query = supabaseAdmin
+    .from(<span class="str">'analyses'</span>)
+    .select(`
+      talkscore_overall,
+      skill_evaluations,
+      skill_average_score,
+      calls!inner (assessment_id, call_date)
+    `)
+    .eq(<span class="str">'company_id'</span>, companyId)
+    .gte(<span class="str">'calls.call_date'</span>, dateFrom.toISOString())
+    .lte(<span class="str">'calls.call_date'</span>, dateTo.toISOString());
+
+  <span class="kw">if</span> (assessmentId) {
+    query = query.eq(<span class="str">'calls.assessment_id'</span>, assessmentId);
+  }
+
+  <span class="kw">const</span> { data } = <span class="kw">await</span> query;
+  <span class="kw">return</span> data;
+}</pre>
+
+    <h3>Step 2: Compute Statistics</h3>
+<pre><span class="cmt">// Pure math — no external dependencies</span>
+
+<span class="kw">export function</span> <span class="fn">computeCalibrationStats</span>(scores: <span class="type">number</span>[], maxScore: <span class="type">number</span> = <span class="num">10</span>) {
+  <span class="kw">const</span> n = scores.length;
+  <span class="kw">if</span> (n < <span class="num">20</span>) <span class="kw">return null</span>;  <span class="cmt">// minimum sample size</span>
+
+  <span class="kw">const</span> mean = scores.reduce((a, b) => a + b, <span class="num">0</span>) / n;
+
+  <span class="cmt">// Standard deviation</span>
+  <span class="kw">const</span> variance = scores.reduce((sum, s) => sum + (s - mean) ** <span class="num">2</span>, <span class="num">0</span>) / (n - <span class="num">1</span>);
+  <span class="kw">const</span> stdDev = Math.sqrt(variance);
+
+  <span class="cmt">// Range</span>
+  <span class="kw">const</span> min = Math.min(...scores);
+  <span class="kw">const</span> max = Math.max(...scores);
+  <span class="kw">const</span> rangePct = ((max - min) / maxScore) * <span class="num">100</span>;
+
+  <span class="cmt">// Kurtosis (excess kurtosis — normal = 0)</span>
+  <span class="kw">const</span> m4 = scores.reduce((sum, s) => sum + (s - mean) ** <span class="num">4</span>, <span class="num">0</span>) / n;
+  <span class="kw">const</span> kurtosis = (m4 / variance ** <span class="num">2</span>) - <span class="num">3</span>;
+
+  <span class="cmt">// Skewness</span>
+  <span class="kw">const</span> m3 = scores.reduce((sum, s) => sum + (s - mean) ** <span class="num">3</span>, <span class="num">0</span>) / n;
+  <span class="kw">const</span> skewness = m3 / (stdDev ** <span class="num">3</span>);
+
+  <span class="cmt">// Differentiation gap: top 20% avg minus bottom 20% avg</span>
+  <span class="kw">const</span> sorted = [...scores].sort((a, b) => a - b);
+  <span class="kw">const</span> quintile = Math.ceil(n * <span class="num">0.2</span>);
+  <span class="kw">const</span> bottom20 = sorted.slice(<span class="num">0</span>, quintile);
+  <span class="kw">const</span> top20 = sorted.slice(-quintile);
+  <span class="kw">const</span> diffGap = avg(top20) - avg(bottom20);
+
+  <span class="cmt">// Health status based on target SD for this scale</span>
+  <span class="kw">const</span> targetSD = maxScore <= <span class="num">5</span> ? <span class="num">0.9</span> : <span class="num">1.5</span>;
+  <span class="kw">const</span> compressionThreshold = maxScore <= <span class="num">5</span> ? <span class="num">0.5</span> : <span class="num">0.8</span>;
+  <span class="kw">const</span> healthStatus =
+    stdDev >= targetSD ? <span class="str">'healthy'</span> :
+    stdDev >= compressionThreshold ? <span class="str">'warning'</span> :
+    <span class="str">'compressed'</span>;
+
+  <span class="cmt">// Histogram bins</span>
+  <span class="kw">const</span> bins = Array.from({ length: maxScore + <span class="num">1</span> }, (_, i) => ({
+    bin: `${i}-${i + <span class="num">1</span>}`,
+    count: scores.filter(s => s >= i && s < i + <span class="num">1</span>).length,
+  }));
+
+  <span class="kw">return</span> {
+    mean, stdDev, min, max, rangePct, kurtosis, skewness,
+    diffGap, healthStatus, targetSD, bins,
+    varianceRatio: +(stdDev / targetSD).toFixed(<span class="num">2</span>),
+  };
+}</pre>
+
+    <h3>Step 3: Run Per-Skill Analysis</h3>
+<pre><span class="kw">export function</span> <span class="fn">computeSkillCalibrations</span>(
+  analyses: <span class="type">AnalysisRow</span>[],
+  assessmentSkills: <span class="type">AssessmentSkill</span>[]
+): <span class="type">SkillCalibration</span>[] {
+  <span class="kw">return</span> assessmentSkills.map(skill => {
+    <span class="cmt">// Extract this skill's scores from all analyses</span>
+    <span class="kw">const</span> skillScores = analyses
+      .map(a => a.skill_evaluations?.find(se => se.skill_id === skill.skill_id))
+      .filter(Boolean)
+      .map(se => se.score);
+
+    <span class="kw">if</span> (skillScores.length < <span class="num">20</span>) <span class="kw">return</span> { skill_id: skill.skill_id, insufficient_data: <span class="kw">true</span> };
+
+    <span class="kw">const</span> stats = computeCalibrationStats(skillScores, skill.max_score);
+
+    <span class="kw">return</span> {
+      skill_id: skill.skill_id,
+      name: skill.name,
+      max_score: skill.max_score,
+      ...stats,
+      sample_scores: skillScores.slice(-<span class="num">10</span>),  <span class="cmt">// last 10 for visual dots</span>
+    };
+  });
+}</pre>
+
+    <h3>Step 4: AI Root Cause Analysis (when compressed)</h3>
+    <p>When any metric crosses the compression threshold, the system triggers an AI analysis to identify <strong>why</strong> scores are flat and <strong>how to fix it</strong>. See <a href="#ai-analysis">Section 7</a> for the full prompt.</p>
+
+    <div class="callout callout-sage">
+      <strong>Performance note:</strong> Stats computation is pure math and runs in &lt;50ms even for 3,000 records. The AI root cause analysis is the expensive step (~3-5s, ~2000 tokens) and only runs when compression is detected.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. UI COMPONENTS                            -->
+  <!-- ========================================== -->
+  <section class="section" id="ui-components">
+    <h2>5. UI Components</h2>
+
+    <p>The Scoring Calibration view is adapted from the <a href="#reference">Voice Interaction Auditor</a> screen, recontextualized for TalkScore Hub's data model. All components follow the Talkpush Visual Language.</p>
+
+    <h3>Page Layout</h3>
+    <div class="diagram">Scoring Calibration Audit
+├── Filters Bar
+│   ├── Date Range Picker (7d / 14d / 30d / custom)
+│   ├── Assessment Selector (dropdown: specific assessment or "All Assessments")
+│   ├── Skill Filter (dropdown: "Overall" or specific skill)
+│   └── [Generate Report] button (sage CTA)
+│
+├── Alert Banner (conditional — only shows when health_status != "healthy")
+│   ├── Icon (amber warning triangle)
+│   ├── Headline: "Score compression detected" / "Scoring variance is weak"
+│   ├── Description: plain-English explanation with % compressed
+│   └── Big metric: current SD with target shown
+│
+├── Stats Row (4 cards)
+│   ├── Calls Analyzed — sample_size, date range label
+│   ├── Avg. Score — overall_mean, colored by health
+│   ├── Score Range Used — min-max, range_pct label
+│   └── Differentiation Power — "Strong" / "Weak" / "None", differentiation_gap
+│
+├── Two-Column: Distribution + Candidate Scores
+│   ├── LEFT: Score Distribution — Current vs. Healthy
+│   │   ├── Current histogram (from distribution_bins)
+│   │   ├── Arrow separator
+│   │   ├── Target histogram (from target_distribution)
+│   │   └── Summary text: "X% of scores crammed into Y range..."
+│   │
+│   └── RIGHT: Recent Candidates — Spot the Difference
+│       ├── Table: Candidate | Skill 1 | Skill 2 | ... | Overall
+│       ├── Score pills: color-coded (compressed=amber, ok=sage, low=red)
+│       └── Compression bracket: "All N candidates score between X and Y"
+│
+├── Two-Column: Skill Variance + Root Causes
+│   ├── LEFT: Skill Variance Analysis
+│   │   └── Per skill:
+│   │       ├── Name + variance badge (Flat / OK / Healthy)
+│   │       ├── Score dot strip (last 10 scores as colored dots)
+│   │       └── Problem description (why this skill is flat)
+│   │
+│   └── RIGHT: Root Causes (from AI analysis)
+│       └── Per cause:
+│           ├── Icon (red=high, amber=med, pink=info)
+│           ├── Title + description
+│           └── Impact level
+│
+└── Full-Width: Recalibration Recommendations
+    └── 3-column grid of fix cards:
+        ├── Fix number + title
+        ├── Description
+        ├── Before (red, strikethrough) vs After (green)
+        └── Expected impact badge</div>
+
+    <h3>Component Mapping to Data</h3>
+    <table>
+      <tr><th>UI Component</th><th>Data Source</th><th>Key Fields</th></tr>
+      <tr>
+        <td>Alert Banner</td>
+        <td><code>calibration_reports</code></td>
+        <td><code>health_status</code>, <code>overall_std_dev</code></td>
+      </tr>
+      <tr>
+        <td>Stats Row</td>
+        <td><code>calibration_reports</code></td>
+        <td><code>sample_size</code>, <code>overall_mean</code>, <code>overall_min/max</code>, <code>overall_range_pct</code>, <code>differentiation_gap</code></td>
+      </tr>
+      <tr>
+        <td>Current Distribution</td>
+        <td><code>calibration_reports.distribution_bins</code></td>
+        <td>Array of <code>{bin, count}</code></td>
+      </tr>
+      <tr>
+        <td>Target Distribution</td>
+        <td><code>calibration_reports.target_distribution</code></td>
+        <td>Computed healthy distribution for same sample size</td>
+      </tr>
+      <tr>
+        <td>Candidate Scores Table</td>
+        <td><code>analyses</code> + <code>calls</code></td>
+        <td>Last 10 <code>skill_evaluations</code> with candidate name from <code>calls</code></td>
+      </tr>
+      <tr>
+        <td>Skill Variance Analysis</td>
+        <td><code>calibration_reports.skill_calibrations</code></td>
+        <td>Per-skill <code>std_dev</code>, <code>health_status</code>, <code>sample_scores</code></td>
+      </tr>
+      <tr>
+        <td>Root Causes</td>
+        <td><code>calibration_reports.root_causes</code></td>
+        <td>AI-generated <code>{cause, description, impact}</code></td>
+      </tr>
+      <tr>
+        <td>Fix Recommendations</td>
+        <td><code>calibration_reports.recommendations</code></td>
+        <td>AI-generated <code>{title, before, after, expected_impact}</code></td>
+      </tr>
+    </table>
+
+    <h3>Health Status Visual Mapping</h3>
+    <table>
+      <tr><th>Status</th><th>Badge</th><th>Stat Color</th><th>Triggers Alert</th></tr>
+      <tr>
+        <td><code>healthy</code></td>
+        <td><span class="badge badge-sage">Healthy</span></td>
+        <td>Sage (#2E7D57)</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td><code>warning</code></td>
+        <td><span class="badge badge-amber">Warning</span></td>
+        <td>Amber (#F0A830)</td>
+        <td>Yes (amber banner)</td>
+      </tr>
+      <tr>
+        <td><code>compressed</code></td>
+        <td><span class="badge badge-red">Compressed</span></td>
+        <td>Soft Red (#E57373)</td>
+        <td>Yes (red banner)</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 6. API ENDPOINTS                            -->
+  <!-- ========================================== -->
+  <section class="section" id="api">
+    <h2>6. API Endpoints</h2>
+
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/calibration/generate</code></td>
+        <td>Supabase JWT</td>
+        <td>Generate a new calibration report for given filters</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/latest</code></td>
+        <td>Supabase JWT</td>
+        <td>Get latest calibration report (with optional assessment_id filter)</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/:id</code></td>
+        <td>Supabase JWT</td>
+        <td>Get specific calibration report by ID</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/history</code></td>
+        <td>Supabase JWT</td>
+        <td>List past calibration reports (track improvement over time)</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/candidates</code></td>
+        <td>Supabase JWT</td>
+        <td>Recent candidates with skill scores (for the "Spot the Difference" table)</td>
+      </tr>
+    </table>
+
+    <h3>Generate Request</h3>
+<pre><span class="cmt">// POST /api/calibration/generate</span>
+{
+  <span class="str">"date_from"</span>: <span class="str">"2026-03-05T00:00:00Z"</span>,
+  <span class="str">"date_to"</span>: <span class="str">"2026-03-19T23:59:59Z"</span>,
+  <span class="str">"assessment_id"</span>: <span class="str">"uuid-or-null"</span>  <span class="cmt">// null = all assessments</span>
+}</pre>
+
+    <h3>Generate Response</h3>
+<pre><span class="cmt">// 200 OK</span>
+{
+  <span class="str">"id"</span>: <span class="str">"report-uuid"</span>,
+  <span class="str">"health_status"</span>: <span class="str">"compressed"</span>,
+  <span class="str">"sample_size"</span>: <span class="num">142</span>,
+  <span class="str">"overall_mean"</span>: <span class="num">6.84</span>,
+  <span class="str">"overall_std_dev"</span>: <span class="num">0.62</span>,
+  <span class="str">"overall_range_pct"</span>: <span class="num">22</span>,
+  <span class="str">"differentiation_gap"</span>: <span class="num">0.8</span>,
+  <span class="str">"distribution_bins"</span>: [...],
+  <span class="str">"target_distribution"</span>: [...],
+  <span class="str">"skill_calibrations"</span>: [...],
+  <span class="str">"root_causes"</span>: [...],        <span class="cmt">// only present if compressed/warning</span>
+  <span class="str">"recommendations"</span>: [...]     <span class="cmt">// only present if compressed/warning</span>
+}</pre>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 7. AI ROOT CAUSE ANALYSIS                   -->
+  <!-- ========================================== -->
+  <section class="section" id="ai-analysis">
+    <h2>7. AI Root Cause Analysis</h2>
+
+    <p>When the calibration engine detects <code>warning</code> or <code>compressed</code> status, it triggers an AI analysis to diagnose the root cause and generate actionable fix recommendations. This runs via the same OpenRouter infrastructure used for call analysis.</p>
+
+    <h3>When It Triggers</h3>
+    <ul>
+      <li><code>overall_std_dev</code> &lt; target threshold</li>
+      <li>Any <code>skill_calibration</code> has <code>health_status: "compressed"</code></li>
+      <li><code>differentiation_gap</code> &lt; 1.0 (on 0-10 scale)</li>
+    </ul>
+
+    <h3>What Gets Sent to the AI</h3>
+    <p>The AI receives the full calibration context (not transcripts &mdash; just statistics):</p>
+
+<pre><span class="kw">const</span> CALIBRATION_ANALYSIS_PROMPT = `You are a scoring calibration expert
+for AI-powered recruitment assessments. You analyze statistical patterns in
+candidate scores to identify WHY scores are compressed and HOW to fix it.
+
+You will receive:
+1. Overall scoring statistics (mean, SD, range, kurtosis, distribution)
+2. Per-skill breakdown with their individual statistics
+3. The assessment's skill definitions and scoring criteria
+4. Sample scores from recent candidates
+
+Your job is to:
+A) Identify ROOT CAUSES for score compression — be specific and actionable
+B) Recommend FIXES that will improve score variance
+
+Common root causes:
+- Vague rubric criteria without behavioral anchors (what does a 2 vs 8 actually look like?)
+- Behavioral questions (past experiences) instead of situational (solve-it-now)
+- No follow-up probing to test depth
+- AI defaulting to center when uncertain (symptom of vague criteria)
+- Scoring criteria that measure self-reported traits (e.g., "shows empathy")
+  instead of demonstrated behavior
+- Criteria that are too similar (overlap means same signal scored twice)
+- Scale too fine (0-10 when 1-5 would suffice) or too coarse
+
+For each FIX, provide:
+- A "before" example (current problematic rubric/question)
+- An "after" example (improved version)
+- Expected impact on variance
+
+Respond in JSON only.`;
+
+<span class="kw">const</span> USER_PROMPT = `Here is the calibration data for assessment
+"${assessment.name}":
+
+OVERALL STATS:
+- Sample size: ${stats.sampleSize} calls
+- Mean score: ${stats.overallMean}
+- Std deviation: ${stats.overallStdDev} (target: ${stats.targetSD})
+- Range used: ${stats.overallMin} - ${stats.overallMax} (${stats.overallRangePct}% of scale)
+- Differentiation gap (top 20% - bottom 20%): ${stats.diffGap}
+- Distribution: ${JSON.stringify(stats.distributionBins)}
+
+PER-SKILL BREAKDOWN:
+${skills.map(s => `
+  "${s.name}" (skill_id: ${s.skill_id})
+    Criteria: ${s.scoring_criteria}
+    Mean: ${s.mean}, SD: ${s.std_dev} (target: ${s.target_std_dev})
+    Status: ${s.health_status}
+    Last 10 scores: [${s.sample_scores.join(', ')}]
+`).join('')}
+
+Respond with:
+{
+  "root_causes": [
+    {
+      "cause": "Short title",
+      "description": "Detailed explanation of why this causes compression",
+      "impact": "high | medium | low",
+      "category": "rubric | question_design | ai_behavior | scale_design",
+      "affected_skills": ["skill_id_1", "skill_id_2"]
+    }
+  ],
+  "recommendations": [
+    {
+      "title": "Action to take",
+      "description": "How to implement this fix",
+      "before": "Current problematic rubric or question text",
+      "after": "Improved version",
+      "expected_impact": "Variance lift: 0.4 → 1.2+",
+      "priority": 1
+    }
+  ],
+  "summary": "2-3 sentence executive summary of the scoring health"
+}`;</pre>
+
+    <div class="callout callout-pink">
+      <strong>Cost efficiency:</strong> The AI root cause analysis only runs when compression is detected (&lt;5% of reports for well-calibrated assessments). For compressed ones, it runs once per report generation, not per call. Typical cost: ~$0.02 per report (2K tokens on Claude Sonnet).
+    </div>
+
+    <h3>Root Cause Categories</h3>
+    <table>
+      <tr><th>Category</th><th>Description</th><th>Example Fix</th></tr>
+      <tr>
+        <td><code>rubric</code></td>
+        <td>Scoring criteria are vague, overlapping, or not anchored to observable behavior</td>
+        <td>Add behavioral anchors: "5 = Named specific CRM tool, described exact escalation path"</td>
+      </tr>
+      <tr>
+        <td><code>question_design</code></td>
+        <td>Questions elicit self-reported answers instead of demonstrable skills</td>
+        <td>Switch from "Tell me about a time..." to situational scenarios</td>
+      </tr>
+      <tr>
+        <td><code>ai_behavior</code></td>
+        <td>AI defaults to center scores when criteria are ambiguous</td>
+        <td>Tighter criteria give the AI a clearer "ruler" &mdash; it stops hedging</td>
+      </tr>
+      <tr>
+        <td><code>scale_design</code></td>
+        <td>Scale is too granular (0-10 for a yes/no trait) or too coarse</td>
+        <td>Match scale granularity to actual observable differentiation levels</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 8. REFERENCE: VOICE AUDITOR                 -->
+  <!-- ========================================== -->
+  <section class="section" id="reference">
+    <h2>8. Reference: Voice Interaction Auditor</h2>
+
+    <p>This feature is adapted from the <strong>Voice Interaction Auditor's Scoring Calibration Audit</strong> screen (<code>voice-interaction-auditor/screens/scoring-calibration-audit.html</code>). Key adaptations for TalkScore Hub:</p>
+
+    <table>
+      <tr><th>Aspect</th><th>Voice Auditor</th><th>TalkScore Hub</th></tr>
+      <tr>
+        <td>Data source</td>
+        <td>Interview audit scores from human reviewers + AI</td>
+        <td>AI-only scores from <code>analyses</code> table</td>
+      </tr>
+      <tr>
+        <td>Scoring scale</td>
+        <td>1-5</td>
+        <td>0-10 (per TalkScore standard), configurable per skill</td>
+      </tr>
+      <tr>
+        <td>Skills/criteria</td>
+        <td>Fixed: Communication, Problem Solving, Empathy, Technical</td>
+        <td>Dynamic: configured per assessment via <code>assessments.skills</code></td>
+      </tr>
+      <tr>
+        <td>Target SD</td>
+        <td>&gt; 0.9 (on 1-5 scale)</td>
+        <td>&gt; 1.5 (on 0-10 scale), auto-adjusted per max_score</td>
+      </tr>
+      <tr>
+        <td>Root causes</td>
+        <td>Static, pre-written text</td>
+        <td>AI-generated based on actual statistical patterns</td>
+      </tr>
+      <tr>
+        <td>Fix recommendations</td>
+        <td>Static cards with before/after</td>
+        <td>AI-generated with skill-specific before/after examples</td>
+      </tr>
+      <tr>
+        <td>Scope</td>
+        <td>Single wave/batch</td>
+        <td>Flexible date range + assessment filter + all-tenant view</td>
+      </tr>
+      <tr>
+        <td>Multi-tenancy</td>
+        <td>Not applicable (single-tenant)</td>
+        <td>Full RLS, per-company isolation via <code>user_roles</code></td>
+      </tr>
+    </table>
+
+    <h3>Components Reused from Voice Auditor</h3>
+    <ul>
+      <li><strong>Alert banner</strong> &mdash; score compression detection with big metric display</li>
+      <li><strong>Stats row</strong> &mdash; 4 summary cards (interviews analyzed, avg score, range used, differentiation power)</li>
+      <li><strong>Distribution comparison</strong> &mdash; current vs. healthy histograms side by side</li>
+      <li><strong>Candidate score table</strong> &mdash; "Spot the Difference" with compressed score pills</li>
+      <li><strong>Rubric variance analysis</strong> &mdash; per-skill breakdown with colored dot strips and variance badges</li>
+      <li><strong>Root cause cards</strong> &mdash; categorized with impact levels and icons</li>
+      <li><strong>Fix recommendation grid</strong> &mdash; 3-column with before/after examples and expected impact</li>
+    </ul>
+
+    <div class="callout callout-lavender">
+      <strong>Design note:</strong> The Voice Auditor's screen uses the full Talkpush Visual Language (sidebar, topbar, brand palette). TalkScore Hub will use the same design system &mdash; the sidebar will reflect TalkScore Hub's navigation, not the Voice Auditor's.
+    </div>
+  </section>
+
+</div>
+
+<div class="footer">
+  TalkScore Hub &mdash; Scoring Calibration Audit Specification &mdash; v1.0 &mdash; March 2026
+</div>
+
+</body>
+</html>

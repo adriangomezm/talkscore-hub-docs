@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalkScore Hub - Architecture Document</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --sage: #B8D4C8;
+      --sage-dark: #8FB8A8;
+      --lavender: #C5CAE9;
+      --pink: #F0B8D0;
+      --amber: #F0A830;
+      --cream: #FAF8F5;
+      --near-black: #1A1A1A;
+      --text-secondary: #555;
+      --border: #E8E4DF;
+      --header-bg: #F5F2ED;
+      --code-bg: #2D2D2D;
+      --code-text: #E0E0E0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--near-black);
+      line-height: 1.6;
+      padding: 0;
+    }
+
+    /* Header */
+    .header {
+      background: var(--near-black);
+      color: white;
+      padding: 48px 64px;
+    }
+    .header-gradient {
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--pink), var(--lavender), var(--sage));
+    }
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .header .subtitle {
+      font-size: 16px;
+      color: #aaa;
+    }
+    .header .meta {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #888;
+    }
+    .header .meta span {
+      margin-right: 24px;
+    }
+
+    /* Nav */
+    .nav {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav a {
+      color: var(--near-black);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-right: 24px;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav a:hover { border-bottom-color: var(--sage); }
+
+    /* Content */
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    /* Sections */
+    .section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 32px;
+    }
+    .section h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--sage);
+    }
+    .section h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 24px 0 12px;
+      color: var(--near-black);
+    }
+    .section h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 16px 0 8px;
+    }
+    .section p {
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+    .section ul, .section ol {
+      margin: 8px 0 16px 24px;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+    .section li { margin-bottom: 6px; }
+
+    /* Code blocks */
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 20px 24px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 16px 0;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+    p code, li code, td code {
+      background: #f0eeeb;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    /* SQL syntax highlighting */
+    .sql-kw { color: #C792EA; font-weight: 500; }
+    .sql-type { color: #82AAFF; }
+    .sql-str { color: #C3E88D; }
+    .sql-comment { color: #888; font-style: italic; }
+    .sql-fn { color: #FFCB6B; }
+    .sql-num { color: #F78C6C; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th {
+      background: var(--header-bg);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 13px;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:hover td { background: var(--cream); }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .badge-sage { background: #e8f5e9; color: #2e7d32; }
+    .badge-lavender { background: #e8eaf6; color: #3949ab; }
+    .badge-pink { background: #fce4ec; color: #c62828; }
+    .badge-amber { background: #fff8e1; color: #f57f17; }
+
+    /* Callout */
+    .callout {
+      padding: 16px 20px;
+      border-radius: 6px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .callout-sage { background: #e8f5e9; border-left: 4px solid var(--sage); }
+    .callout-amber { background: #fff8e1; border-left: 4px solid var(--amber); }
+    .callout-lavender { background: #e8eaf6; border-left: 4px solid var(--lavender); }
+
+    /* Diagram */
+    .diagram {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 24px 32px;
+      border-radius: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 16px 0;
+      white-space: pre;
+    }
+
+    /* Status flow */
+    .status-flow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+    .status-step {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-arrow {
+      color: #999;
+      font-size: 18px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px;
+      color: #999;
+      font-size: 13px;
+    }
+
+    @media print {
+      body { padding: 0; }
+      .nav { display: none; }
+      .header { padding: 32px; }
+      .content { padding: 24px; }
+      .section { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-gradient"></div>
+<div class="header">
+  <h1>TalkScore Hub</h1>
+  <p class="subtitle">Architecture & Infrastructure Document</p>
+  <div class="meta">
+    <span>Version 1.0</span>
+    <span>March 19, 2026</span>
+    <span>Product: TalkScore</span>
+    <span>Platform: Replit Core</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#overview">Overview</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#stack">Tech Stack</a>
+  <a href="#pam">PAM Integration</a>
+  <a href="#schema">Database Schema</a>
+  <a href="#api">API Endpoints</a>
+  <a href="#structure">Project Structure</a>
+  <a href="#env">Environment</a>
+  <a href="#decisions">Decisions</a>
+</nav>
+
+<div class="content">
+
+  <!-- Overview -->
+  <section class="section" id="overview">
+    <h2>Overview</h2>
+    <p>TalkScore Hub is a real-time metrics and reporting dashboard for TalkScore assessment calls. It receives call data from Talkpush via webhook, enriches it with additional details from the Talkpush API, runs <strong>two parallel AI analyses</strong> via OpenRouter &mdash; (1) TalkScore language proficiency + sentiment, and (2) AI Agent Quality flags &mdash; and presents results in a multi-tenant dashboard.</p>
+
+    <h3>Key Parameters</h3>
+    <table>
+      <tr><th>Parameter</th><th>Value</th></tr>
+      <tr><td>Daily call volume</td><td><strong>~3,000 calls/day</strong> (~125/hr, ~2/min)</td></tr>
+      <tr><td>AI analysis</td><td><strong>Dual parallel:</strong> (1) TalkScore language proficiency + Sentiment, (2) AI Agent Quality flags (33 flag types across agent, bias, candidate categories)</td></tr>
+      <tr><td>AI provider</td><td>OpenRouter (multi-model switching)</td></tr>
+      <tr><td>Multi-tenancy</td><td>Yes &mdash; integrated with <strong>Product Access Manager (PAM)</strong></td></tr>
+      <tr><td>Auth</td><td>Supabase Auth + CRM Bridge SSO via PAM</td></tr>
+      <tr><td>Real-time</td><td>Yes &mdash; Supabase Realtime subscriptions</td></tr>
+      <tr><td>Hosting</td><td>Replit Core (paid, always-on)</td></tr>
+    </table>
+
+    <h3>What the Webhook Sends</h3>
+    <table>
+      <tr><th>Field</th><th>Description</th></tr>
+      <tr><td><code>company</code></td><td>Company/tenant identifier (mapped to <code>companies.tenant_id</code>)</td></tr>
+      <tr><td><code>candidate_id</code></td><td>Talkpush candidate ID</td></tr>
+      <tr><td><code>application_id</code></td><td>Talkpush application ID</td></tr>
+      <tr><td><code>transcript</code></td><td>Full call transcript</td></tr>
+      <tr><td><code>recording_url</code></td><td>Link to call recording</td></tr>
+    </table>
+
+    <div class="callout callout-amber">
+      <strong>Note:</strong> The webhook payload is incomplete. Additional candidate, campaign, and agent details are fetched from the Talkpush API in an async enrichment step.
+    </div>
+  </section>
+
+  <!-- Processing Pipeline -->
+  <section class="section" id="pipeline">
+    <h2>Processing Pipeline</h2>
+    <p>The pipeline is <strong>asynchronous</strong>. At ~2 calls/minute, the webhook must respond with 200 immediately and process in the background. AI analysis alone takes 3-10 seconds per call.</p>
+
+    <div class="diagram">Talkpush CRM                TalkScore Hub (Replit Core)
+────────────                ──────────────────────────
+
+ CRM Bridge  ────────────► /auth/crm-bridge?token=xxx
+ (SSO login)                Validate token with PAM → create session
+
+
+ Webhook ──────────────────► POST /api/webhooks/call-complete
+ (call complete)              │
+                              ▼
+                         1. RECEIVE &amp; STORE RAW
+                            Match company via webhook company field
+                            → lookup companies.tenant_id
+                            Store in calls table (status: raw)
+                            Respond 200 immediately
+                              │
+                              ▼
+                         2. ENRICH (async job via BullMQ)
+ Talkpush API ◄────────────► Fetch candidate details, campaign,
+                              agent info from Talkpush API
+                              Update call (status: enriched)
+                              │
+                              ▼
+                         3. AI ANALYSIS (two parallel jobs via BullMQ)
+ OpenRouter ◄──────────────► 3a. TalkScore + Sentiment (language proficiency)
+                              3b. Agent Quality Flags (33 flag types)
+                              Both run in parallel on same transcript
+                              Store in analyses table
+                              Update call (status: analyzed) when BOTH complete
+                              │
+                              ▼
+                         4. NOTIFY
+                            Push via Supabase Realtime to dashboard
+
+
+ PAM (Product Access Manager)
+ ─────────────────────────────
+ ◄── GET  /api/access-manager/clients    (PAM pulls client list)
+ ◄── GET  /api/access-manager/users      (PAM pulls user list)
+ ──► POST /api/v1/users/register          (TalkScore Hub pushes user changes)
+ ──► POST /api/v1/auth/validate           (TalkScore Hub validates CRM tokens)</div>
+
+    <h3>Call Processing Status Flow</h3>
+    <div class="status-flow">
+      <span class="status-step badge-amber">raw</span>
+      <span class="status-arrow">&rarr;</span>
+      <span class="status-step badge-lavender">enriched</span>
+      <span class="status-arrow">&rarr;</span>
+      <span class="status-step badge-sage">analyzed</span>
+    </div>
+    <div class="status-flow">
+      <span class="status-step badge-amber">raw</span>
+      <span class="status-arrow">&rarr;</span>
+      <span class="status-step badge-pink">error</span>
+      <span style="font-size:13px; color:#999; margin-left:8px;">(on failure at any step, with error_message)</span>
+    </div>
+
+    <h3>Why Async Matters</h3>
+    <ul>
+      <li><strong>Webhook response time:</strong> Must respond 200 within seconds &mdash; can't wait for AI analysis</li>
+      <li><strong>AI latency:</strong> OpenRouter calls take 3-10 seconds per transcript</li>
+      <li><strong>Retry logic:</strong> BullMQ handles failed jobs with exponential backoff</li>
+      <li><strong>Rate limiting:</strong> Queue controls concurrency to respect OpenRouter/Talkpush API limits</li>
+      <li><strong>Observability:</strong> Each job has status tracking, timestamps, and error logging</li>
+    </ul>
+  </section>
+
+  <!-- Tech Stack -->
+  <section class="section" id="stack">
+    <h2>Tech Stack</h2>
+    <table>
+      <tr><th>Layer</th><th>Technology</th><th>Why</th></tr>
+      <tr>
+        <td><strong>Runtime</strong></td>
+        <td>Node.js + Express</td>
+        <td>Fast, good Replit support, consistent with Talkpush stack</td>
+      </tr>
+      <tr>
+        <td><strong>Database</strong></td>
+        <td>PostgreSQL (Supabase)</td>
+        <td>Already used across products; multi-tenant RLS, realtime subscriptions, auth built-in</td>
+      </tr>
+      <tr>
+        <td><strong>Job Queue</strong></td>
+        <td>BullMQ + Redis (Upstash)</td>
+        <td>Reliable async processing with retries and rate limiting; Upstash free tier handles 10K commands/day</td>
+      </tr>
+      <tr>
+        <td><strong>AI</strong></td>
+        <td>OpenRouter API</td>
+        <td>Model flexibility &mdash; switch between Claude, GPT-4, Gemini, etc.</td>
+      </tr>
+      <tr>
+        <td><strong>Real-time</strong></td>
+        <td>Supabase Realtime</td>
+        <td>Push updates to dashboard without polling; built into Supabase</td>
+      </tr>
+      <tr>
+        <td><strong>Frontend</strong></td>
+        <td>React + Tailwind CSS</td>
+        <td>Consistent with other Talkpush products</td>
+      </tr>
+      <tr>
+        <td><strong>Auth</strong></td>
+        <td>Supabase Auth + PAM CRM Bridge</td>
+        <td>Multi-tenant, row-level security, SSO from Talkpush CRM</td>
+      </tr>
+      <tr>
+        <td><strong>Hosting</strong></td>
+        <td>Replit Core</td>
+        <td>Always-on, paid plan</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- PAM Integration -->
+  <section class="section" id="pam">
+    <h2>PAM Integration (Product Access Manager)</h2>
+
+    <p>TalkScore Hub integrates with the centralized <strong>Product Access Manager</strong> for authentication, user management, and tenant discovery. This enables SSO from the Talkpush CRM and centralized access control.</p>
+
+    <div class="callout callout-sage">
+      <strong>PAM Base URL:</strong> <code>https://product-access-manager.vercel.app/api/v1</code>
+    </div>
+
+    <h3>What PAM Provides</h3>
+    <table>
+      <tr><th>Capability</th><th>How</th></tr>
+      <tr>
+        <td>SSO from CRM</td>
+        <td>CRM generates single-use token (60s TTL) &rarr; user redirected to <code>/auth/crm-bridge?token=xxx</code> &rarr; TalkScore Hub validates with PAM &rarr; creates local session</td>
+      </tr>
+      <tr>
+        <td>Centralized user registry</td>
+        <td>TalkScore Hub pushes user create/update/delete to PAM via <code>/users/register</code></td>
+      </tr>
+      <tr>
+        <td>Client discovery</td>
+        <td>PAM pulls client list from TalkScore Hub via <code>/api/access-manager/clients</code></td>
+      </tr>
+      <tr>
+        <td>User discovery</td>
+        <td>PAM pulls user list from TalkScore Hub via <code>/api/access-manager/users</code></td>
+      </tr>
+    </table>
+
+    <h3>Data Structure Alignment</h3>
+    <table>
+      <tr><th>PAM Standard</th><th>TalkScore Hub Implementation</th></tr>
+      <tr>
+        <td>Companies with <code>tenant_id</code></td>
+        <td><code>companies</code> table with <code>tenant_id TEXT UNIQUE</code> field</td>
+      </tr>
+      <tr>
+        <td>Profiles (extends <code>auth.users</code>)</td>
+        <td><code>profiles</code> table with <code>email</code>, <code>full_name</code>, <code>auth_source</code></td>
+      </tr>
+      <tr>
+        <td>User roles: <code>admin</code>, <code>manager</code>, <code>user</code></td>
+        <td><code>user_roles</code> junction table with PAM-standard roles</td>
+      </tr>
+      <tr>
+        <td><code>auth_source</code> tracking</td>
+        <td><code>'direct'</code>, <code>'google_sso'</code>, <code>'crm_bridge'</code> &mdash; CRM Bridge users NOT synced back to PAM</td>
+      </tr>
+    </table>
+
+    <h3>Endpoints TalkScore Hub Exposes (PAM pulls from these)</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/access-manager/clients</code></td>
+        <td>Returns companies with <code>name</code>, <code>tenant_id</code>, <code>status</code></td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/access-manager/users</code></td>
+        <td>Returns users with <code>email</code>, <code>full_name</code>, <code>role</code>, <code>tenant_id</code></td>
+      </tr>
+    </table>
+
+    <h3>Endpoints TalkScore Hub Calls on PAM</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>When</th></tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/v1/auth/validate</code></td>
+        <td>Validate CRM Bridge SSO token during login</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/v1/users/register</code></td>
+        <td>User created or updated in TalkScore Hub admin</td>
+      </tr>
+      <tr>
+        <td><code>DELETE</code></td>
+        <td><code>/api/v1/users/register</code></td>
+        <td>User deactivated or removed from TalkScore Hub</td>
+      </tr>
+    </table>
+
+    <div class="callout callout-amber">
+      <strong>Sync Rule:</strong> Users who arrive via CRM Bridge Login (<code>auth_source = 'crm_bridge'</code>) are <strong>NOT</strong> synced back to PAM. Only users created directly in TalkScore Hub's admin panel are synced. This prevents infinite loops.
+    </div>
+
+    <h3>PAM Registration Checklist</h3>
+    <ol>
+      <li>Register TalkScore Hub as a product in PAM (slug: <code>talkscore-hub</code>)</li>
+      <li>Get a product API key from PAM admin</li>
+      <li>Set the Login URL to <code>https://[replit-url]/auth/crm-bridge</code></li>
+      <li>Link initial clients to the product in PAM UI</li>
+      <li>Store <code>ACCESS_MANAGER_API_KEY</code> in environment variables</li>
+    </ol>
+  </section>
+
+  <!-- Database Schema -->
+  <section class="section" id="schema">
+    <h2>Database Schema (PAM-Compatible)</h2>
+
+    <h3>Entity Relationship</h3>
+    <div class="diagram">companies (PAM standard)
+  ├── id (UUID PK)
+  ├── name
+  ├── tenant_id (TEXT UNIQUE) ←── bridge to Talkpush platform
+  ├── status
+  ├── api_key ←── for Talkpush API enrichment calls
+  └── settings (JSONB)
+
+profiles (PAM standard, extends auth.users)
+  ├── id (UUID PK → auth.users.id)
+  ├── email (UNIQUE) ←── PAM identifies users by email
+  ├── full_name
+  └── auth_source ←── 'direct' | 'google_sso' | 'crm_bridge'
+
+user_roles (PAM standard junction)
+  ├── id (UUID PK)
+  ├── user_id (FK → profiles)
+  ├── client_id (FK → companies, nullable)
+  └── role ←── 'admin' | 'manager' | 'user'
+
+assessments (skill config per campaign)
+  ├── id (UUID PK)
+  ├── company_id (FK → companies)
+  ├── talkpush_campaign_id ←── maps to Talkpush campaign
+  ├── name ←── "Customer Service Agent Assessment"
+  ├── description
+  ├── skills (JSONB) ←── [{skill_id, name, description, scoring_criteria, max_score}]
+  ├── is_active (BOOLEAN)
+  └── UNIQUE(company_id, talkpush_campaign_id)
+
+calls (TalkScore-specific)
+  ├── id (UUID PK)
+  ├── company_id (FK → companies)
+  ├── talkpush_candidate_id
+  ├── talkpush_application_id
+  ├── transcript
+  ├── recording_url
+  ├── candidate_name (enriched)
+  ├── campaign_name (enriched)
+  ├── talkpush_campaign_id (enriched)
+  ├── assessment_id (FK → assessments, set during enrichment)
+  ├── agent_name (enriched)
+  ├── call_duration_seconds (enriched)
+  ├── call_date (enriched)
+  ├── status ←── raw | enriched | analyzed | error
+  ├── raw_webhook_payload (JSONB)
+  └── enrichment_data (JSONB)
+
+analyses (TalkScore-specific)
+  ├── id (UUID PK)
+  ├── call_id (FK → calls)
+  ├── company_id (FK → companies)
+  │
+  ├── ── TalkScore (language proficiency) ──
+  ├── talkscore_overall (0.0 - 10.0)
+  ├── talkscore_breakdown (JSONB) ←── pronunciation, fluency, grammar, vocabulary, coherence
+  ├── communication_issues (JSONB)
+  ├── candidate_issues (JSONB)
+  ├── agent_issues (JSONB)
+  │
+  ├── ── Sentiment ──
+  ├── sentiment_overall ←── positive | neutral | negative
+  ├── sentiment_score (-1.00 to 1.00)
+  ├── sentiment_breakdown (JSONB)
+  │
+  ├── ── Call Stage / Dropoff Analysis ──
+  ├── last_stage_reached (TEXT) ←── introduction | question_N | closing | finished
+  ├── total_questions_asked (INTEGER)
+  ├── total_questions_expected (INTEGER, nullable)
+  ├── call_completed (BOOLEAN)
+  ├── dropout_reason (TEXT, nullable) ←── candidate_hangup | agent_error | silence | technical
+  ├── stages (JSONB) ←── [{stage, timestamp, completed}]
+  │
+  ├── ── Candidate Questions ──
+  ├── candidate_questions (JSONB) ←── [{question, timestamp, context, stage}]
+  ├── candidate_question_count (INTEGER) ←── total questions asked by candidate
+  │
+  ├── ── Skill Evaluations (dynamic, from assessment config) ──
+  ├── skill_evaluations (JSONB) ←── [{skill_id, name, score, max_score, description, reasoning}]
+  ├── skill_summary (TEXT) ←── overall skill evaluation summary
+  ├── skill_average_score (NUMERIC) ←── normalized average across all skills
+  │
+  ├── ── Agent Quality Flags ──
+  ├── quality_flags (JSONB) ←── [{flag_id, category, timestamp, evidence, explanation}]
+  ├── quality_flag_count (INTEGER) ←── total flags detected
+  ├── quality_summary (TEXT) ←── 2-3 sentence quality assessment
+  ├── has_critical_flags (BOOLEAN) ←── agent_loop_suspected, hallucination, bias flags
+  │
+  ├── ── AI metadata ──
+  ├── talkscore_model_used / quality_model_used
+  ├── talkscore_tokens / quality_tokens
+  └── talkscore_duration_ms / quality_duration_ms
+
+calibration_reports (scoring analysis)
+  ├── id (UUID PK)
+  ├── company_id (FK → companies)
+  ├── assessment_id (FK → assessments, nullable)
+  ├── date_from / date_to (date range analyzed)
+  ├── sample_size (INTEGER)
+  ├── overall_mean / overall_std_dev / overall_min / overall_max
+  ├── overall_range_pct ←── % of scale actually used
+  ├── differentiation_gap ←── top 20% avg - bottom 20% avg
+  ├── health_status ←── healthy | warning | compressed
+  ├── distribution_bins (JSONB) ←── histogram data
+  ├── skill_calibrations (JSONB) ←── per-skill stats, variance, health
+  ├── root_causes (JSONB) ←── AI-generated when compressed
+  └── recommendations (JSONB) ←── AI-generated fix playbook</div>
+
+    <h3>SQL Schema</h3>
+
+    <h4>Companies (PAM Standard)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> companies (
+  id          <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  name        <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,
+  tenant_id   <span class="sql-type">TEXT</span> <span class="sql-kw">UNIQUE</span>,                      <span class="sql-comment">-- Talkpush platform tenant ID</span>
+  status      <span class="sql-type">TEXT</span> <span class="sql-kw">DEFAULT</span> <span class="sql-str">'active'</span>,            <span class="sql-comment">-- 'active' | 'inactive'</span>
+  api_key     <span class="sql-type">TEXT</span>,                                <span class="sql-comment">-- Talkpush API key for enrichment</span>
+  settings    <span class="sql-type">JSONB</span> <span class="sql-kw">DEFAULT</span> <span class="sql-str">'{}'</span>,               <span class="sql-comment">-- tenant-specific config</span>
+  created_at  <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>(),
+  updated_at  <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);
+
+<span class="sql-kw">CREATE INDEX</span> idx_companies_tenant <span class="sql-kw">ON</span> companies(tenant_id)
+  <span class="sql-kw">WHERE</span> tenant_id <span class="sql-kw">IS NOT NULL</span>;</pre>
+
+    <h4>Profiles (PAM Standard)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> profiles (
+  id          <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY REFERENCES</span> auth.users(id) <span class="sql-kw">ON DELETE CASCADE</span>,
+  email       <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL UNIQUE</span>,             <span class="sql-comment">-- PAM identifies users by email</span>
+  full_name   <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,
+  auth_source <span class="sql-type">TEXT</span> <span class="sql-kw">DEFAULT</span> <span class="sql-str">'direct'</span>,          <span class="sql-comment">-- 'direct' | 'google_sso' | 'crm_bridge'</span>
+  created_at  <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>(),
+  updated_at  <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);</pre>
+
+    <h4>User Roles (PAM Standard)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> user_roles (
+  id          <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  user_id     <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> profiles(id) <span class="sql-kw">ON DELETE CASCADE</span>,
+  client_id   <span class="sql-type">UUID</span> <span class="sql-kw">REFERENCES</span> companies(id) <span class="sql-kw">ON DELETE CASCADE</span>,
+  role        <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-str">'user'</span>,     <span class="sql-comment">-- 'admin' | 'manager' | 'user'</span>
+  created_at  <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>(),
+
+  <span class="sql-kw">UNIQUE</span>(user_id, client_id)
+);</pre>
+
+    <h4>Assessments (Skill Configuration per Campaign)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> assessments (
+  id                        <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  company_id                <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> companies(id),
+  talkpush_campaign_id      <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,             <span class="sql-comment">-- maps to Talkpush campaign</span>
+  name                      <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,             <span class="sql-comment">-- e.g. "Customer Service Agent Assessment"</span>
+  description               <span class="sql-type">TEXT</span>,
+
+  <span class="sql-comment">-- ═══ Skills to evaluate ═══</span>
+  skills                    <span class="sql-type">JSONB</span> <span class="sql-kw">NOT NULL DEFAULT</span> <span class="sql-str">'[]'</span>,  <span class="sql-comment">-- [{skill_id, name, description, scoring_criteria, max_score}]</span>
+
+  is_active                 <span class="sql-type">BOOLEAN</span> <span class="sql-kw">DEFAULT</span> <span class="sql-kw">TRUE</span>,
+  created_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>(),
+  updated_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);
+
+<span class="sql-kw">CREATE UNIQUE INDEX</span> idx_assessments_campaign <span class="sql-kw">ON</span> assessments(company_id, talkpush_campaign_id);
+
+<span class="sql-comment">-- Example skills configuration:
+-- [
+--   {
+--     "skill_id": "customer_empathy",
+--     "name": "Customer Empathy",
+--     "description": "Ability to understand and relate to customer needs and emotions",
+--     "scoring_criteria": "Look for active listening, acknowledgment of concerns, appropriate tone",
+--     "max_score": 10
+--   },
+--   {
+--     "skill_id": "problem_solving",
+--     "name": "Problem Solving",
+--     "description": "Ability to analyze situations and propose solutions",
+--     "scoring_criteria": "Look for logical reasoning, creative solutions, structured approach",
+--     "max_score": 10
+--   }
+-- ]</span></pre>
+
+    <h4>Calls (TalkScore-Specific)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> calls (
+  id                        <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  company_id                <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> companies(id),
+
+  <span class="sql-comment">-- From webhook (raw)</span>
+  talkpush_candidate_id     <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,
+  talkpush_application_id   <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,
+  transcript                <span class="sql-type">TEXT</span>,
+  recording_url             <span class="sql-type">TEXT</span>,
+
+  <span class="sql-comment">-- From API enrichment</span>
+  candidate_name            <span class="sql-type">TEXT</span>,
+  candidate_phone           <span class="sql-type">TEXT</span>,
+  campaign_name             <span class="sql-type">TEXT</span>,
+  talkpush_campaign_id      <span class="sql-type">TEXT</span>,
+  assessment_id             <span class="sql-type">UUID</span> <span class="sql-kw">REFERENCES</span> assessments(id),  <span class="sql-comment">-- linked during enrichment</span>
+  agent_name                <span class="sql-type">TEXT</span>,
+  call_duration_seconds     <span class="sql-type">INTEGER</span>,
+  call_date                 <span class="sql-type">TIMESTAMPTZ</span>,
+
+  <span class="sql-comment">-- Processing</span>
+  status                    <span class="sql-type">TEXT</span> <span class="sql-kw">DEFAULT</span> <span class="sql-str">'raw'</span>,     <span class="sql-comment">-- raw → enriched → analyzed → error</span>
+  error_message             <span class="sql-type">TEXT</span>,
+  raw_webhook_payload       <span class="sql-type">JSONB</span>,
+  enrichment_data           <span class="sql-type">JSONB</span>,
+
+  created_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>(),
+  updated_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);
+
+<span class="sql-kw">CREATE INDEX</span> idx_calls_company_date <span class="sql-kw">ON</span> calls(company_id, call_date <span class="sql-kw">DESC</span>);
+<span class="sql-kw">CREATE INDEX</span> idx_calls_status <span class="sql-kw">ON</span> calls(status);
+<span class="sql-kw">CREATE INDEX</span> idx_calls_application <span class="sql-kw">ON</span> calls(talkpush_application_id);</pre>
+
+    <h4>Analyses (TalkScore-Specific)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> analyses (
+  id                        <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  call_id                   <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> calls(id) <span class="sql-kw">ON DELETE CASCADE</span>,
+  company_id                <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> companies(id),
+
+  <span class="sql-comment">-- ═══ TalkScore (language proficiency) ═══</span>
+  talkscore_overall         <span class="sql-type">NUMERIC</span>(<span class="sql-num">3</span>,<span class="sql-num">1</span>),              <span class="sql-comment">-- 0.0 - 10.0</span>
+  talkscore_breakdown       <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- {pronunciation, fluency, grammar, vocabulary, coherence}</span>
+  communication_issues      <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{type, severity, detail, timestamp_in_call}]</span>
+  candidate_issues          <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- issues from candidate side</span>
+  agent_issues              <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- issues from agent side</span>
+
+  <span class="sql-comment">-- ═══ Sentiment ═══</span>
+  sentiment_overall         <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- positive | neutral | negative</span>
+  sentiment_score           <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),              <span class="sql-comment">-- -1.00 to 1.00</span>
+  sentiment_breakdown       <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- per-segment sentiment</span>
+
+  <span class="sql-comment">-- ═══ Call Stage / Dropoff Analysis ═══</span>
+  last_stage_reached        <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- introduction | question_1 | question_N | closing | finished</span>
+  total_questions_asked     <span class="sql-type">INTEGER</span>,                   <span class="sql-comment">-- how many questions agent asked</span>
+  total_questions_expected  <span class="sql-type">INTEGER</span>,                   <span class="sql-comment">-- how many questions the interview should have</span>
+  call_completed            <span class="sql-type">BOOLEAN</span>,                   <span class="sql-comment">-- true if reached 'finished' stage</span>
+  dropout_reason            <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- candidate_hangup | silence_timeout | error | completed | unknown</span>
+  stages                    <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{stage, reached: true/false, timestamp, duration_seconds}]</span>
+
+  <span class="sql-comment">-- ═══ Candidate Questions ═══</span>
+  candidate_questions       <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{question, timestamp, context, stage}]</span>
+  candidate_question_count  <span class="sql-type">INTEGER</span> <span class="sql-kw">DEFAULT</span> <span class="sql-num">0</span>,        <span class="sql-comment">-- total questions asked by candidate</span>
+
+  <span class="sql-comment">-- ═══ Skill Evaluations (dynamic, per assessment config) ═══</span>
+  skill_evaluations         <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{skill_id, name, score, max_score, description, reasoning}]</span>
+  skill_summary             <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- overall skill evaluation summary</span>
+  skill_average_score       <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),              <span class="sql-comment">-- average across all skills (normalized 0-10)</span>
+
+  <span class="sql-comment">-- ═══ Agent Quality Flags (from AI Interview Agent Quality Analysis v4) ═══</span>
+  quality_flags             <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- [{flag_id, category, timestamp, evidence, explanation}]</span>
+  quality_flag_count        <span class="sql-type">INTEGER</span> <span class="sql-kw">DEFAULT</span> <span class="sql-num">0</span>,        <span class="sql-comment">-- total flags detected</span>
+  quality_summary           <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- 2-3 sentence quality assessment</span>
+  has_critical_flags        <span class="sql-type">BOOLEAN</span> <span class="sql-kw">DEFAULT</span> <span class="sql-kw">FALSE</span>,    <span class="sql-comment">-- agent_loop, hallucination, bias</span>
+
+  <span class="sql-comment">-- ═══ AI metadata (per-analysis tracking) ═══</span>
+  talkscore_model           <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- model used for TalkScore+Sentiment</span>
+  talkscore_tokens          <span class="sql-type">INTEGER</span>,                   <span class="sql-comment">-- total tokens (prompt+completion)</span>
+  talkscore_duration_ms     <span class="sql-type">INTEGER</span>,                   <span class="sql-comment">-- wall-clock time</span>
+  quality_model             <span class="sql-type">TEXT</span>,                      <span class="sql-comment">-- model used for Agent Quality</span>
+  quality_tokens            <span class="sql-type">INTEGER</span>,                   <span class="sql-comment">-- total tokens (prompt+completion)</span>
+  quality_duration_ms       <span class="sql-type">INTEGER</span>,                   <span class="sql-comment">-- wall-clock time</span>
+  raw_talkscore_response    <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- full TalkScore AI response</span>
+  raw_quality_response      <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- full Agent Quality AI response</span>
+
+  created_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);
+
+<span class="sql-kw">CREATE INDEX</span> idx_analyses_company <span class="sql-kw">ON</span> analyses(company_id, created_at <span class="sql-kw">DESC</span>);
+<span class="sql-kw">CREATE INDEX</span> idx_analyses_score <span class="sql-kw">ON</span> analyses(company_id, talkscore_overall);
+<span class="sql-kw">CREATE INDEX</span> idx_analyses_critical <span class="sql-kw">ON</span> analyses(company_id, has_critical_flags)
+  <span class="sql-kw">WHERE</span> has_critical_flags = <span class="sql-kw">TRUE</span>;
+<span class="sql-kw">CREATE INDEX</span> idx_analyses_dropoff <span class="sql-kw">ON</span> analyses(company_id, call_completed, last_stage_reached);</pre>
+
+    <h4>Calibration Reports (Scoring Analysis)</h4>
+<pre><span class="sql-kw">CREATE TABLE</span> calibration_reports (
+  id                        <span class="sql-type">UUID</span> <span class="sql-kw">PRIMARY KEY DEFAULT</span> <span class="sql-fn">gen_random_uuid</span>(),
+  company_id                <span class="sql-type">UUID</span> <span class="sql-kw">NOT NULL REFERENCES</span> companies(id),
+  assessment_id             <span class="sql-type">UUID</span> <span class="sql-kw">REFERENCES</span> assessments(id),  <span class="sql-comment">-- null = all assessments</span>
+  date_from                 <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">NOT NULL</span>,
+  date_to                   <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">NOT NULL</span>,
+  sample_size               <span class="sql-type">INTEGER</span> <span class="sql-kw">NOT NULL</span>,
+  overall_mean              <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_std_dev           <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_min               <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_max               <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),
+  overall_range_pct         <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),              <span class="sql-comment">-- % of scale used</span>
+  differentiation_gap       <span class="sql-type">NUMERIC</span>(<span class="sql-num">4</span>,<span class="sql-num">2</span>),              <span class="sql-comment">-- top 20% avg - bottom 20% avg</span>
+  health_status             <span class="sql-type">TEXT</span> <span class="sql-kw">NOT NULL</span>,             <span class="sql-comment">-- healthy | warning | compressed</span>
+  distribution_bins         <span class="sql-type">JSONB</span>,
+  target_distribution       <span class="sql-type">JSONB</span>,
+  skill_calibrations        <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- per-skill stats, variance, health</span>
+  root_causes               <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- AI-generated when compressed</span>
+  recommendations           <span class="sql-type">JSONB</span>,                     <span class="sql-comment">-- AI-generated fix playbook</span>
+  ai_model_used             <span class="sql-type">TEXT</span>,
+  created_at                <span class="sql-type">TIMESTAMPTZ</span> <span class="sql-kw">DEFAULT</span> <span class="sql-fn">now</span>()
+);
+
+<span class="sql-kw">CREATE INDEX</span> idx_calibration_company <span class="sql-kw">ON</span> calibration_reports(company_id, created_at <span class="sql-kw">DESC</span>);</pre>
+
+    <h4>Row Level Security (Multi-Tenancy)</h4>
+<pre><span class="sql-kw">ALTER TABLE</span> calls <span class="sql-kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="sql-kw">ALTER TABLE</span> analyses <span class="sql-kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="sql-kw">ALTER TABLE</span> companies <span class="sql-kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="sql-kw">ALTER TABLE</span> assessments <span class="sql-kw">ENABLE ROW LEVEL SECURITY</span>;
+<span class="sql-kw">ALTER TABLE</span> calibration_reports <span class="sql-kw">ENABLE ROW LEVEL SECURITY</span>;
+
+<span class="sql-comment">-- Users can only see data for companies they have a role in</span>
+<span class="sql-kw">CREATE POLICY</span> tenant_calls <span class="sql-kw">ON</span> calls
+  <span class="sql-kw">USING</span> (company_id <span class="sql-kw">IN</span> (
+    <span class="sql-kw">SELECT</span> client_id <span class="sql-kw">FROM</span> user_roles <span class="sql-kw">WHERE</span> user_id = auth.uid()
+  ));
+
+<span class="sql-kw">CREATE POLICY</span> tenant_analyses <span class="sql-kw">ON</span> analyses
+  <span class="sql-kw">USING</span> (company_id <span class="sql-kw">IN</span> (
+    <span class="sql-kw">SELECT</span> client_id <span class="sql-kw">FROM</span> user_roles <span class="sql-kw">WHERE</span> user_id = auth.uid()
+  ));
+
+<span class="sql-kw">CREATE POLICY</span> tenant_companies <span class="sql-kw">ON</span> companies
+  <span class="sql-kw">USING</span> (id <span class="sql-kw">IN</span> (
+    <span class="sql-kw">SELECT</span> client_id <span class="sql-kw">FROM</span> user_roles <span class="sql-kw">WHERE</span> user_id = auth.uid()
+  ));
+
+<span class="sql-kw">CREATE POLICY</span> tenant_assessments <span class="sql-kw">ON</span> assessments
+  <span class="sql-kw">USING</span> (company_id <span class="sql-kw">IN</span> (
+    <span class="sql-kw">SELECT</span> client_id <span class="sql-kw">FROM</span> user_roles <span class="sql-kw">WHERE</span> user_id = auth.uid()
+  ));
+
+<span class="sql-kw">CREATE POLICY</span> tenant_calibration <span class="sql-kw">ON</span> calibration_reports
+  <span class="sql-kw">USING</span> (company_id <span class="sql-kw">IN</span> (
+    <span class="sql-kw">SELECT</span> client_id <span class="sql-kw">FROM</span> user_roles <span class="sql-kw">WHERE</span> user_id = auth.uid()
+  ));</pre>
+  </section>
+
+  <!-- API Endpoints -->
+  <section class="section" id="api">
+    <h2>API Endpoints</h2>
+
+    <h3>Webhook</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/webhooks/call-complete</code></td>
+        <td>Webhook secret</td>
+        <td>Receive call data from Talkpush</td>
+      </tr>
+    </table>
+
+    <h3>PAM Integration</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/auth/crm-bridge</code></td>
+        <td>Token in query param</td>
+        <td>CRM Bridge SSO login</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/access-manager/clients</code></td>
+        <td>PAM product key</td>
+        <td>Client discovery for PAM sync</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/access-manager/users</code></td>
+        <td>PAM product key</td>
+        <td>User discovery for PAM sync</td>
+      </tr>
+    </table>
+
+    <h3>Dashboard APIs</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calls</code></td>
+        <td>Supabase JWT</td>
+        <td>List calls (paginated, filtered by tenant via RLS)</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calls/:id</code></td>
+        <td>Supabase JWT</td>
+        <td>Call detail with analysis</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/metrics/overview</code></td>
+        <td>Supabase JWT</td>
+        <td>Aggregate metrics (avg score, volume, trends)</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/metrics/issues</code></td>
+        <td>Supabase JWT</td>
+        <td>Top communication issues</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/metrics/sentiment</code></td>
+        <td>Supabase JWT</td>
+        <td>Sentiment distribution</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/reports/daily</code></td>
+        <td>Supabase JWT</td>
+        <td>Daily summary report</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/reports/agent-performance</code></td>
+        <td>Supabase JWT</td>
+        <td>Per-agent breakdown</td>
+      </tr>
+    </table>
+
+    <h3>Assessments</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/assessments</code></td>
+        <td>Supabase JWT</td>
+        <td>List assessments for tenant</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/assessments/:id</code></td>
+        <td>Supabase JWT</td>
+        <td>Assessment detail with skills config</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/assessments</code></td>
+        <td>Supabase JWT (admin/manager)</td>
+        <td>Create assessment with skills</td>
+      </tr>
+      <tr>
+        <td><code>PUT</code></td>
+        <td><code>/api/assessments/:id</code></td>
+        <td>Supabase JWT (admin/manager)</td>
+        <td>Update assessment skills config</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/metrics/skills</code></td>
+        <td>Supabase JWT</td>
+        <td>Skill score averages across calls per assessment</td>
+      </tr>
+    </table>
+
+    <h3>Scoring Calibration</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/calibration/generate</code></td>
+        <td>Supabase JWT</td>
+        <td>Generate calibration report (date range, optional assessment filter)</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/latest</code></td>
+        <td>Supabase JWT</td>
+        <td>Latest calibration report for tenant</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/:id</code></td>
+        <td>Supabase JWT</td>
+        <td>Specific calibration report by ID</td>
+      </tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/calibration/history</code></td>
+        <td>Supabase JWT</td>
+        <td>Past reports (track improvement over time)</td>
+      </tr>
+    </table>
+
+    <h3>Admin</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr>
+        <td><code>GET</code></td>
+        <td><code>/api/admin/queue-status</code></td>
+        <td>Admin role</td>
+        <td>Job queue health (BullMQ)</td>
+      </tr>
+      <tr>
+        <td><code>POST</code></td>
+        <td><code>/api/admin/reprocess/:callId</code></td>
+        <td>Admin role</td>
+        <td>Re-run AI analysis for a call</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Project Structure -->
+  <section class="section" id="structure">
+    <h2>Project Structure (Replit)</h2>
+<pre>talkscore-hub/
+├── src/
+│   ├── server.ts                    <span class="sql-comment"># Express app entry point</span>
+│   ├── config/
+│   │   ├── supabase.ts              <span class="sql-comment"># Supabase client (DB + Auth)</span>
+│   │   ├── redis.ts                 <span class="sql-comment"># Upstash Redis connection</span>
+│   │   └── openrouter.ts            <span class="sql-comment"># OpenRouter client config</span>
+│   ├── routes/
+│   │   ├── webhooks.ts              <span class="sql-comment"># Talkpush webhook receiver</span>
+│   │   ├── calls.ts                 <span class="sql-comment"># Call CRUD (RLS-filtered)</span>
+│   │   ├── metrics.ts               <span class="sql-comment"># Aggregation queries</span>
+│   │   ├── reports.ts               <span class="sql-comment"># Report generation</span>
+│   │   └── access-manager.ts        <span class="sql-comment"># PAM endpoints (clients + users)</span>
+│   ├── auth/
+│   │   ├── crm-bridge.ts            <span class="sql-comment"># CRM Bridge SSO login route</span>
+│   │   └── pam-sync.ts              <span class="sql-comment"># Push user changes to PAM</span>
+│   ├── jobs/
+│   │   ├── queue.ts                 <span class="sql-comment"># BullMQ queue setup</span>
+│   │   ├── enrichment.worker.ts     <span class="sql-comment"># Talkpush API enrichment</span>
+│   │   └── analysis.worker.ts       <span class="sql-comment"># OpenRouter AI analysis</span>
+│   ├── services/
+│   │   ├── talkpush-api.ts          <span class="sql-comment"># Talkpush API client</span>
+│   │   ├── openrouter.ts            <span class="sql-comment"># AI analysis prompts + logic</span>
+│   │   └── scoring.ts               <span class="sql-comment"># TalkScore calculation</span>
+│   ├── middleware/
+│   │   ├── auth.ts                  <span class="sql-comment"># Supabase JWT + session validation</span>
+│   │   └── tenant.ts                <span class="sql-comment"># Inject company context from user_roles</span>
+│   └── types/
+│       └── index.ts                 <span class="sql-comment"># TypeScript interfaces</span>
+├── client/                          <span class="sql-comment"># React dashboard</span>
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── Dashboard.tsx        <span class="sql-comment"># Overview metrics</span>
+│   │   │   ├── CallList.tsx         <span class="sql-comment"># Paginated call list</span>
+│   │   │   ├── CallDetail.tsx       <span class="sql-comment"># Single call + analysis detail</span>
+│   │   │   └── Reports.tsx          <span class="sql-comment"># Reports view</span>
+│   │   ├── hooks/
+│   │   │   └── useRealtimeUpdates.ts <span class="sql-comment"># Supabase Realtime subscription</span>
+│   │   └── components/
+│   │       └── ...
+├── .env                             <span class="sql-comment"># Environment variables</span>
+└── .replit                          <span class="sql-comment"># Replit configuration</span></pre>
+  </section>
+
+  <!-- Environment Variables -->
+  <section class="section" id="env">
+    <h2>Environment Variables</h2>
+    <table>
+      <tr><th>Variable</th><th>Purpose</th><th>Source</th></tr>
+      <tr>
+        <td><code>ACCESS_MANAGER_API_KEY</code></td>
+        <td>PAM product API key</td>
+        <td>PAM admin creates this</td>
+      </tr>
+      <tr>
+        <td><code>SUPABASE_URL</code></td>
+        <td>Supabase project URL</td>
+        <td>Supabase dashboard</td>
+      </tr>
+      <tr>
+        <td><code>SUPABASE_ANON_KEY</code></td>
+        <td>Supabase anon/public key (frontend)</td>
+        <td>Supabase dashboard</td>
+      </tr>
+      <tr>
+        <td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+        <td>Supabase service role key (webhook handler, bypasses RLS)</td>
+        <td>Supabase dashboard</td>
+      </tr>
+      <tr>
+        <td><code>OPENROUTER_API_KEY</code></td>
+        <td>OpenRouter API key for AI analysis</td>
+        <td>OpenRouter dashboard</td>
+      </tr>
+      <tr>
+        <td><code>UPSTASH_REDIS_URL</code></td>
+        <td>Redis connection for BullMQ job queue</td>
+        <td>Upstash dashboard</td>
+      </tr>
+      <tr>
+        <td><code>UPSTASH_REDIS_TOKEN</code></td>
+        <td>Redis auth token</td>
+        <td>Upstash dashboard</td>
+      </tr>
+      <tr>
+        <td><code>TALKPUSH_API_BASE_URL</code></td>
+        <td>Talkpush API base URL for enrichment</td>
+        <td>Talkpush engineering</td>
+      </tr>
+      <tr>
+        <td><code>TALKPUSH_API_KEY</code></td>
+        <td>Talkpush API key for enrichment calls</td>
+        <td>Talkpush engineering</td>
+      </tr>
+      <tr>
+        <td><code>WEBHOOK_SECRET</code></td>
+        <td>Shared secret for webhook authentication</td>
+        <td>Agreed with Talkpush engineering</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- Key Decisions -->
+  <section class="section" id="decisions">
+    <h2>Key Architecture Decisions</h2>
+
+    <h3>1. <code>company_id</code> (UUID) as FK, not <code>tenant_id</code> (string)</h3>
+    <p>The <code>calls</code> and <code>analyses</code> tables reference <code>companies.id</code> (UUID), not the string <code>tenant_id</code>. The <code>tenant_id</code> is only used for PAM sync and webhook company matching. This keeps foreign keys clean and performant.</p>
+
+    <h3>2. Webhook &rarr; company mapping</h3>
+    <p>When a webhook arrives with a company identifier, we look up <code>companies.tenant_id</code> to resolve the local <code>company_id</code> UUID, then store the call against that UUID.</p>
+
+    <h3>3. CRM Bridge users not synced back</h3>
+    <p>Users arriving via CRM Bridge are marked <code>auth_source = 'crm_bridge'</code> and are NOT synced back to PAM (prevents infinite loop, per PAM integration guide).</p>
+
+    <h3>4. RLS via <code>user_roles</code> junction table</h3>
+    <p>Multi-tenant data isolation uses Supabase Row Level Security with the <code>user_roles</code> junction table. A user sees only data for companies they have a role in. This is the same pattern used by Contract Hub.</p>
+
+    <h3>5. Webhook responds 200 immediately</h3>
+    <p>At ~2 calls/minute, the webhook handler stores raw data and enqueues processing jobs. It never waits for API enrichment or AI analysis to complete before responding.</p>
+
+    <h3>6. Separate <code>analyses</code> table (not inline on <code>calls</code>)</h3>
+    <p>AI results are in a separate table because: (a) analysis can be re-run without duplicating call data, (b) the analysis schema may evolve independently, (c) supports future multi-model comparison (run the same call through different models).</p>
+
+    <h3>7. Supabase over Neon</h3>
+    <p>Chose Supabase (not Replit's native Neon PostgreSQL) because: (a) Auth + RLS + Realtime built-in, (b) consistent with other Talkpush products, (c) PAM integration patterns are already established for Supabase.</p>
+
+    <h3>8. Upstash Redis over in-process queue</h3>
+    <p>Chose Upstash Redis + BullMQ over a simpler in-memory queue because: (a) jobs survive Replit restarts, (b) built-in retry with exponential backoff, (c) rate limiting controls for OpenRouter API, (d) monitoring dashboard. Free tier handles 10K commands/day which is sufficient for 3K calls.</p>
+  </section>
+
+</div>
+
+<div class="footer">
+  TalkScore Hub &mdash; Architecture Document v1.0 &mdash; March 2026 &mdash; Talkpush
+</div>
+
+</body>
+</html>

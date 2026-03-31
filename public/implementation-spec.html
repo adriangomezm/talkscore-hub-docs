@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalkScore Hub - Implementation Specification</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --sage: #B8D4C8;
+      --sage-dark: #8FB8A8;
+      --lavender: #C5CAE9;
+      --pink: #F0B8D0;
+      --amber: #F0A830;
+      --cream: #FAF8F5;
+      --near-black: #1A1A1A;
+      --text-secondary: #555;
+      --border: #E8E4DF;
+      --header-bg: #F5F2ED;
+      --code-bg: #2D2D2D;
+      --code-text: #E0E0E0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--near-black);
+      line-height: 1.6;
+    }
+
+    .header {
+      background: var(--near-black);
+      color: white;
+      padding: 48px 64px;
+    }
+    .header-gradient {
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--pink), var(--lavender), var(--sage));
+    }
+    .header h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+    .header .subtitle { font-size: 16px; color: #aaa; }
+    .header .meta { margin-top: 16px; font-size: 13px; color: #888; }
+    .header .meta span { margin-right: 24px; }
+
+    .nav {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav a {
+      color: var(--near-black);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-right: 24px;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav a:hover { border-bottom-color: var(--sage); }
+
+    .content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 32px;
+    }
+
+    .section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 32px;
+    }
+    .section h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--sage);
+    }
+    .section h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 28px 0 12px;
+    }
+    .section h4 {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 20px 0 8px;
+    }
+    .section p {
+      margin-bottom: 12px;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+    .section ul, .section ol {
+      margin: 8px 0 16px 24px;
+      color: var(--text-secondary);
+      font-size: 15px;
+    }
+    .section li { margin-bottom: 6px; }
+
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 20px 24px;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 16px 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+    p code, li code, td code {
+      background: #f0eeeb;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 13px;
+    }
+
+    .kw { color: #C792EA; font-weight: 500; }
+    .type { color: #82AAFF; }
+    .str { color: #C3E88D; }
+    .cmt { color: #888; font-style: italic; }
+    .fn { color: #FFCB6B; }
+    .num { color: #F78C6C; }
+    .var { color: #89DDFF; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    th {
+      background: var(--header-bg);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 13px;
+      border-bottom: 2px solid var(--border);
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    tr:hover td { background: var(--cream); }
+
+    .callout {
+      padding: 16px 20px;
+      border-radius: 6px;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .callout-sage { background: #e8f5e9; border-left: 4px solid var(--sage); }
+    .callout-amber { background: #fff8e1; border-left: 4px solid var(--amber); }
+    .callout-lavender { background: #e8eaf6; border-left: 4px solid var(--lavender); }
+    .callout-pink { background: #fce4ec; border-left: 4px solid var(--pink); }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--sage);
+      color: var(--near-black);
+      font-weight: 700;
+      font-size: 14px;
+      margin-right: 10px;
+      flex-shrink: 0;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .step-content { flex: 1; }
+    .step-content h4 { margin-top: 2px; }
+
+    .footer {
+      text-align: center;
+      padding: 32px;
+      color: #999;
+      font-size: 13px;
+    }
+
+    @media print {
+      .nav { display: none; }
+      .header { padding: 32px; }
+      .content { padding: 24px; }
+      .section { break-inside: avoid; page-break-inside: avoid; }
+      pre { white-space: pre-wrap; word-wrap: break-word; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-gradient"></div>
+<div class="header">
+  <h1>TalkScore Hub</h1>
+  <p class="subtitle">Implementation Specification</p>
+  <div class="meta">
+    <span>Version 1.0</span>
+    <span>March 19, 2026</span>
+    <span>Companion to: architecture.html</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="#webhook">Webhook Flow</a>
+  <a href="#enrichment">Enrichment</a>
+  <a href="#ai-prompts">AI Prompts</a>
+  <a href="#queue">Job Queue</a>
+  <a href="#crm-bridge">CRM Bridge</a>
+  <a href="#realtime">Real-time</a>
+  <a href="#pam-sync">PAM Sync</a>
+  <a href="#error-handling">Error Handling</a>
+</nav>
+
+<div class="content">
+
+  <!-- ========================================== -->
+  <!-- 1. WEBHOOK PROCESSING FLOW                  -->
+  <!-- ========================================== -->
+  <section class="section" id="webhook">
+    <h2>1. Webhook Processing Flow</h2>
+
+    <p>When a TalkScore assessment call completes, Talkpush fires a webhook to TalkScore Hub. The handler must respond <strong>within 5 seconds</strong> and enqueue async processing.</p>
+
+    <h3>Webhook Endpoint</h3>
+<pre><span class="kw">POST</span> /api/webhooks/call-complete
+<span class="cmt">Content-Type: application/json</span>
+<span class="cmt">X-Webhook-Secret: {{WEBHOOK_SECRET}}</span></pre>
+
+    <h3>Expected Payload</h3>
+<pre>{
+  <span class="str">"company"</span>: <span class="str">"concentrix_ph"</span>,          <span class="cmt">// maps to companies.tenant_id</span>
+  <span class="str">"candidate_id"</span>: <span class="str">"12345"</span>,               <span class="cmt">// Talkpush candidate ID</span>
+  <span class="str">"application_id"</span>: <span class="str">"67890"</span>,             <span class="cmt">// Talkpush application ID</span>
+  <span class="str">"transcript"</span>: <span class="str">"Agent: Hello... Candidate: Hi..."</span>,
+  <span class="str">"recording_url"</span>: <span class="str">"https://recordings.talkpush.com/..."</span>
+}</pre>
+
+    <h3>Handler Logic</h3>
+
+    <div class="step">
+      <span class="step-number">1</span>
+      <div class="step-content">
+        <h4>Authenticate</h4>
+        <p>Verify <code>X-Webhook-Secret</code> header matches <code>WEBHOOK_SECRET</code> env var. Reject with 401 if invalid.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number">2</span>
+      <div class="step-content">
+        <h4>Resolve company</h4>
+        <p>Look up <code>companies</code> table by <code>tenant_id = payload.company</code>. If no match, respond 422 with <code>{"error": "Unknown company"}</code>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number">3</span>
+      <div class="step-content">
+        <h4>Store raw call</h4>
+        <p>Insert into <code>calls</code> table with <code>status = 'raw'</code> and the full payload in <code>raw_webhook_payload</code>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number">4</span>
+      <div class="step-content">
+        <h4>Enqueue enrichment job</h4>
+        <p>Add job to BullMQ <code>enrichment</code> queue with <code>{ callId, companyId }</code>.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <span class="step-number">5</span>
+      <div class="step-content">
+        <h4>Respond 200</h4>
+        <p>Return <code>{"received": true, "call_id": "uuid"}</code>. Total handler time target: &lt;500ms.</p>
+      </div>
+    </div>
+
+    <h3>Implementation</h3>
+<pre><span class="cmt">// src/routes/webhooks.ts</span>
+<span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> { supabaseAdmin } <span class="kw">from</span> <span class="str">'../config/supabase'</span>;
+<span class="kw">import</span> { enrichmentQueue } <span class="kw">from</span> <span class="str">'../jobs/queue'</span>;
+
+<span class="kw">const</span> router = Router();
+
+router.post(<span class="str">'/call-complete'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="cmt">// 1. Authenticate</span>
+  <span class="kw">const</span> secret = req.headers[<span class="str">'x-webhook-secret'</span>];
+  <span class="kw">if</span> (secret !== process.env.WEBHOOK_SECRET) {
+    <span class="kw">return</span> res.status(<span class="num">401</span>).json({ error: <span class="str">'Invalid webhook secret'</span> });
+  }
+
+  <span class="kw">const</span> { company, candidate_id, application_id, transcript, recording_url } = req.body;
+
+  <span class="cmt">// 2. Resolve company</span>
+  <span class="kw">const</span> { data: companyRow } = <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'companies'</span>)
+    .select(<span class="str">'id'</span>)
+    .eq(<span class="str">'tenant_id'</span>, company)
+    .single();
+
+  <span class="kw">if</span> (!companyRow) {
+    <span class="kw">return</span> res.status(<span class="num">422</span>).json({ error: <span class="str">`Unknown company: ${company}`</span> });
+  }
+
+  <span class="cmt">// 3. Store raw call</span>
+  <span class="kw">const</span> { data: call, error } = <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'calls'</span>)
+    .insert({
+      company_id: companyRow.id,
+      talkpush_candidate_id: candidate_id,
+      talkpush_application_id: application_id,
+      transcript,
+      recording_url,
+      status: <span class="str">'raw'</span>,
+      raw_webhook_payload: req.body,
+    })
+    .select(<span class="str">'id'</span>)
+    .single();
+
+  <span class="kw">if</span> (error) {
+    console.error(<span class="str">'Failed to store call:'</span>, error);
+    <span class="kw">return</span> res.status(<span class="num">500</span>).json({ error: <span class="str">'Failed to store call'</span> });
+  }
+
+  <span class="cmt">// 4. Enqueue enrichment</span>
+  <span class="kw">await</span> enrichmentQueue.add(<span class="str">'enrich'</span>, {
+    callId: call.id,
+    companyId: companyRow.id,
+  }, {
+    attempts: <span class="num">3</span>,
+    backoff: { type: <span class="str">'exponential'</span>, delay: <span class="num">5000</span> },
+  });
+
+  <span class="cmt">// 5. Respond</span>
+  <span class="kw">return</span> res.status(<span class="num">200</span>).json({ received: <span class="kw">true</span>, call_id: call.id });
+});</pre>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 2. ENRICHMENT WORKER                        -->
+  <!-- ========================================== -->
+  <section class="section" id="enrichment">
+    <h2>2. Enrichment Worker</h2>
+
+    <p>The enrichment worker fetches additional candidate, campaign, and agent details from the Talkpush API that aren't included in the webhook payload.</p>
+
+    <h3>What We Fetch</h3>
+    <table>
+      <tr><th>Data</th><th>API Call</th><th>Stored In</th></tr>
+      <tr>
+        <td>Candidate name, phone</td>
+        <td><code>GET /candidates/{candidate_id}</code></td>
+        <td><code>calls.candidate_name</code>, <code>calls.candidate_phone</code></td>
+      </tr>
+      <tr>
+        <td>Campaign name &amp; ID</td>
+        <td><code>GET /applications/{application_id}</code></td>
+        <td><code>calls.campaign_name</code>, <code>calls.talkpush_campaign_id</code></td>
+      </tr>
+      <tr>
+        <td>Assessment link</td>
+        <td>Resolved from <code>assessments</code> table via <code>campaign_id</code></td>
+        <td><code>calls.assessment_id</code></td>
+      </tr>
+      <tr>
+        <td>Agent/recruiter name</td>
+        <td><code>GET /applications/{application_id}</code></td>
+        <td><code>calls.agent_name</code></td>
+      </tr>
+      <tr>
+        <td>Call duration, date</td>
+        <td><code>GET /applications/{application_id}</code></td>
+        <td><code>calls.call_duration_seconds</code>, <code>calls.call_date</code></td>
+      </tr>
+    </table>
+
+    <h3>Worker Implementation</h3>
+<pre><span class="cmt">// src/jobs/enrichment.worker.ts</span>
+<span class="kw">import</span> { Worker } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+<span class="kw">import</span> { redis } <span class="kw">from</span> <span class="str">'../config/redis'</span>;
+<span class="kw">import</span> { supabaseAdmin } <span class="kw">from</span> <span class="str">'../config/supabase'</span>;
+<span class="kw">import</span> { TalkpushAPI } <span class="kw">from</span> <span class="str">'../services/talkpush-api'</span>;
+<span class="kw">import</span> { analysisQueue } <span class="kw">from</span> <span class="str">'./queue'</span>;
+
+<span class="kw">const</span> enrichmentWorker = <span class="kw">new</span> Worker(
+  <span class="str">'enrichment'</span>,
+  <span class="kw">async</span> (job) => {
+    <span class="kw">const</span> { callId, companyId } = job.data;
+
+    <span class="cmt">// Fetch the raw call</span>
+    <span class="kw">const</span> { data: call } = <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'calls'</span>)
+      .select(<span class="str">'*'</span>)
+      .eq(<span class="str">'id'</span>, callId)
+      .single();
+
+    <span class="cmt">// Fetch company API key for Talkpush API auth</span>
+    <span class="kw">const</span> { data: company } = <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'companies'</span>)
+      .select(<span class="str">'api_key, tenant_id'</span>)
+      .eq(<span class="str">'id'</span>, companyId)
+      .single();
+
+    <span class="kw">const</span> api = <span class="kw">new</span> TalkpushAPI(company.api_key, company.tenant_id);
+
+    <span class="cmt">// Parallel API calls</span>
+    <span class="kw">const</span> [candidate, application] = <span class="kw">await</span> Promise.all([
+      api.getCandidate(call.talkpush_candidate_id),
+      api.getApplication(call.talkpush_application_id),
+    ]);
+
+    <span class="cmt">// Update call with enriched data</span>
+    <span class="kw">const</span> enrichmentData = { candidate, application };
+
+    <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'calls'</span>)
+      .update({
+        candidate_name: candidate?.name || <span class="kw">null</span>,
+        candidate_phone: candidate?.phone || <span class="kw">null</span>,
+        campaign_name: application?.campaign_name || <span class="kw">null</span>,
+        talkpush_campaign_id: application?.campaign_id || <span class="kw">null</span>,
+        agent_name: application?.agent_name || <span class="kw">null</span>,
+        call_duration_seconds: application?.call_duration || <span class="kw">null</span>,
+        call_date: application?.call_date || <span class="kw">null</span>,
+        status: <span class="str">'enriched'</span>,
+        enrichment_data: enrichmentData,
+        updated_at: <span class="kw">new</span> Date().toISOString(),
+      })
+      .eq(<span class="str">'id'</span>, callId);
+
+    <span class="cmt">// Resolve assessment from campaign_id (if configured)</span>
+    <span class="kw">let</span> assessmentId = <span class="kw">null</span>;
+    <span class="kw">if</span> (application?.campaign_id) {
+      <span class="kw">const</span> { data: assessment } = <span class="kw">await</span> supabaseAdmin
+        .from(<span class="str">'assessments'</span>)
+        .select(<span class="str">'id'</span>)
+        .eq(<span class="str">'company_id'</span>, companyId)
+        .eq(<span class="str">'talkpush_campaign_id'</span>, String(application.campaign_id))
+        .eq(<span class="str">'is_active'</span>, <span class="kw">true</span>)
+        .single();
+
+      <span class="kw">if</span> (assessment) {
+        assessmentId = assessment.id;
+        <span class="kw">await</span> supabaseAdmin.from(<span class="str">'calls'</span>)
+          .update({ assessment_id: assessmentId })
+          .eq(<span class="str">'id'</span>, callId);
+      }
+    }
+
+    <span class="cmt">// Chain: enqueue AI analysis (include assessmentId for skill evaluation)</span>
+    <span class="kw">await</span> analysisQueue.add(<span class="str">'analyze'</span>, {
+      callId,
+      companyId,
+      assessmentId,  <span class="cmt">// null if no assessment configured</span>
+    }, {
+      attempts: <span class="num">3</span>,
+      backoff: { type: <span class="str">'exponential'</span>, delay: <span class="num">10000</span> },
+    });
+  },
+  {
+    connection: redis,
+    concurrency: <span class="num">5</span>,  <span class="cmt">// 5 parallel enrichments</span>
+  }
+);</pre>
+
+    <div class="callout callout-amber">
+      <strong>Rate Limiting:</strong> The Talkpush API may have rate limits. The concurrency of 5 keeps us at a safe ~5 requests/second. Adjust based on actual API limits. The BullMQ rate limiter can also cap jobs per time window if needed.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 3. AI ANALYSIS PROMPTS                      -->
+  <!-- ========================================== -->
+  <section class="section" id="ai-prompts">
+    <h2>3. AI Analysis Layer</h2>
+
+    <p>The AI layer runs <strong>two parallel analyses</strong> on each call transcript via OpenRouter, extracting <strong>four dimensions</strong> of insight:</p>
+    <ol>
+      <li><strong>TalkScore + Sentiment + Call Stage/Dropoff + Candidate Questions</strong> &mdash; Language proficiency scoring, sentiment analysis, interview stage mapping with dropoff detection, and extraction of all questions asked by the candidate</li>
+      <li><strong>Agent Quality Flags</strong> &mdash; Detects 33 flag types across agent failures, bias/fairness violations, and candidate behavior signals</li>
+    </ol>
+    <p>Both run as <strong>parallel <code>Promise.all</code> calls</strong> to the same OpenRouter endpoint. Wall-clock time = max(call_1, call_2) instead of sum. The TalkScore prompt extracts all three dimensions (communication quality, sentiment, and stage/dropoff) in a single call.</p>
+
+    <h3>OpenRouter Configuration</h3>
+<pre><span class="cmt">// src/config/openrouter.ts</span>
+<span class="kw">export const</span> OPENROUTER_CONFIG = {
+  baseURL: <span class="str">'https://openrouter.ai/api/v1'</span>,
+  defaultModel: <span class="str">'anthropic/claude-sonnet-4-20250514'</span>,
+  fallbackModel: <span class="str">'openai/gpt-4o'</span>,
+  maxTokens: <span class="num">2000</span>,
+  temperature: <span class="num">0.1</span>,  <span class="cmt">// Low temperature for consistent scoring</span>
+};</pre>
+
+    <h3>Combined Analysis Prompt</h3>
+
+    <div class="callout callout-lavender">
+      <strong>Why one prompt for three dimensions?</strong> TalkScore, sentiment, and stage/dropoff analysis all depend on the same transcript context. Combining them into a single prompt avoids redundant token usage and keeps latency low (3-5s for all three outputs).
+    </div>
+
+<pre><span class="cmt">// src/services/openrouter.ts</span>
+
+<span class="kw">const</span> SYSTEM_PROMPT = `You are TalkScore Analyzer, an expert in evaluating
+assessment call quality for recruitment. You analyze transcripts of calls
+between recruitment agents and candidates.
+
+Your job is to produce FOUR analyses from a single transcript:
+
+1. COMMUNICATION QUALITY (TalkScore) — Identify issues in the communication
+   from BOTH sides (candidate and agent). Focus on:
+
+   FROM THE CANDIDATE:
+   - Pronunciation clarity (are they understandable?)
+   - Fluency (natural pace, minimal filler words like "um", "uh", long pauses)
+   - Grammar (accuracy and complexity of sentence structures)
+   - Vocabulary (range, sophistication, specificity of word choice)
+   - Coherence (logical flow, use of connectives, organized responses)
+
+   FROM THE AGENT:
+   - Clarity of instructions and questions
+   - Professional tone and communication
+   - Active listening indicators
+   - Proper call flow and structure
+   - Handling of candidate confusion or questions
+
+2. SENTIMENT ANALYSIS — Overall emotional tone and per-segment breakdown.
+
+3. CALL STAGE / DROPOFF ANALYSIS — Map the interview flow into stages and
+   identify where (if anywhere) the call dropped off. Stages are:
+   - "introduction" — greeting, identity confirmation, purpose explanation
+   - "question_1", "question_2", ... "question_N" — each interview question asked
+   - "closing" — agent wraps up, thanks candidate, explains next steps
+   - "finished" — call ends naturally after closing
+
+   Determine:
+   - Which stage the call reached last (last_stage_reached)
+   - How many questions the agent asked (total_questions_asked)
+   - How many questions the interview was designed to have (total_questions_expected,
+     infer from context or set null if unclear)
+   - Whether the call completed fully (call_completed = true if reached "finished")
+   - Why the call ended early, if it did (dropout_reason):
+     candidate_hangup | silence_timeout | error | completed | unknown
+
+4. CANDIDATE QUESTIONS — Extract every question the CANDIDATE asks during the
+   interview. These are questions FROM the candidate TO the agent (not the
+   agent's interview questions). For each question, capture:
+   - The exact question text
+   - Timestamp (MM:SS) when it was asked
+   - The context: what prompted the candidate to ask (e.g., confusion, clarification, curiosity)
+   - Which interview stage the question occurred in (introduction, question_N, closing)
+
+SCORING RULES:
+- TalkScore Overall: 0.0 to 10.0 (one decimal). This is HOLISTIC — not a
+  simple average. A candidate with minor pronunciation issues but excellent
+  vocabulary and coherence may score higher than one with perfect pronunciation
+  but very basic language. Use IELTS-style band calibration:
+  - 9.0-10.0: Expert/native-like across all dimensions
+  - 7.0-8.9: Very good, minor issues, strong communicator
+  - 5.0-6.9: Competent, noticeable issues but communication succeeds
+  - 3.0-4.9: Limited, frequent issues, communication breaks down
+  - 0.0-2.9: Extremely limited, unable to communicate effectively
+
+- Sentiment Score: -1.00 to 1.00 (two decimals)
+  - Positive: 0.25 to 1.00
+  - Neutral: -0.24 to 0.24
+  - Negative: -1.00 to -0.25
+
+You MUST respond in valid JSON only. No markdown, no explanation outside JSON.`;
+
+<span class="kw">const</span> USER_PROMPT_TEMPLATE = `Analyze this assessment call transcript:
+
+---
+TRANSCRIPT:
+{transcript}
+---
+
+Respond with this exact JSON structure:
+
+{
+  "talkscore_overall": 7.5,
+  "candidate_issues": [
+    {
+      "type": "fluency|pronunciation|grammar|vocabulary|coherence",
+      "severity": "low|medium|high",
+      "detail": "Specific description of the issue",
+      "example": "Exact quote from transcript showing the issue"
+    }
+  ],
+  "agent_issues": [
+    {
+      "type": "clarity|tone|listening|flow|handling",
+      "severity": "low|medium|high",
+      "detail": "Specific description of the issue",
+      "example": "Exact quote from transcript showing the issue"
+    }
+  ],
+  "communication_issues": [
+    {
+      "type": "misunderstanding|overlap|silence|confusion|technical",
+      "severity": "low|medium|high",
+      "detail": "Description of bilateral communication breakdown",
+      "example": "Exact quote from transcript"
+    }
+  ],
+  "talkscore_breakdown": {
+    "pronunciation": 8.0,
+    "fluency": 7.5,
+    "grammar": 7.0,
+    "vocabulary": 6.5,
+    "coherence": 7.5
+  },
+  "sentiment_overall": "positive|neutral|negative",
+  "sentiment_score": 0.45,
+  "sentiment_breakdown": [
+    {
+      "speaker": "agent|candidate",
+      "segment": "Brief description of segment",
+      "sentiment": "positive|neutral|negative",
+      "score": 0.6
+    }
+  ],
+  "last_stage_reached": "question_3",
+  "total_questions_asked": 3,
+  "total_questions_expected": 5,
+  "call_completed": false,
+  "dropout_reason": "candidate_hangup",
+  "stages": [
+    {
+      "stage": "introduction",
+      "reached": true,
+      "timestamp": "00:00",
+      "duration_seconds": 45
+    },
+    {
+      "stage": "question_1",
+      "reached": true,
+      "timestamp": "00:45",
+      "duration_seconds": 90
+    },
+    {
+      "stage": "question_2",
+      "reached": true,
+      "timestamp": "02:15",
+      "duration_seconds": 75
+    },
+    {
+      "stage": "question_3",
+      "reached": true,
+      "timestamp": "03:30",
+      "duration_seconds": 30
+    },
+    {
+      "stage": "question_4",
+      "reached": false
+    },
+    {
+      "stage": "question_5",
+      "reached": false
+    },
+    {
+      "stage": "closing",
+      "reached": false
+    },
+    {
+      "stage": "finished",
+      "reached": false
+    }
+  ],
+  "candidate_questions": [
+    {
+      "question": "Can I do the interview in Spanish instead?",
+      "timestamp": "01:20",
+      "context": "Candidate seemed uncomfortable with English assessment",
+      "stage": "introduction"
+    },
+    {
+      "question": "How long will this take?",
+      "timestamp": "02:30",
+      "context": "Asked before starting question section",
+      "stage": "question_1"
+    }
+  ],
+  "candidate_question_count": 2,
+  "summary": "2-3 sentence summary of the call quality and key findings"
+}`;
+</pre>
+
+    <h3>3a-ii. Dynamic Skills Prompt Builder</h3>
+
+    <p>When an assessment has skills configured, the <code>buildSkillsPromptSection()</code> function appends a skills evaluation section to the TalkScore system prompt. This is <strong>dynamic</strong> &mdash; different assessments can evaluate different skills.</p>
+
+<pre><span class="cmt">// src/services/prompts/talkscore.ts</span>
+
+<span class="kw">export function</span> <span class="fn">buildSkillsPromptSection</span>(skills: AssessmentSkill[]): <span class="type">string</span> {
+  <span class="kw">if</span> (!skills?.length) <span class="kw">return</span> <span class="str">''</span>;
+
+  <span class="kw">const</span> skillsList = skills.map((s, i) =>
+    `  ${i + <span class="num">1</span>}. "${s.name}" (skill_id: "${s.skill_id}", max_score: ${s.max_score})
+     Description: ${s.description}
+     Scoring criteria: ${s.scoring_criteria}`
+  ).join(<span class="str">'\n'</span>);
+
+  <span class="kw">return</span> `
+
+<span class="str">5. SKILL EVALUATION — This assessment is configured to evaluate the following
+   skills. For EACH skill, you must provide:
+   - A score (0 to max_score for that skill)
+   - A description of the candidate's performance on this skill
+   - Reasoning explaining WHY you gave that score, with evidence from the transcript
+
+SKILLS TO EVALUATE:
+${skillsList}
+
+Include a "skill_evaluations" array in your JSON response with one entry per skill,
+and a "skill_summary" with a 2-3 sentence overall assessment of the candidate's
+skill performance.</span>`;
+}</pre>
+
+    <p>This produces an AI response that includes:</p>
+<pre><span class="cmt">// Example skill_evaluations output (appended to main JSON)</span>
+<span class="str">"skill_evaluations"</span>: [
+  {
+    <span class="str">"skill_id"</span>: <span class="str">"customer_empathy"</span>,
+    <span class="str">"name"</span>: <span class="str">"Customer Empathy"</span>,
+    <span class="str">"score"</span>: <span class="num">7</span>,
+    <span class="str">"max_score"</span>: <span class="num">10</span>,
+    <span class="str">"description"</span>: <span class="str">"Candidate showed good awareness of customer needs and acknowledged concerns appropriately."</span>,
+    <span class="str">"reasoning"</span>: <span class="str">"At 02:15, when asked about handling upset customers, the candidate described a de-escalation approach with specific examples. However, missed the follow-up about proactive outreach."</span>
+  },
+  {
+    <span class="str">"skill_id"</span>: <span class="str">"problem_solving"</span>,
+    <span class="str">"name"</span>: <span class="str">"Problem Solving"</span>,
+    <span class="str">"score"</span>: <span class="num">5</span>,
+    <span class="str">"max_score"</span>: <span class="num">10</span>,
+    <span class="str">"description"</span>: <span class="str">"Candidate struggled with the scenario-based question, giving a vague response without structure."</span>,
+    <span class="str">"reasoning"</span>: <span class="str">"At 04:30, the candidate was asked to walk through resolving a billing dispute. Response lacked a step-by-step approach and did not mention verification or escalation paths."</span>
+  }
+],
+<span class="str">"skill_summary"</span>: <span class="str">"The candidate demonstrates strong interpersonal skills but needs development in structured problem-solving. Good fit for entry-level customer service with coaching on process adherence."</span></pre>
+
+    <div class="callout callout-sage">
+      <strong>No skills configured?</strong> If the assessment has no skills (or the call has no linked assessment), <code>buildSkillsPromptSection()</code> returns an empty string. The prompt runs without the skills section, and <code>skill_evaluations</code>, <code>skill_summary</code>, and <code>skill_average_score</code> will be <code>null</code> in the database.
+    </div>
+
+    <h3>3b. Agent Quality Prompt</h3>
+
+    <p>The Agent Quality Analysis uses the <strong>v4 prompt</strong> from <code>AI INTERVIEW AGENT QUALITY ANALYSIS.md</code>. It detects 33 flag types across three categories:</p>
+
+    <table>
+      <tr><th>Category</th><th>Flags</th><th>Description</th></tr>
+      <tr>
+        <td><strong>agent</strong> (12 flags)</td>
+        <td><code>intent_misunderstood</code>, <code>repetition</code>, <code>agent_loop_suspected</code>, <code>poor_tone</code>, <code>unrelated_topic</code>, <code>lack_of_empathy</code>, <code>escalation_needed</code>, <code>user_confusion</code>, <code>vague_answers</code>, <code>hallucination</code>, <code>question_ignored</code>, <code>abrupt_end</code></td>
+        <td>AI interviewer failures &mdash; loops, misunderstandings, tone issues</td>
+      </tr>
+      <tr>
+        <td><strong>bias_and_fairness</strong> (9 flags)</td>
+        <td><code>gender_bias</code>, <code>racial_bias</code>, <code>age_bias</code>, <code>socioeconomic_bias</code>, <code>disability_bias</code>, <code>cultural_nationality_bias</code>, <code>language_proficiency_bias</code>, <code>accent_and_dialect_bias</code>, <code>interview_format_bias</code></td>
+        <td>Discrimination and fairness violations</td>
+      </tr>
+      <tr>
+        <td><strong>candidate</strong> (4 flags)</td>
+        <td><code>requested_escalation</code>, <code>used_profanity</code>, <code>inappropriate_content</code>, <code>privacy_concern_raised</code></td>
+        <td>Candidate behavior signals</td>
+      </tr>
+    </table>
+
+    <div class="callout callout-pink">
+      <strong>Critical flags</strong> that trigger <code>has_critical_flags = TRUE</code>: <code>agent_loop_suspected</code>, <code>hallucination</code>, and any <code>bias_and_fairness</code> flag. These surface prominently in the dashboard for immediate review.
+    </div>
+
+    <p>The full Agent Quality prompt is stored in <code>src/services/prompts/agent-quality.ts</code> and loaded at startup. It includes the complete flag reference table, definitions with examples, decision trees for ambiguous cases, ASR artifact rules, and strict JSON output format.</p>
+
+<pre><span class="cmt">// src/services/prompts/agent-quality.ts (excerpt — key rules)</span>
+
+<span class="cmt">// CRITICAL RULES:</span>
+<span class="cmt">// 1. Return ONLY valid JSON array — no markdown, no commentary</span>
+<span class="cmt">// 2. Use ONLY exact flag_id values from the reference table</span>
+<span class="cmt">// 3. Be conservative — only flag clear, evidence-backed issues</span>
+<span class="cmt">// 4. Do NOT flag long pauses (handled separately)</span>
+<span class="cmt">// 5. Do NOT flag ASR artifacts (repetitive text at end of candidate turns)</span>
+
+<span class="cmt">// OUTPUT FORMAT per conversation:</span>
+{
+  <span class="str">"flags"</span>: [
+    {
+      <span class="str">"flag_id"</span>: <span class="str">"agent_loop_suspected"</span>,         <span class="cmt">// from reference table</span>
+      <span class="str">"category"</span>: <span class="str">"agent"</span>,                       <span class="cmt">// must match table</span>
+      <span class="str">"timestamp"</span>: <span class="str">"03:45"</span>,                     <span class="cmt">// MM:SS from transcript</span>
+      <span class="str">"evidence"</span>: <span class="str">"AGENT at 03:45: 'What is your email?'"</span>,
+      <span class="str">"explanation"</span>: <span class="str">"Agent re-asked email after candidate provided it twice"</span>
+    }
+  ],
+  <span class="str">"summary"</span>: <span class="str">"2-3 sentence quality assessment"</span>
+}</pre>
+
+    <h3>Analysis Worker (Dual Parallel)</h3>
+<pre><span class="cmt">// src/jobs/analysis.worker.ts</span>
+<span class="kw">import</span> { Worker } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+<span class="kw">import</span> { redis } <span class="kw">from</span> <span class="str">'../config/redis'</span>;
+<span class="kw">import</span> { supabaseAdmin } <span class="kw">from</span> <span class="str">'../config/supabase'</span>;
+<span class="kw">import</span> { OPENROUTER_CONFIG, callOpenRouter } <span class="kw">from</span> <span class="str">'../config/openrouter'</span>;
+<span class="kw">import</span> { TALKSCORE_SYSTEM, TALKSCORE_USER, buildSkillsPromptSection } <span class="kw">from</span> <span class="str">'../services/prompts/talkscore'</span>;
+<span class="kw">import</span> { QUALITY_PROMPT } <span class="kw">from</span> <span class="str">'../services/prompts/agent-quality'</span>;
+
+<span class="cmt">// Critical flag IDs that trigger has_critical_flags</span>
+<span class="kw">const</span> CRITICAL_FLAGS = <span class="kw">new</span> Set([
+  <span class="str">'agent_loop_suspected'</span>, <span class="str">'hallucination'</span>,
+  <span class="str">'gender_bias'</span>, <span class="str">'racial_bias'</span>, <span class="str">'age_bias'</span>,
+  <span class="str">'socioeconomic_bias'</span>, <span class="str">'disability_bias'</span>,
+  <span class="str">'cultural_nationality_bias'</span>, <span class="str">'language_proficiency_bias'</span>,
+  <span class="str">'accent_and_dialect_bias'</span>, <span class="str">'interview_format_bias'</span>,
+]);
+
+<span class="kw">const</span> analysisWorker = <span class="kw">new</span> Worker(
+  <span class="str">'analysis'</span>,
+  <span class="kw">async</span> (job) => {
+    <span class="kw">const</span> { callId, companyId, assessmentId } = job.data;
+
+    <span class="cmt">// Fetch transcript, company settings, and assessment skills (if configured)</span>
+    <span class="kw">const</span> queries = [
+      supabaseAdmin.from(<span class="str">'calls'</span>).select(<span class="str">'transcript'</span>).eq(<span class="str">'id'</span>, callId).single(),
+      supabaseAdmin.from(<span class="str">'companies'</span>).select(<span class="str">'settings'</span>).eq(<span class="str">'id'</span>, companyId).single(),
+    ];
+    <span class="kw">if</span> (assessmentId) {
+      queries.push(
+        supabaseAdmin.from(<span class="str">'assessments'</span>).select(<span class="str">'skills, name'</span>).eq(<span class="str">'id'</span>, assessmentId).single()
+      );
+    }
+    <span class="kw">const</span> results = <span class="kw">await</span> Promise.all(queries);
+    <span class="kw">const</span> call = results[<span class="num">0</span>].data;
+    <span class="kw">const</span> company = results[<span class="num">1</span>].data;
+    <span class="kw">const</span> assessment = results[<span class="num">2</span>]?.data || <span class="kw">null</span>;
+
+    <span class="kw">if</span> (!call?.transcript) <span class="kw">throw new</span> Error(<span class="str">`No transcript for call ${callId}`</span>);
+
+    <span class="kw">const</span> model = company?.settings?.openrouter_model || OPENROUTER_CONFIG.defaultModel;
+
+    <span class="cmt">// ═══ BUILD DYNAMIC PROMPT WITH SKILLS (if assessment configured) ═══</span>
+    <span class="kw">const</span> skillsSection = assessment?.skills?.length
+      ? buildSkillsPromptSection(assessment.skills)
+      : <span class="str">''</span>;
+    <span class="kw">const</span> systemPrompt = TALKSCORE_SYSTEM + skillsSection;
+
+    <span class="cmt">// ═══ RUN BOTH ANALYSES IN PARALLEL ═══</span>
+    <span class="kw">const</span> talkscoreStart = Date.now();
+    <span class="kw">const</span> qualityStart = Date.now();
+
+    <span class="kw">const</span> [talkscoreResult, qualityResult] = <span class="kw">await</span> Promise.all([
+      <span class="cmt">// Analysis 1: TalkScore + Sentiment + Stages + Skills</span>
+      callOpenRouter({
+        model,
+        systemPrompt,
+        userPrompt: TALKSCORE_USER.replace(<span class="str">'{transcript}'</span>, call.transcript),
+        maxTokens: <span class="num">3000</span>,  <span class="cmt">// increased for skill evaluations</span>
+      }),
+      <span class="cmt">// Analysis 2: Agent Quality Flags</span>
+      callOpenRouter({
+        model,
+        systemPrompt: QUALITY_PROMPT,     <span class="cmt">// Full v4 prompt from .md file</span>
+        userPrompt: call.transcript,
+        maxTokens: <span class="num">2000</span>,
+      }),
+    ]);
+
+    <span class="cmt">// Parse results</span>
+    <span class="kw">const</span> ts = talkscoreResult.parsed;        <span class="cmt">// TalkScore JSON</span>
+    <span class="kw">const</span> qf = qualityResult.parsed;           <span class="cmt">// Quality flags JSON</span>
+
+    <span class="cmt">// Extract flags (handle array wrapper from v4 prompt)</span>
+    <span class="kw">const</span> qualityData = Array.isArray(qf) ? qf[<span class="num">0</span>] : qf;
+    <span class="kw">const</span> flags = qualityData?.flags || [];
+    <span class="kw">const</span> hasCritical = flags.some(f => CRITICAL_FLAGS.has(f.flag_id));
+
+    <span class="cmt">// Store combined analysis</span>
+    <span class="kw">await</span> supabaseAdmin.from(<span class="str">'analyses'</span>).insert({
+      call_id: callId,
+      company_id: companyId,
+
+      <span class="cmt">// TalkScore</span>
+      talkscore_overall: ts.talkscore_overall,
+      talkscore_breakdown: ts.talkscore_breakdown,
+      communication_issues: ts.communication_issues,
+      candidate_issues: ts.candidate_issues,
+      agent_issues: ts.agent_issues,
+
+      <span class="cmt">// Sentiment</span>
+      sentiment_overall: ts.sentiment_overall,
+      sentiment_score: ts.sentiment_score,
+      sentiment_breakdown: ts.sentiment_breakdown,
+
+      <span class="cmt">// Call Stage / Dropoff</span>
+      last_stage_reached: ts.last_stage_reached,
+      total_questions_asked: ts.total_questions_asked,
+      total_questions_expected: ts.total_questions_expected,
+      call_completed: ts.call_completed,
+      dropout_reason: ts.dropout_reason,
+      stages: ts.stages,
+
+      <span class="cmt">// Candidate Questions</span>
+      candidate_questions: ts.candidate_questions || [],
+      candidate_question_count: ts.candidate_question_count || <span class="num">0</span>,
+
+      <span class="cmt">// Skill Evaluations (only present if assessment has skills configured)</span>
+      skill_evaluations: ts.skill_evaluations || <span class="kw">null</span>,
+      skill_summary: ts.skill_summary || <span class="kw">null</span>,
+      skill_average_score: ts.skill_evaluations?.length
+        ? +(ts.skill_evaluations.reduce((sum, s) =>
+            sum + (s.score / s.max_score) * <span class="num">10</span>, <span class="num">0</span>) / ts.skill_evaluations.length).toFixed(<span class="num">2</span>)
+        : <span class="kw">null</span>,
+
+      <span class="cmt">// Agent Quality Flags</span>
+      quality_flags: flags,
+      quality_flag_count: flags.length,
+      quality_summary: qualityData?.summary || <span class="kw">null</span>,
+      has_critical_flags: hasCritical,
+
+      <span class="cmt">// AI metadata (tracked per-analysis)</span>
+      talkscore_model: model,
+      talkscore_tokens: talkscoreResult.totalTokens,
+      talkscore_duration_ms: talkscoreResult.durationMs,
+      quality_model: model,
+      quality_tokens: qualityResult.totalTokens,
+      quality_duration_ms: qualityResult.durationMs,
+      raw_talkscore_response: ts,
+      raw_quality_response: qualityData,
+    });
+
+    <span class="cmt">// Update call status</span>
+    <span class="kw">await</span> supabaseAdmin.from(<span class="str">'calls'</span>).update({
+      status: <span class="str">'analyzed'</span>,
+      updated_at: <span class="kw">new</span> Date().toISOString(),
+    }).eq(<span class="str">'id'</span>, callId);
+  },
+  {
+    connection: redis,
+    concurrency: <span class="num">3</span>,   <span class="cmt">// 3 parallel analysis jobs (each makes 2 API calls)</span>
+    limiter: {
+      max: <span class="num">30</span>,         <span class="cmt">// max 30 jobs/min = 60 OpenRouter calls/min</span>
+      duration: <span class="num">60000</span>,
+    },
+  }
+);</pre>
+
+    <h3>OpenRouter Helper</h3>
+<pre><span class="cmt">// src/config/openrouter.ts — shared caller</span>
+<span class="kw">export async function</span> <span class="fn">callOpenRouter</span>({ model, systemPrompt, userPrompt, maxTokens }) {
+  <span class="kw">const</span> start = Date.now();
+  <span class="kw">const</span> response = <span class="kw">await</span> fetch(<span class="str">`${OPENROUTER_CONFIG.baseURL}/chat/completions`</span>, {
+    method: <span class="str">'POST'</span>,
+    headers: {
+      <span class="str">'Authorization'</span>: <span class="str">`Bearer ${process.env.OPENROUTER_API_KEY}`</span>,
+      <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      <span class="str">'HTTP-Referer'</span>: <span class="str">'https://talkscore-hub.talkpush.com'</span>,
+      <span class="str">'X-Title'</span>: <span class="str">'TalkScore Hub'</span>,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: <span class="str">'system'</span>, content: systemPrompt },
+        { role: <span class="str">'user'</span>, content: userPrompt },
+      ],
+      max_tokens: maxTokens,
+      temperature: <span class="num">0.1</span>,
+      response_format: { type: <span class="str">'json_object'</span> },
+    }),
+  });
+
+  <span class="kw">if</span> (!response.ok) {
+    <span class="kw">throw new</span> Error(<span class="str">`OpenRouter ${response.status}: ${<span class="kw">await</span> response.text()}`</span>);
+  }
+
+  <span class="kw">const</span> result = <span class="kw">await</span> response.json();
+  <span class="kw">return</span> {
+    parsed: JSON.parse(result.choices[<span class="num">0</span>].message.content),
+    totalTokens: (result.usage?.prompt_tokens || <span class="num">0</span>) + (result.usage?.completion_tokens || <span class="num">0</span>),
+    durationMs: Date.now() - start,
+  };
+}</pre>
+
+    <h3>AI Response Schemas</h3>
+
+    <h4>TalkScore + Sentiment Response</h4>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>talkscore_overall</code></td><td>number (0.0-10.0)</td><td>Holistic communication quality score</td></tr>
+      <tr><td><code>talkscore_breakdown</code></td><td>object</td><td>Per-dimension: pronunciation, fluency, grammar, vocabulary, coherence</td></tr>
+      <tr><td><code>candidate_issues</code></td><td>array</td><td>Communication issues from candidate side</td></tr>
+      <tr><td><code>agent_issues</code></td><td>array</td><td>Communication issues from agent side</td></tr>
+      <tr><td><code>communication_issues</code></td><td>array</td><td>Bilateral issues (misunderstandings, overlaps)</td></tr>
+      <tr><td><code>sentiment_overall</code></td><td>string</td><td>positive / neutral / negative</td></tr>
+      <tr><td><code>sentiment_score</code></td><td>number (-1.00 to 1.00)</td><td>Numeric sentiment value</td></tr>
+      <tr><td><code>sentiment_breakdown</code></td><td>array</td><td>Per-segment sentiment by speaker</td></tr>
+      <tr><td><code>summary</code></td><td>string</td><td>2-3 sentence summary</td></tr>
+    </table>
+
+    <h4>Agent Quality Response</h4>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>flags[]</code></td><td>array</td><td>Array of detected quality flags</td></tr>
+      <tr><td><code>flags[].flag_id</code></td><td>string</td><td>Must match one of 33 flag IDs from reference table</td></tr>
+      <tr><td><code>flags[].category</code></td><td>string</td><td><code>agent</code> | <code>bias_and_fairness</code> | <code>candidate</code></td></tr>
+      <tr><td><code>flags[].timestamp</code></td><td>string</td><td>MM:SS from transcript</td></tr>
+      <tr><td><code>flags[].evidence</code></td><td>string</td><td>Direct quote: <code>AGENT at MM:SS: 'text'</code></td></tr>
+      <tr><td><code>flags[].explanation</code></td><td>string</td><td>Why this meets the flag definition</td></tr>
+      <tr><td><code>summary</code></td><td>string</td><td>2-3 sentence quality assessment</td></tr>
+    </table>
+
+    <h3>Model Fallback Strategy</h3>
+    <p>If the primary model fails, the BullMQ worker retries with exponential backoff. On the 3rd attempt, switches to the fallback model:</p>
+    <ol>
+      <li><strong>Attempt 1:</strong> <code>anthropic/claude-sonnet-4-20250514</code> (primary)</li>
+      <li><strong>Attempt 2:</strong> Same model, after 10s backoff</li>
+      <li><strong>Attempt 3:</strong> <code>openai/gpt-4o</code> (fallback)</li>
+    </ol>
+    <p>Per-company model override via <code>companies.settings.openrouter_model</code>.</p>
+
+    <h3>Cost Estimation (Dual Analysis)</h3>
+    <table>
+      <tr><th>Metric</th><th>TalkScore + Sentiment</th><th>Agent Quality</th><th>Combined</th></tr>
+      <tr><td>System prompt</td><td>~500 tokens</td><td>~2,500 tokens</td><td>~3,000 tokens</td></tr>
+      <tr><td>Transcript (avg)</td><td>~2,000 tokens</td><td>~2,000 tokens</td><td>~4,000 tokens (sent twice)</td></tr>
+      <tr><td>Response</td><td>~600 tokens</td><td>~800 tokens</td><td>~1,400 tokens</td></tr>
+      <tr><td>Total per call</td><td>~3,100 tokens</td><td>~5,300 tokens</td><td><strong>~8,400 tokens</strong></td></tr>
+      <tr><td>Daily (3K calls)</td><td>~9.3M tokens</td><td>~15.9M tokens</td><td><strong>~25.2M tokens</strong></td></tr>
+      <tr><td>Claude Sonnet / day</td><td>~$40</td><td>~$65</td><td><strong>~$100-120/day</strong></td></tr>
+      <tr><td>GPT-4o / day</td><td>~$30</td><td>~$50</td><td><strong>~$75-95/day</strong></td></tr>
+    </table>
+
+    <div class="callout callout-sage">
+      <strong>Optimization options:</strong> (1) Use <code>claude-haiku</code> for short transcripts (&lt;500 tokens), (2) Use GPT-4o-mini for the quality analysis (simpler classification task), (3) Per-company model config via <code>companies.settings</code>.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 4. JOB QUEUE CONFIGURATION                  -->
+  <!-- ========================================== -->
+  <section class="section" id="queue">
+    <h2>4. Job Queue Configuration</h2>
+
+    <h3>Queue Architecture</h3>
+    <p>Two BullMQ queues, chained sequentially:</p>
+
+    <table>
+      <tr><th>Queue</th><th>Concurrency</th><th>Rate Limit</th><th>Retries</th><th>Backoff</th></tr>
+      <tr>
+        <td><code>enrichment</code></td>
+        <td>5 workers</td>
+        <td>None (Talkpush API is internal)</td>
+        <td>3 attempts</td>
+        <td>Exponential, 5s base</td>
+      </tr>
+      <tr>
+        <td><code>analysis</code></td>
+        <td>3 workers</td>
+        <td>30 jobs/minute</td>
+        <td>3 attempts</td>
+        <td>Exponential, 10s base</td>
+      </tr>
+    </table>
+
+    <h3>Queue Setup</h3>
+<pre><span class="cmt">// src/jobs/queue.ts</span>
+<span class="kw">import</span> { Queue } <span class="kw">from</span> <span class="str">'bullmq'</span>;
+<span class="kw">import</span> { redis } <span class="kw">from</span> <span class="str">'../config/redis'</span>;
+
+<span class="kw">export const</span> enrichmentQueue = <span class="kw">new</span> Queue(<span class="str">'enrichment'</span>, {
+  connection: redis,
+  defaultJobOptions: {
+    attempts: <span class="num">3</span>,
+    backoff: { type: <span class="str">'exponential'</span>, delay: <span class="num">5000</span> },
+    removeOnComplete: { count: <span class="num">1000</span> },  <span class="cmt">// Keep last 1000 completed</span>
+    removeOnFail: { count: <span class="num">5000</span> },      <span class="cmt">// Keep last 5000 failed</span>
+  },
+});
+
+<span class="kw">export const</span> analysisQueue = <span class="kw">new</span> Queue(<span class="str">'analysis'</span>, {
+  connection: redis,
+  defaultJobOptions: {
+    attempts: <span class="num">3</span>,
+    backoff: { type: <span class="str">'exponential'</span>, delay: <span class="num">10000</span> },
+    removeOnComplete: { count: <span class="num">1000</span> },
+    removeOnFail: { count: <span class="num">5000</span> },
+  },
+});</pre>
+
+    <h3>Redis Configuration (Upstash)</h3>
+<pre><span class="cmt">// src/config/redis.ts</span>
+<span class="kw">import</span> { Redis } <span class="kw">from</span> <span class="str">'ioredis'</span>;
+
+<span class="kw">export const</span> redis = <span class="kw">new</span> Redis(process.env.UPSTASH_REDIS_URL, {
+  maxRetriesPerRequest: <span class="kw">null</span>,  <span class="cmt">// Required for BullMQ</span>
+  enableReadyCheck: <span class="kw">false</span>,
+  tls: {},  <span class="cmt">// Upstash requires TLS</span>
+});</pre>
+
+    <h3>Throughput Calculation</h3>
+    <table>
+      <tr><th>Metric</th><th>Value</th></tr>
+      <tr><td>Incoming rate</td><td>~2 calls/minute peak</td></tr>
+      <tr><td>Enrichment throughput</td><td>5 concurrent &times; ~2s each = ~150/min capacity</td></tr>
+      <tr><td>Analysis throughput</td><td>30/min (rate limited) = handles peak with margin</td></tr>
+      <tr><td>End-to-end latency</td><td>Webhook to analyzed: ~15-30 seconds typical</td></tr>
+      <tr><td>Daily Redis commands</td><td>~9,000 (3K &times; 3 queue ops) &mdash; within Upstash free tier (10K/day)</td></tr>
+    </table>
+
+    <div class="callout callout-amber">
+      <strong>Scaling Note:</strong> If volume exceeds 10K calls/day, upgrade Upstash to the Pay-as-you-go plan ($0.2/100K commands). The queue architecture supports horizontal scaling by adding more workers without code changes.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 5. CRM BRIDGE LOGIN                         -->
+  <!-- ========================================== -->
+  <section class="section" id="crm-bridge">
+    <h2>5. CRM Bridge Login (SSO via PAM)</h2>
+
+    <p>Users access TalkScore Hub from the Talkpush CRM. The CRM generates a single-use token (60s TTL), redirects to TalkScore Hub, which validates it with PAM and creates a local session.</p>
+
+    <h3>Login Flow</h3>
+    <ol>
+      <li>User clicks "TalkScore Hub" in Talkpush CRM</li>
+      <li>CRM calls PAM <code>POST /auth/token</code> &rarr; gets single-use token</li>
+      <li>CRM redirects to <code>https://talkscore-hub.replit.app/auth/crm-bridge?token=xxx</code></li>
+      <li>TalkScore Hub validates token with PAM <code>POST /auth/validate</code></li>
+      <li>TalkScore Hub creates/updates local profile + session</li>
+      <li>User is redirected to dashboard</li>
+    </ol>
+
+    <h3>Implementation</h3>
+<pre><span class="cmt">// src/auth/crm-bridge.ts</span>
+<span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> { supabaseAdmin } <span class="kw">from</span> <span class="str">'../config/supabase'</span>;
+
+<span class="kw">const</span> PAM_URL = <span class="str">'https://product-access-manager.vercel.app/api/v1'</span>;
+<span class="kw">const</span> router = Router();
+
+router.get(<span class="str">'/crm-bridge'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { token } = req.query;
+
+  <span class="kw">if</span> (!token) {
+    <span class="kw">return</span> res.status(<span class="num">400</span>).send(<span class="str">'Missing token'</span>);
+  }
+
+  <span class="kw">try</span> {
+    <span class="cmt">// Validate token with PAM</span>
+    <span class="kw">const</span> pamResponse = <span class="kw">await</span> fetch(<span class="str">`${PAM_URL}/auth/validate`</span>, {
+      method: <span class="str">'POST'</span>,
+      headers: {
+        <span class="str">'Authorization'</span>: <span class="str">`Bearer ${process.env.ACCESS_MANAGER_API_KEY}`</span>,
+        <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      },
+      body: JSON.stringify({ token }),
+    });
+
+    <span class="kw">if</span> (pamResponse.status === <span class="num">410</span>) {
+      <span class="kw">return</span> res.status(<span class="num">410</span>).send(<span class="str">'Login link expired. Please try again from the CRM.'</span>);
+    }
+    <span class="kw">if</span> (!pamResponse.ok) {
+      <span class="kw">return</span> res.status(pamResponse.status).send(<span class="str">'Authentication failed'</span>);
+    }
+
+    <span class="kw">const</span> user = <span class="kw">await</span> pamResponse.json();
+
+    <span class="cmt">// Resolve or create local company</span>
+    <span class="kw">let</span> { data: company } = <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'companies'</span>)
+      .select(<span class="str">'id'</span>)
+      .eq(<span class="str">'tenant_id'</span>, user.client.tenant_id)
+      .single();
+
+    <span class="kw">if</span> (!company) {
+      <span class="cmt">// Auto-create company from PAM data</span>
+      <span class="kw">const</span> { data: newCompany } = <span class="kw">await</span> supabaseAdmin
+        .from(<span class="str">'companies'</span>)
+        .insert({
+          name: user.client.name,
+          tenant_id: user.client.tenant_id,
+          status: <span class="str">'active'</span>,
+        })
+        .select(<span class="str">'id'</span>)
+        .single();
+      company = newCompany;
+    }
+
+    <span class="cmt">// Create or update Supabase Auth user</span>
+    <span class="cmt">// (use admin API since CRM Bridge users don't sign up normally)</span>
+    <span class="kw">let</span> authUser;
+    <span class="kw">const</span> { data: existingUsers } = <span class="kw">await</span> supabaseAdmin.auth.admin
+      .listUsers();
+    <span class="kw">const</span> existing = existingUsers.users
+      .find(u => u.email === user.email);
+
+    <span class="kw">if</span> (existing) {
+      authUser = existing;
+    } <span class="kw">else</span> {
+      <span class="kw">const</span> { data } = <span class="kw">await</span> supabaseAdmin.auth.admin.createUser({
+        email: user.email,
+        email_confirm: <span class="kw">true</span>,
+        user_metadata: { full_name: user.full_name },
+      });
+      authUser = data.user;
+    }
+
+    <span class="cmt">// Upsert profile (PAM standard)</span>
+    <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'profiles'</span>)
+      .upsert({
+        id: authUser.id,
+        email: user.email,
+        full_name: user.full_name,
+        auth_source: <span class="str">'crm_bridge'</span>,  <span class="cmt">// NOT synced back to PAM</span>
+      }, { onConflict: <span class="str">'id'</span> });
+
+    <span class="cmt">// Upsert user role for this company</span>
+    <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'user_roles'</span>)
+      .upsert({
+        user_id: authUser.id,
+        client_id: company.id,
+        role: user.role,  <span class="cmt">// 'admin' | 'manager' | 'user'</span>
+      }, { onConflict: <span class="str">'user_id,client_id'</span> });
+
+    <span class="cmt">// Generate a Supabase session for the user</span>
+    <span class="kw">const</span> { data: session } = <span class="kw">await</span> supabaseAdmin.auth.admin
+      .generateLink({ type: <span class="str">'magiclink'</span>, email: user.email });
+
+    <span class="cmt">// Set session cookie and redirect to dashboard</span>
+    res.cookie(<span class="str">'sb-access-token'</span>, session.properties.hashed_token, {
+      httpOnly: <span class="kw">true</span>,
+      secure: <span class="kw">true</span>,
+      sameSite: <span class="str">'lax'</span>,
+      maxAge: <span class="num">86400</span> * <span class="num">1000</span>,  <span class="cmt">// 24 hours</span>
+    });
+
+    <span class="kw">return</span> res.redirect(<span class="str">'/'</span>);
+  } <span class="kw">catch</span> (error) {
+    console.error(<span class="str">'CRM Bridge Login failed:'</span>, error);
+    <span class="kw">return</span> res.status(<span class="num">500</span>).send(<span class="str">'Authentication failed'</span>);
+  }
+});</pre>
+
+    <div class="callout callout-sage">
+      <strong>Key behavior:</strong> CRM Bridge users are created with <code>auth_source = 'crm_bridge'</code>. The PAM sync service (Section 7) explicitly skips these users to prevent infinite sync loops.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 6. REAL-TIME UPDATES                        -->
+  <!-- ========================================== -->
+  <section class="section" id="realtime">
+    <h2>6. Real-Time Dashboard Updates</h2>
+
+    <p>The dashboard receives live updates as calls are processed using <strong>Supabase Realtime</strong>. When a call's status changes (raw &rarr; enriched &rarr; analyzed), the dashboard updates automatically.</p>
+
+    <h3>Supabase Realtime Configuration</h3>
+    <p>Enable Realtime on the <code>calls</code> and <code>analyses</code> tables in Supabase Dashboard &rarr; Database &rarr; Replication.</p>
+
+    <h3>Frontend Hook</h3>
+<pre><span class="cmt">// client/src/hooks/useRealtimeUpdates.ts</span>
+<span class="kw">import</span> { useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { supabase } <span class="kw">from</span> <span class="str">'../config/supabase'</span>;
+
+<span class="kw">export function</span> <span class="fn">useRealtimeCalls</span>(companyId: string, onUpdate: (call: any) => void) {
+  useEffect(() => {
+    <span class="kw">const</span> channel = supabase
+      .channel(<span class="str">'calls-realtime'</span>)
+      .on(
+        <span class="str">'postgres_changes'</span>,
+        {
+          event: <span class="str">'*'</span>,          <span class="cmt">// INSERT, UPDATE</span>
+          schema: <span class="str">'public'</span>,
+          table: <span class="str">'calls'</span>,
+          filter: <span class="str">`company_id=eq.${companyId}`</span>,
+        },
+        (payload) => {
+          onUpdate(payload.new);
+        }
+      )
+      .subscribe();
+
+    <span class="kw">return</span> () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId, onUpdate]);
+}
+
+<span class="kw">export function</span> <span class="fn">useRealtimeAnalyses</span>(companyId: string, onAnalysis: (analysis: any) => void) {
+  useEffect(() => {
+    <span class="kw">const</span> channel = supabase
+      .channel(<span class="str">'analyses-realtime'</span>)
+      .on(
+        <span class="str">'postgres_changes'</span>,
+        {
+          event: <span class="str">'INSERT'</span>,
+          schema: <span class="str">'public'</span>,
+          table: <span class="str">'analyses'</span>,
+          filter: <span class="str">`company_id=eq.${companyId}`</span>,
+        },
+        (payload) => {
+          onAnalysis(payload.new);
+        }
+      )
+      .subscribe();
+
+    <span class="kw">return</span> () => {
+      supabase.removeChannel(channel);
+    };
+  }, [companyId, onAnalysis]);
+}</pre>
+
+    <h3>What Updates in Real-Time</h3>
+    <table>
+      <tr><th>Event</th><th>Dashboard Behavior</th></tr>
+      <tr>
+        <td>New call inserted (<code>status: raw</code>)</td>
+        <td>Call appears in list with "Processing" badge</td>
+      </tr>
+      <tr>
+        <td>Call updated to <code>enriched</code></td>
+        <td>Candidate name, campaign, agent info populates</td>
+      </tr>
+      <tr>
+        <td>Call updated to <code>analyzed</code></td>
+        <td>"Processing" badge changes to TalkScore badge with score</td>
+      </tr>
+      <tr>
+        <td>New analysis inserted</td>
+        <td>Dashboard metrics (avg score, sentiment chart) update live</td>
+      </tr>
+      <tr>
+        <td>Call status becomes <code>error</code></td>
+        <td>Error badge appears with retry option</td>
+      </tr>
+    </table>
+
+    <div class="callout callout-lavender">
+      <strong>RLS applies to Realtime too.</strong> Supabase Realtime respects Row Level Security, so each tenant only receives events for their own company's data. No additional filtering needed.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 7. PAM SYNC                                 -->
+  <!-- ========================================== -->
+  <section class="section" id="pam-sync">
+    <h2>7. PAM Sync Endpoints</h2>
+
+    <h3>Client Discovery Endpoint</h3>
+    <p>PAM calls this to discover which companies exist in TalkScore Hub.</p>
+<pre><span class="cmt">// src/routes/access-manager.ts</span>
+<span class="kw">import</span> { Router } <span class="kw">from</span> <span class="str">'express'</span>;
+<span class="kw">import</span> { supabaseAdmin } <span class="kw">from</span> <span class="str">'../config/supabase'</span>;
+
+<span class="kw">const</span> router = Router();
+
+<span class="cmt">// PAM pulls client list</span>
+router.get(<span class="str">'/clients'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> apiKey = req.headers.authorization?.replace(<span class="str">'Bearer '</span>, <span class="str">''</span>);
+  <span class="kw">if</span> (apiKey !== process.env.ACCESS_MANAGER_API_KEY) {
+    <span class="kw">return</span> res.status(<span class="num">401</span>).json({ error: <span class="str">'Unauthorized'</span> });
+  }
+
+  <span class="kw">const</span> { data: companies } = <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'companies'</span>)
+    .select(<span class="str">'name, tenant_id, status'</span>)
+    .not(<span class="str">'tenant_id'</span>, <span class="str">'is'</span>, <span class="kw">null</span>)
+    .order(<span class="str">'name'</span>);
+
+  <span class="kw">return</span> res.json({
+    clients: (companies || []).map(c => ({
+      name: c.name,
+      tenant_id: c.tenant_id,
+      status: c.status,
+    })),
+  });
+});
+
+<span class="cmt">// PAM pulls user list</span>
+router.get(<span class="str">'/users'</span>, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> apiKey = req.headers.authorization?.replace(<span class="str">'Bearer '</span>, <span class="str">''</span>);
+  <span class="kw">if</span> (apiKey !== process.env.ACCESS_MANAGER_API_KEY) {
+    <span class="kw">return</span> res.status(<span class="num">401</span>).json({ error: <span class="str">'Unauthorized'</span> });
+  }
+
+  <span class="cmt">// Fetch users with their roles and company tenant_ids</span>
+  <span class="cmt">// EXCLUDE crm_bridge users (they came FROM PAM, don't sync back)</span>
+  <span class="kw">const</span> { data: profiles } = <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'profiles'</span>)
+    .select(<span class="str">`
+      email, full_name,
+      user_roles (
+        role,
+        companies ( tenant_id )
+      )
+    `</span>)
+    .neq(<span class="str">'auth_source'</span>, <span class="str">'crm_bridge'</span>);
+
+  <span class="kw">const</span> users = (profiles || []).flatMap(p =>
+    (p.user_roles || [])
+      .filter(r => r.companies?.tenant_id)
+      .map(r => ({
+        email: p.email,
+        full_name: p.full_name,
+        role: r.role,
+        tenant_id: r.companies.tenant_id,
+      }))
+  );
+
+  <span class="kw">return</span> res.json({ users });
+});</pre>
+
+    <h3>Push Sync Helper</h3>
+    <p>Called after user create/update/delete in TalkScore Hub admin panel:</p>
+<pre><span class="cmt">// src/auth/pam-sync.ts</span>
+
+<span class="kw">const</span> PAM_URL = <span class="str">'https://product-access-manager.vercel.app/api/v1'</span>;
+
+<span class="kw">export async function</span> <span class="fn">syncUserToPAM</span>(
+  action: <span class="str">'register'</span> | <span class="str">'delete'</span>,
+  userData: { email: string; full_name?: string; role?: string; tenant_id: string }
+) {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> response = <span class="kw">await</span> fetch(<span class="str">`${PAM_URL}/users/register`</span>, {
+      method: action === <span class="str">'delete'</span> ? <span class="str">'DELETE'</span> : <span class="str">'POST'</span>,
+      headers: {
+        <span class="str">'Authorization'</span>: <span class="str">`Bearer ${process.env.ACCESS_MANAGER_API_KEY}`</span>,
+        <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span>,
+      },
+      body: JSON.stringify(userData),
+    });
+
+    <span class="kw">if</span> (!response.ok) {
+      console.error(<span class="str">`PAM sync failed (${response.status}):`</span>, <span class="kw">await</span> response.text());
+    }
+  } <span class="kw">catch</span> (err) {
+    <span class="cmt">// Fire-and-forget: PAM is secondary, don't block product operations</span>
+    console.error(<span class="str">'PAM sync error:'</span>, err.message);
+  }
+}</pre>
+
+    <div class="callout callout-amber">
+      <strong>Fire-and-forget:</strong> PAM sync NEVER blocks TalkScore Hub operations. If PAM is down, log the error and move on. The user's local account still works. PAM can catch up via the pull-based <code>/api/access-manager/users</code> endpoint.
+    </div>
+  </section>
+
+  <!-- ========================================== -->
+  <!-- 8. ERROR HANDLING                           -->
+  <!-- ========================================== -->
+  <section class="section" id="error-handling">
+    <h2>8. Error Handling & Recovery</h2>
+
+    <h3>Webhook Errors</h3>
+    <table>
+      <tr><th>Error</th><th>Response</th><th>Recovery</th></tr>
+      <tr>
+        <td>Invalid webhook secret</td>
+        <td>401</td>
+        <td>Check <code>WEBHOOK_SECRET</code> matches between Talkpush and TalkScore Hub</td>
+      </tr>
+      <tr>
+        <td>Unknown company (no <code>tenant_id</code> match)</td>
+        <td>422</td>
+        <td>Register the company in TalkScore Hub's <code>companies</code> table</td>
+      </tr>
+      <tr>
+        <td>Database insert failure</td>
+        <td>500</td>
+        <td>Talkpush should retry the webhook. Check Supabase connectivity</td>
+      </tr>
+      <tr>
+        <td>Missing required fields</td>
+        <td>400</td>
+        <td>Validate payload; log full body for debugging</td>
+      </tr>
+    </table>
+
+    <h3>Enrichment Errors</h3>
+    <table>
+      <tr><th>Error</th><th>BullMQ Behavior</th><th>Recovery</th></tr>
+      <tr>
+        <td>Talkpush API timeout</td>
+        <td>Retry after 5s, 10s, 20s (exponential)</td>
+        <td>Auto-recovery; if all 3 fail, call status &rarr; <code>error</code></td>
+      </tr>
+      <tr>
+        <td>Talkpush API 404 (candidate not found)</td>
+        <td>No retry (permanent failure)</td>
+        <td>Skip enrichment, proceed to analysis with available data</td>
+      </tr>
+      <tr>
+        <td>Talkpush API 429 (rate limited)</td>
+        <td>Retry with longer backoff</td>
+        <td>Reduce concurrency or add delay between requests</td>
+      </tr>
+    </table>
+
+    <h3>Analysis Errors</h3>
+    <table>
+      <tr><th>Error</th><th>BullMQ Behavior</th><th>Recovery</th></tr>
+      <tr>
+        <td>OpenRouter timeout</td>
+        <td>Retry after 10s, 20s, 40s</td>
+        <td>Third attempt uses fallback model</td>
+      </tr>
+      <tr>
+        <td>OpenRouter 429 (rate limited)</td>
+        <td>Queue rate limiter prevents this</td>
+        <td>If occurs, reduce <code>limiter.max</code></td>
+      </tr>
+      <tr>
+        <td>Invalid JSON in AI response</td>
+        <td>Retry (AI may produce valid JSON next time)</td>
+        <td>If persistent, switch model. Log <code>raw_ai_response</code> for debugging</td>
+      </tr>
+      <tr>
+        <td>All 3 attempts fail</td>
+        <td>Job moves to failed queue</td>
+        <td>Call status &rarr; <code>error</code> with message. Admin can reprocess via <code>/api/admin/reprocess/:callId</code></td>
+      </tr>
+    </table>
+
+    <h3>Error Status Handler</h3>
+<pre><span class="cmt">// On any worker failure after all retries exhausted</span>
+enrichmentWorker.on(<span class="str">'failed'</span>, <span class="kw">async</span> (job, err) => {
+  <span class="kw">if</span> (job) {
+    <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'calls'</span>)
+      .update({
+        status: <span class="str">'error'</span>,
+        error_message: <span class="str">`Enrichment failed: ${err.message}`</span>,
+        updated_at: <span class="kw">new</span> Date().toISOString(),
+      })
+      .eq(<span class="str">'id'</span>, job.data.callId);
+  }
+});
+
+analysisWorker.on(<span class="str">'failed'</span>, <span class="kw">async</span> (job, err) => {
+  <span class="kw">if</span> (job) {
+    <span class="kw">await</span> supabaseAdmin
+      .from(<span class="str">'calls'</span>)
+      .update({
+        status: <span class="str">'error'</span>,
+        error_message: <span class="str">`Analysis failed: ${err.message}`</span>,
+        updated_at: <span class="kw">new</span> Date().toISOString(),
+      })
+      .eq(<span class="str">'id'</span>, job.data.callId);
+  }
+});</pre>
+
+    <h3>Admin Reprocess Endpoint</h3>
+<pre><span class="cmt">// Re-run analysis for a specific call</span>
+router.post(<span class="str">'/reprocess/:callId'</span>, requireAdmin, <span class="kw">async</span> (req, res) => {
+  <span class="kw">const</span> { callId } = req.params;
+
+  <span class="cmt">// Reset status</span>
+  <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'calls'</span>)
+    .update({ status: <span class="str">'enriched'</span>, error_message: <span class="kw">null</span> })
+    .eq(<span class="str">'id'</span>, callId);
+
+  <span class="cmt">// Delete old analysis if exists</span>
+  <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'analyses'</span>)
+    .delete()
+    .eq(<span class="str">'call_id'</span>, callId);
+
+  <span class="cmt">// Re-enqueue</span>
+  <span class="kw">const</span> { data: call } = <span class="kw">await</span> supabaseAdmin
+    .from(<span class="str">'calls'</span>)
+    .select(<span class="str">'company_id'</span>)
+    .eq(<span class="str">'id'</span>, callId)
+    .single();
+
+  <span class="kw">await</span> analysisQueue.add(<span class="str">'analyze'</span>, {
+    callId,
+    companyId: call.company_id,
+  });
+
+  res.json({ reprocessing: <span class="kw">true</span>, call_id: callId });
+});</pre>
+
+    <h3>Monitoring & Observability</h3>
+    <table>
+      <tr><th>What to Monitor</th><th>How</th><th>Alert Threshold</th></tr>
+      <tr>
+        <td>Queue depth (pending jobs)</td>
+        <td><code>/api/admin/queue-status</code></td>
+        <td>Alert if &gt; 500 pending (processing falling behind)</td>
+      </tr>
+      <tr>
+        <td>Failed jobs count</td>
+        <td>BullMQ failed event handler</td>
+        <td>Alert if &gt; 50 failed in 1 hour</td>
+      </tr>
+      <tr>
+        <td>End-to-end latency</td>
+        <td><code>calls.updated_at - calls.created_at</code></td>
+        <td>Alert if avg &gt; 60 seconds</td>
+      </tr>
+      <tr>
+        <td>Error rate</td>
+        <td><code>SELECT count(*) FROM calls WHERE status = 'error'</code></td>
+        <td>Alert if &gt; 5% of daily calls</td>
+      </tr>
+      <tr>
+        <td>OpenRouter spend</td>
+        <td>Sum <code>analyses.prompt_tokens + completion_tokens</code></td>
+        <td>Alert if daily cost exceeds budget</td>
+      </tr>
+    </table>
+  </section>
+
+</div>
+
+<div class="footer">
+  TalkScore Hub &mdash; Implementation Specification v1.0 &mdash; March 2026 &mdash; Talkpush
+</div>
+
+</body>
+</html>

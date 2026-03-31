@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TalkScore Hub - Complete Requirements List</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap');
+
+    :root {
+      --sage: #B8D4C8;
+      --sage-dark: #8FB8A8;
+      --sage-light: #E8F2ED;
+      --lavender: #C5CAE9;
+      --lavender-light: #E8EAF6;
+      --pink: #F0B8D0;
+      --pink-light: #FAE4EE;
+      --amber: #F0A830;
+      --amber-light: #FFF3DB;
+      --cream: #FAF8F5;
+      --near-black: #1A1A1A;
+      --text-secondary: #555;
+      --border: #E8E4DF;
+      --header-bg: #F5F2ED;
+      --code-bg: #2D2D2D;
+      --code-text: #E0E0E0;
+      --soft-red: #E57373;
+      --soft-red-light: #FFEBEE;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--near-black);
+      line-height: 1.6;
+      padding: 0;
+    }
+
+    /* Header */
+    .header {
+      background: var(--near-black);
+      color: white;
+      padding: 48px 64px;
+    }
+    .header-gradient {
+      height: 4px;
+      background: linear-gradient(90deg, var(--amber), var(--pink), var(--lavender), var(--sage));
+    }
+    .header h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
+    .header .subtitle { font-size: 16px; color: #aaa; }
+    .header .meta { margin-top: 16px; font-size: 13px; color: #888; }
+    .header .meta span { margin-right: 24px; }
+
+    /* Nav */
+    .nav {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 64px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav a {
+      color: var(--near-black);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      margin-right: 24px;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .nav a:hover { border-bottom-color: var(--sage); }
+
+    /* Content */
+    .content { max-width: 1020px; margin: 0 auto; padding: 48px 32px; }
+
+    /* Sections */
+    .section {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 40px;
+      margin-bottom: 32px;
+    }
+    .section h2 {
+      font-size: 24px; font-weight: 700; margin-bottom: 24px;
+      padding-bottom: 12px; border-bottom: 2px solid var(--sage);
+    }
+    .section h3 { font-size: 18px; font-weight: 600; margin: 28px 0 12px; }
+    .section h4 { font-size: 15px; font-weight: 600; margin: 20px 0 8px; }
+    .section p { margin-bottom: 12px; color: var(--text-secondary); font-size: 15px; }
+    .section ul, .section ol {
+      margin: 8px 0 16px 24px; color: var(--text-secondary); font-size: 15px;
+    }
+    .section li { margin-bottom: 6px; }
+
+    /* Code */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+    }
+    p code, li code, td code {
+      background: #f0eeeb; padding: 2px 6px; border-radius: 3px; font-size: 13px;
+    }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px; }
+    th {
+      background: var(--header-bg); text-align: left; padding: 10px 14px;
+      font-weight: 600; font-size: 13px; border-bottom: 2px solid var(--border);
+    }
+    td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:hover td { background: var(--cream); }
+
+    /* Badges */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-sage { background: #e8f5e9; color: #2e7d32; }
+    .badge-lavender { background: #e8eaf6; color: #3949ab; }
+    .badge-pink { background: #fce4ec; color: #c62828; }
+    .badge-amber { background: #fff8e1; color: #f57f17; }
+    .badge-red { background: var(--soft-red-light); color: #C62828; }
+
+    /* Callouts */
+    .callout { padding: 16px 20px; border-radius: 6px; margin: 16px 0; font-size: 14px; }
+    .callout-sage { background: #e8f5e9; border-left: 4px solid var(--sage); }
+    .callout-amber { background: #fff8e1; border-left: 4px solid var(--amber); }
+    .callout-lavender { background: #e8eaf6; border-left: 4px solid var(--lavender); }
+    .callout-pink { background: #fce4ec; border-left: 4px solid var(--pink); }
+
+    /* Requirement items */
+    .req {
+      padding: 12px 16px;
+      border-left: 3px solid var(--border);
+      margin: 8px 0;
+      background: var(--cream);
+      border-radius: 0 6px 6px 0;
+      font-size: 14px;
+      color: var(--near-black);
+    }
+    .req strong { font-weight: 600; }
+    .req.must { border-left-color: var(--sage); }
+    .req.should { border-left-color: var(--lavender); }
+    .req.could { border-left-color: var(--amber); }
+
+    .req-id {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #888;
+      margin-right: 8px;
+    }
+
+    /* Priority legend */
+    .priority-legend {
+      display: flex;
+      gap: 24px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .priority-legend .item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .priority-legend .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding: 32px;
+      font-size: 13px;
+      color: #999;
+    }
+
+    /* TOC numbering */
+    .toc {
+      columns: 2;
+      column-gap: 32px;
+      list-style: none;
+      margin: 16px 0;
+      padding: 0;
+    }
+    .toc li {
+      padding: 4px 0;
+      font-size: 14px;
+      break-inside: avoid;
+    }
+    .toc a {
+      color: var(--near-black);
+      text-decoration: none;
+    }
+    .toc a:hover { color: var(--sage-dark); }
+    .toc .section-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #888;
+      margin-right: 8px;
+    }
+
+    /* Summary stats */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin: 24px 0;
+    }
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-card .number {
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-card .label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+<div class="header-gradient"></div>
+<div class="header">
+  <h1>TalkScore Hub &mdash; Requirements Document</h1>
+  <div class="subtitle">Complete, detailed requirements list covering every system component</div>
+  <div class="meta">
+    <span>Version 1.0</span>
+    <span>March 2026</span>
+    <span>Talkpush &mdash; New Products &amp; Ventures</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <a href="index">Overview</a>
+  <a href="architecture">Architecture</a>
+  <a href="implementation-spec">Implementation</a>
+  <a href="scoring-calibration">Scoring Calibration</a>
+  <a href="requirements" style="border-bottom-color: var(--sage);">Requirements</a>
+</nav>
+
+<div class="content">
+
+  <!-- Summary -->
+  <section class="section" id="summary">
+    <h2>Summary</h2>
+    <p>This document captures every requirement for TalkScore Hub &mdash; a real-time metrics and reporting dashboard for TalkScore assessment calls. The system receives call data via webhook from Talkpush, enriches it through the Talkpush API, runs dual parallel AI analyses via OpenRouter, stores results in Supabase, and presents them in a multi-tenant dashboard integrated with PAM (Product Access Manager).</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="number" style="color: var(--sage-dark);">16</div>
+        <div class="label">Requirement Areas</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color: var(--near-black);">160+</div>
+        <div class="label">Individual Requirements</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color: var(--amber);">~3K</div>
+        <div class="label">Calls / Day</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" style="color: #3949ab;">8</div>
+        <div class="label">Database Tables</div>
+      </div>
+    </div>
+
+    <div class="priority-legend">
+      <div class="item"><div class="dot" style="background: var(--sage);"></div> <strong>MUST</strong> &mdash; Required for launch</div>
+      <div class="item"><div class="dot" style="background: var(--lavender);"></div> <strong>SHOULD</strong> &mdash; Expected but deferrable</div>
+      <div class="item"><div class="dot" style="background: var(--amber);"></div> <strong>COULD</strong> &mdash; Nice to have</div>
+    </div>
+  </section>
+
+  <!-- Table of Contents -->
+  <section class="section" id="toc-section">
+    <h2>Table of Contents</h2>
+    <ul class="toc">
+      <li><span class="section-num">1</span> <a href="#infra">Infrastructure &amp; Environment Setup</a></li>
+      <li><span class="section-num">2</span> <a href="#database">Database Schema &amp; Supabase Setup</a></li>
+      <li><span class="section-num">3</span> <a href="#webhook">Webhook Processing</a></li>
+      <li><span class="section-num">4</span> <a href="#enrichment">Data Enrichment Pipeline</a></li>
+      <li><span class="section-num">5</span> <a href="#ai-talkscore">AI Analysis &mdash; TalkScore + Sentiment + Stages + Candidate Questions</a></li>
+      <li><span class="section-num">6</span> <a href="#ai-quality">AI Analysis &mdash; Agent Quality Flags</a></li>
+      <li><span class="section-num">7</span> <a href="#skills">Dynamic Skill Evaluations</a></li>
+      <li><span class="section-num">8</span> <a href="#job-queue">Job Queue &amp; Async Processing</a></li>
+      <li><span class="section-num">9</span> <a href="#auth">Authentication &amp; PAM Integration</a></li>
+      <li><span class="section-num">10</span> <a href="#multi-tenancy">Multi-Tenancy &amp; Row Level Security</a></li>
+      <li><span class="section-num">11</span> <a href="#dashboard">Dashboard &amp; Real-Time UI</a></li>
+      <li><span class="section-num">12</span> <a href="#calibration">Scoring Calibration Audit</a></li>
+      <li><span class="section-num">13</span> <a href="#prompt-editor">Skills Prompt Editor</a></li>
+      <li><span class="section-num">14</span> <a href="#user-feedback">User Feedback on Scores</a></li>
+      <li><span class="section-num">15</span> <a href="#feedback-analyzer">AI Feedback Analyzer (Daily)</a></li>
+      <li><span class="section-num">16</span> <a href="#error-handling">Error Handling, Monitoring &amp; Admin</a></li>
+    </ul>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 1. INFRASTRUCTURE -->
+  <!-- ================================================================ -->
+  <section class="section" id="infra">
+    <h2>1. Infrastructure &amp; Environment Setup</h2>
+
+    <h3>1.1 Hosting &amp; Runtime</h3>
+    <div class="req must"><span class="req-id">INF-01</span> <strong>Replit Core (paid, always-on)</strong> &mdash; The application must run on Replit Core to ensure 24/7 availability. No sleep/hibernation cycles.</div>
+    <div class="req must"><span class="req-id">INF-02</span> <strong>Node.js + Express</strong> &mdash; Backend runtime must be Node.js with Express as the HTTP framework, consistent with the Talkpush tech stack.</div>
+    <div class="req must"><span class="req-id">INF-03</span> <strong>TypeScript</strong> &mdash; All server and client code must be written in TypeScript for type safety.</div>
+
+    <h3>1.2 External Services</h3>
+    <div class="req must"><span class="req-id">INF-04</span> <strong>Supabase Project</strong> &mdash; Create a Supabase project for PostgreSQL, Auth, RLS, and Realtime subscriptions.</div>
+    <div class="req must"><span class="req-id">INF-05</span> <strong>Upstash Redis</strong> &mdash; Provision an Upstash Redis instance for BullMQ job queue persistence. Requires TLS and <code>maxRetriesPerRequest: null</code>.</div>
+    <div class="req must"><span class="req-id">INF-06</span> <strong>OpenRouter Account</strong> &mdash; Active OpenRouter account with API key for AI analysis. Must support model switching between Claude Sonnet and GPT-4o fallback.</div>
+
+    <h3>1.3 Environment Variables</h3>
+    <p>All of the following must be configured in the Replit environment:</p>
+    <table>
+      <tr><th>Variable</th><th>Purpose</th><th>Source</th></tr>
+      <tr><td><code>ACCESS_MANAGER_API_KEY</code></td><td>PAM product API key for CRM Bridge SSO and user sync</td><td>PAM admin</td></tr>
+      <tr><td><code>SUPABASE_URL</code></td><td>Supabase project URL</td><td>Supabase dashboard</td></tr>
+      <tr><td><code>SUPABASE_ANON_KEY</code></td><td>Supabase public/anon key (frontend)</td><td>Supabase dashboard</td></tr>
+      <tr><td><code>SUPABASE_SERVICE_ROLE_KEY</code></td><td>Supabase service role key (backend, bypasses RLS)</td><td>Supabase dashboard</td></tr>
+      <tr><td><code>OPENROUTER_API_KEY</code></td><td>OpenRouter API key for AI analysis</td><td>OpenRouter dashboard</td></tr>
+      <tr><td><code>UPSTASH_REDIS_URL</code></td><td>Redis connection string for BullMQ</td><td>Upstash dashboard</td></tr>
+      <tr><td><code>UPSTASH_REDIS_TOKEN</code></td><td>Redis auth token</td><td>Upstash dashboard</td></tr>
+      <tr><td><code>TALKPUSH_API_BASE_URL</code></td><td>Talkpush API base URL for enrichment</td><td>Talkpush engineering</td></tr>
+      <tr><td><code>TALKPUSH_API_KEY</code></td><td>Talkpush API key for enrichment calls</td><td>Talkpush engineering</td></tr>
+      <tr><td><code>WEBHOOK_SECRET</code></td><td>Shared secret for webhook authentication</td><td>Agreed with Talkpush engineering</td></tr>
+    </table>
+
+    <div class="req must"><span class="req-id">INF-07</span> <strong>All 10 environment variables</strong> must be configured before the system can operate. Missing any one should log a clear startup error.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 2. DATABASE -->
+  <!-- ================================================================ -->
+  <section class="section" id="database">
+    <h2>2. Database Schema &amp; Supabase Setup</h2>
+
+    <h3>2.1 Tables</h3>
+    <p>Six tables must be created in Supabase PostgreSQL:</p>
+
+    <h4>2.1.1 <code>companies</code> (PAM Standard)</h4>
+    <div class="req must"><span class="req-id">DB-01</span> Fields: <code>id</code> (UUID PK), <code>name</code> (TEXT NOT NULL), <code>tenant_id</code> (TEXT UNIQUE), <code>status</code> (TEXT, default 'active'), <code>api_key</code> (TEXT &mdash; Talkpush API key for enrichment), <code>settings</code> (JSONB, default '{}'), <code>created_at</code>, <code>updated_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-02</span> Index on <code>tenant_id</code> (partial, WHERE tenant_id IS NOT NULL) for webhook company resolution.</div>
+
+    <h4>2.1.2 <code>profiles</code> (PAM Standard)</h4>
+    <div class="req must"><span class="req-id">DB-03</span> Fields: <code>id</code> (UUID PK, REFERENCES auth.users ON DELETE CASCADE), <code>email</code> (TEXT UNIQUE NOT NULL), <code>full_name</code> (TEXT NOT NULL), <code>auth_source</code> (TEXT, default 'direct' &mdash; values: 'direct', 'google_sso', 'crm_bridge'), <code>created_at</code>, <code>updated_at</code>.</div>
+
+    <h4>2.1.3 <code>user_roles</code> (PAM Standard)</h4>
+    <div class="req must"><span class="req-id">DB-04</span> Fields: <code>id</code> (UUID PK), <code>user_id</code> (UUID FK &rarr; profiles), <code>client_id</code> (UUID FK &rarr; companies ON DELETE CASCADE), <code>role</code> (TEXT, default 'user' &mdash; values: 'admin', 'manager', 'user'), <code>created_at</code>. UNIQUE constraint on (user_id, client_id).</div>
+
+    <h4>2.1.4 <code>assessments</code> (Skill Configuration per Campaign)</h4>
+    <div class="req must"><span class="req-id">DB-05</span> Fields: <code>id</code> (UUID PK), <code>company_id</code> (UUID FK &rarr; companies NOT NULL), <code>talkpush_campaign_id</code> (TEXT NOT NULL), <code>name</code> (TEXT NOT NULL), <code>description</code> (TEXT), <code>skills</code> (JSONB NOT NULL, default '[]'), <code>is_active</code> (BOOLEAN default TRUE), <code>created_at</code>, <code>updated_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-06</span> Unique index on <code>(company_id, talkpush_campaign_id)</code> to prevent duplicate assessment configs per campaign per tenant.</div>
+    <div class="req must"><span class="req-id">DB-07</span> Skills JSONB array structure: each entry must have <code>skill_id</code> (TEXT), <code>name</code> (TEXT), <code>description</code> (TEXT), <code>scoring_criteria</code> (TEXT), <code>max_score</code> (INTEGER).</div>
+
+    <h4>2.1.5 <code>calls</code> (TalkScore-Specific)</h4>
+    <div class="req must"><span class="req-id">DB-08</span> Webhook fields: <code>id</code> (UUID PK), <code>company_id</code> (UUID FK NOT NULL), <code>talkpush_candidate_id</code> (TEXT NOT NULL), <code>talkpush_application_id</code> (TEXT NOT NULL), <code>transcript</code> (TEXT), <code>recording_url</code> (TEXT).</div>
+    <div class="req must"><span class="req-id">DB-09</span> Enrichment fields: <code>candidate_name</code>, <code>candidate_phone</code>, <code>campaign_name</code>, <code>talkpush_campaign_id</code> (TEXT), <code>assessment_id</code> (UUID FK &rarr; assessments), <code>agent_name</code>, <code>call_duration_seconds</code> (INTEGER), <code>call_date</code> (TIMESTAMPTZ).</div>
+    <div class="req must"><span class="req-id">DB-10</span> Processing fields: <code>status</code> (TEXT, default 'raw' &mdash; values: 'raw', 'enriched', 'analyzed', 'error'), <code>error_message</code> (TEXT), <code>raw_webhook_payload</code> (JSONB), <code>enrichment_data</code> (JSONB), <code>created_at</code>, <code>updated_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-11</span> Indexes: <code>(company_id, call_date DESC)</code>, <code>(status)</code>, <code>(talkpush_application_id)</code>.</div>
+
+    <h4>2.1.6 <code>analyses</code> (TalkScore-Specific)</h4>
+    <div class="req must"><span class="req-id">DB-12</span> Core fields: <code>id</code> (UUID PK), <code>call_id</code> (UUID FK &rarr; calls ON DELETE CASCADE), <code>company_id</code> (UUID FK &rarr; companies NOT NULL).</div>
+    <div class="req must"><span class="req-id">DB-13</span> <strong>TalkScore fields:</strong> <code>talkscore_overall</code> (NUMERIC 3,1 &mdash; 0.0-10.0), <code>talkscore_breakdown</code> (JSONB &mdash; pronunciation, fluency, grammar, vocabulary, coherence), <code>communication_issues</code> (JSONB), <code>candidate_issues</code> (JSONB), <code>agent_issues</code> (JSONB).</div>
+    <div class="req must"><span class="req-id">DB-14</span> <strong>Sentiment fields:</strong> <code>sentiment_overall</code> (TEXT &mdash; positive/neutral/negative), <code>sentiment_score</code> (NUMERIC 4,2 &mdash; -1.00 to 1.00), <code>sentiment_breakdown</code> (JSONB &mdash; per-segment).</div>
+    <div class="req must"><span class="req-id">DB-15</span> <strong>Call Stage/Dropoff fields:</strong> <code>last_stage_reached</code> (TEXT), <code>total_questions_asked</code> (INTEGER), <code>total_questions_expected</code> (INTEGER), <code>call_completed</code> (BOOLEAN), <code>dropout_reason</code> (TEXT &mdash; candidate_hangup, silence_timeout, error, completed, unknown), <code>stages</code> (JSONB &mdash; array of stage objects with reached, timestamp, duration_seconds).</div>
+    <div class="req must"><span class="req-id">DB-16</span> <strong>Candidate Questions fields:</strong> <code>candidate_questions</code> (JSONB &mdash; array of {question, timestamp, context, stage}), <code>candidate_question_count</code> (INTEGER, default 0).</div>
+    <div class="req must"><span class="req-id">DB-17</span> <strong>Skill Evaluation fields:</strong> <code>skill_evaluations</code> (JSONB &mdash; array of {skill_id, name, score, max_score, description, reasoning}), <code>skill_summary</code> (TEXT), <code>skill_average_score</code> (NUMERIC 4,2 &mdash; normalized 0-10 average).</div>
+    <div class="req must"><span class="req-id">DB-18</span> <strong>Agent Quality fields:</strong> <code>quality_flags</code> (JSONB &mdash; array of {flag_id, category, timestamp, evidence, explanation}), <code>quality_flag_count</code> (INTEGER, default 0), <code>quality_summary</code> (TEXT), <code>has_critical_flags</code> (BOOLEAN, default FALSE).</div>
+    <div class="req must"><span class="req-id">DB-19</span> <strong>AI metadata fields:</strong> <code>talkscore_model</code>, <code>talkscore_tokens</code>, <code>talkscore_duration_ms</code>, <code>quality_model</code>, <code>quality_tokens</code>, <code>quality_duration_ms</code>, <code>raw_talkscore_response</code> (JSONB), <code>raw_quality_response</code> (JSONB), <code>created_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-20</span> Indexes: <code>(company_id, created_at DESC)</code>, <code>(company_id, talkscore_overall)</code>, <code>(company_id, has_critical_flags) WHERE TRUE</code>, <code>(company_id, call_completed, last_stage_reached)</code>.</div>
+
+    <h4>2.1.7 <code>calibration_reports</code> (Scoring Analysis)</h4>
+    <div class="req must"><span class="req-id">DB-21</span> Fields: <code>id</code> (UUID PK), <code>company_id</code> (UUID FK NOT NULL), <code>assessment_id</code> (UUID FK, nullable &mdash; null = all assessments), <code>date_from</code> (TIMESTAMPTZ NOT NULL), <code>date_to</code> (TIMESTAMPTZ NOT NULL), <code>sample_size</code> (INTEGER NOT NULL).</div>
+    <div class="req must"><span class="req-id">DB-22</span> Stats fields: <code>overall_mean</code>, <code>overall_std_dev</code>, <code>overall_min</code>, <code>overall_max</code>, <code>overall_range_pct</code>, <code>overall_kurtosis</code> (NUMERIC 6,3), <code>overall_skewness</code> (NUMERIC 6,3), <code>differentiation_gap</code> (all NUMERIC 4,2).</div>
+    <div class="req must"><span class="req-id">DB-23</span> <code>health_status</code> (TEXT NOT NULL &mdash; 'healthy', 'warning', 'compressed').</div>
+    <div class="req must"><span class="req-id">DB-24</span> Distribution fields: <code>distribution_bins</code> (JSONB), <code>target_distribution</code> (JSONB).</div>
+    <div class="req must"><span class="req-id">DB-25</span> Analysis fields: <code>skill_calibrations</code> (JSONB &mdash; per-skill stats), <code>root_causes</code> (JSONB &mdash; AI-generated), <code>recommendations</code> (JSONB &mdash; AI-generated), <code>ai_model_used</code> (TEXT), <code>ai_tokens</code> (INTEGER), <code>created_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-26</span> Indexes: <code>(company_id, created_at DESC)</code>, <code>(assessment_id, created_at DESC)</code>.</div>
+
+    <h4>2.1.8 <code>score_feedback</code> (User Feedback on AI Scores)</h4>
+    <div class="req must"><span class="req-id">DB-30</span> Fields: <code>id</code> (UUID PK), <code>analysis_id</code> (UUID FK &rarr; analyses NOT NULL), <code>company_id</code> (UUID FK &rarr; companies NOT NULL), <code>user_id</code> (UUID FK &rarr; profiles NOT NULL), <code>feedback_type</code> (TEXT &mdash; 'score_override', 'comment', 'answer_comment'), <code>target_field</code> (TEXT NOT NULL), <code>original_value</code> (JSONB), <code>corrected_value</code> (JSONB), <code>comment</code> (TEXT), <code>status</code> (TEXT, default 'pending' &mdash; 'pending', 'accepted', 'rejected', 'noted'), <code>created_at</code>, <code>updated_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-31</span> Indexes: <code>(analysis_id, created_at DESC)</code>, <code>(company_id, created_at DESC)</code>, <code>(target_field, company_id)</code>.</div>
+
+    <h4>2.1.9 <code>feedback_summaries</code> (Daily AI Analysis of Feedback)</h4>
+    <div class="req must"><span class="req-id">DB-32</span> Fields: <code>id</code> (UUID PK), <code>company_id</code> (UUID FK NOT NULL), <code>assessment_id</code> (UUID FK, nullable), <code>date_from</code> (TIMESTAMPTZ NOT NULL), <code>date_to</code> (TIMESTAMPTZ NOT NULL), <code>total_feedback_count</code> (INTEGER), <code>score_overrides_count</code> (INTEGER), <code>most_corrected_fields</code> (JSONB), <code>skill_disagreement_rates</code> (JSONB), <code>ai_recommendations</code> (JSONB &mdash; array of recommendations, each containing <code>cited_feedback</code> array with feedback IDs, user names, comment excerpts, and score deltas), <code>executive_summary</code> (TEXT), <code>feedback_health</code> (TEXT &mdash; 'healthy', 'moderate', 'critical'), <code>ai_model_used</code> (TEXT), <code>ai_tokens</code> (INTEGER), <code>created_at</code>.</div>
+    <div class="req must"><span class="req-id">DB-33</span> Indexes: <code>(company_id, created_at DESC)</code>, <code>(assessment_id, created_at DESC)</code>.</div>
+    <div class="req must"><span class="req-id">DB-34</span> RLS on both <code>score_feedback</code> and <code>feedback_summaries</code>: same company_id-based policy as other tables.</div>
+
+    <h3>2.2 Supabase Configuration</h3>
+    <div class="req must"><span class="req-id">DB-27</span> <strong>Enable Realtime</strong> on <code>calls</code> and <code>analyses</code> tables via Supabase Dashboard &rarr; Database &rarr; Replication.</div>
+    <div class="req must"><span class="req-id">DB-28</span> <strong>Enable Row Level Security</strong> on all 8 tables: <code>companies</code>, <code>profiles</code>, <code>user_roles</code>, <code>assessments</code>, <code>calls</code>, <code>analyses</code>, <code>calibration_reports</code>, <code>score_feedback</code>, <code>feedback_summaries</code>.</div>
+    <div class="req must"><span class="req-id">DB-29</span> <strong>Supabase Auth</strong> must be enabled and configured to support both email/password (direct) and admin-created users (CRM Bridge).</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 3. WEBHOOK PROCESSING -->
+  <!-- ================================================================ -->
+  <section class="section" id="webhook">
+    <h2>3. Webhook Processing</h2>
+
+    <h3>3.1 Endpoint</h3>
+    <div class="req must"><span class="req-id">WH-01</span> <strong>POST <code>/api/webhooks/call-complete</code></strong> &mdash; Single endpoint that receives call completion events from Talkpush CRM.</div>
+
+    <h3>3.2 Authentication</h3>
+    <div class="req must"><span class="req-id">WH-02</span> Verify <code>X-Webhook-Secret</code> header against <code>WEBHOOK_SECRET</code> environment variable. Return 401 if invalid.</div>
+
+    <h3>3.3 Expected Payload</h3>
+    <div class="req must"><span class="req-id">WH-03</span> Accept JSON body with fields: <code>company</code> (string, maps to companies.tenant_id), <code>candidate_id</code> (string), <code>application_id</code> (string), <code>transcript</code> (string), <code>recording_url</code> (string).</div>
+    <div class="req must"><span class="req-id">WH-04</span> Validate required fields (<code>company</code>, <code>candidate_id</code>, <code>application_id</code>, <code>transcript</code>). Return 400 with specific error if any missing.</div>
+
+    <h3>3.4 Handler Logic (Sequential)</h3>
+    <div class="req must"><span class="req-id">WH-05</span> <strong>Step 1 &mdash; Resolve company:</strong> Look up <code>companies</code> table by <code>tenant_id = payload.company</code>. Return 422 with <code>{"error": "Unknown company: {name}"}</code> if no match.</div>
+    <div class="req must"><span class="req-id">WH-06</span> <strong>Step 2 &mdash; Store raw call:</strong> Insert into <code>calls</code> table with <code>status = 'raw'</code> and full payload stored in <code>raw_webhook_payload</code> JSONB field.</div>
+    <div class="req must"><span class="req-id">WH-07</span> <strong>Step 3 &mdash; Enqueue enrichment job:</strong> Add job to BullMQ <code>enrichment</code> queue with <code>{callId, companyId}</code>. Configure with 3 attempts, exponential backoff starting at 5 seconds.</div>
+    <div class="req must"><span class="req-id">WH-08</span> <strong>Step 4 &mdash; Respond 200:</strong> Return <code>{"received": true, "call_id": "{uuid}"}</code>. Total handler time target: &lt;500ms.</div>
+
+    <h3>3.5 Performance</h3>
+    <div class="req must"><span class="req-id">WH-09</span> The webhook handler must NEVER wait for enrichment or AI analysis to complete. It must respond immediately after storing the raw call and enqueuing the job.</div>
+    <div class="req must"><span class="req-id">WH-10</span> Must handle ~2 calls/minute (125/hr, ~3,000/day) without queuing or timing out.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 4. DATA ENRICHMENT -->
+  <!-- ================================================================ -->
+  <section class="section" id="enrichment">
+    <h2>4. Data Enrichment Pipeline</h2>
+
+    <h3>4.1 Talkpush API Calls</h3>
+    <div class="req must"><span class="req-id">EN-01</span> <strong>Fetch candidate details:</strong> <code>GET /candidates/{candidate_id}</code> &rarr; extract <code>name</code>, <code>phone</code>.</div>
+    <div class="req must"><span class="req-id">EN-02</span> <strong>Fetch application details:</strong> <code>GET /applications/{application_id}</code> &rarr; extract <code>campaign_name</code>, <code>campaign_id</code>, <code>agent_name</code>, <code>call_duration</code>, <code>call_date</code>.</div>
+    <div class="req must"><span class="req-id">EN-03</span> Both API calls must run in parallel via <code>Promise.all</code>.</div>
+    <div class="req must"><span class="req-id">EN-04</span> Use per-company <code>api_key</code> from <code>companies</code> table for Talkpush API authentication (not a global key).</div>
+
+    <h3>4.2 Assessment Resolution</h3>
+    <div class="req must"><span class="req-id">EN-05</span> After enrichment, resolve <code>assessment_id</code> by looking up <code>assessments</code> table where <code>company_id</code> and <code>talkpush_campaign_id</code> match, and <code>is_active = true</code>.</div>
+    <div class="req must"><span class="req-id">EN-06</span> If an assessment match is found, update <code>calls.assessment_id</code> with the resolved UUID.</div>
+    <div class="req must"><span class="req-id">EN-07</span> If no assessment is configured for the campaign, <code>assessment_id</code> remains null &mdash; skill evaluations will be skipped during AI analysis.</div>
+
+    <h3>4.3 Data Storage</h3>
+    <div class="req must"><span class="req-id">EN-08</span> Update the <code>calls</code> record with all enriched fields: <code>candidate_name</code>, <code>candidate_phone</code>, <code>campaign_name</code>, <code>talkpush_campaign_id</code>, <code>agent_name</code>, <code>call_duration_seconds</code>, <code>call_date</code>.</div>
+    <div class="req must"><span class="req-id">EN-09</span> Store full enrichment API responses in <code>enrichment_data</code> JSONB for debugging.</div>
+    <div class="req must"><span class="req-id">EN-10</span> Update call status from <code>'raw'</code> to <code>'enriched'</code>.</div>
+
+    <h3>4.4 Chaining</h3>
+    <div class="req must"><span class="req-id">EN-11</span> After successful enrichment, enqueue an AI analysis job to the <code>analysis</code> queue with <code>{callId, companyId, assessmentId}</code>. Configure with 3 attempts, exponential backoff starting at 10 seconds.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 5. AI ANALYSIS — TALKSCORE -->
+  <!-- ================================================================ -->
+  <section class="section" id="ai-talkscore">
+    <h2>5. AI Analysis &mdash; TalkScore + Sentiment + Stages + Candidate Questions</h2>
+
+    <p>The first of two parallel AI analyses. A single prompt extracts four dimensions from the transcript.</p>
+
+    <h3>5.1 OpenRouter Configuration</h3>
+    <div class="req must"><span class="req-id">AI-01</span> Base URL: <code>https://openrouter.ai/api/v1</code></div>
+    <div class="req must"><span class="req-id">AI-02</span> Default model: <code>anthropic/claude-sonnet-4-20250514</code> (Claude Sonnet)</div>
+    <div class="req must"><span class="req-id">AI-03</span> Fallback model: <code>openai/gpt-4o</code> (used on 3rd retry attempt)</div>
+    <div class="req must"><span class="req-id">AI-04</span> <code>maxTokens: 3000</code> (increased from 2000 to accommodate skill evaluations)</div>
+    <div class="req must"><span class="req-id">AI-05</span> <code>temperature: 0.1</code> for consistent, reproducible scoring</div>
+
+    <h3>5.2 Dimension 1 &mdash; TalkScore (Language Proficiency)</h3>
+    <div class="req must"><span class="req-id">AI-06</span> Score candidates on overall communication quality: <code>talkscore_overall</code> (0.0&ndash;10.0, one decimal).</div>
+    <div class="req must"><span class="req-id">AI-07</span> Produce per-dimension breakdown scores: <code>pronunciation</code>, <code>fluency</code>, <code>grammar</code>, <code>vocabulary</code>, <code>coherence</code> (each 0.0&ndash;10.0).</div>
+    <div class="req must"><span class="req-id">AI-08</span> The overall score must be <strong>holistic, not a simple average</strong> of sub-dimensions. Use IELTS-style band calibration: 9.0-10.0 Expert, 7.0-8.9 Very Good, 5.0-6.9 Competent, 3.0-4.9 Limited, 0.0-2.9 Extremely Limited.</div>
+    <div class="req must"><span class="req-id">AI-09</span> Detect and list <strong>candidate issues</strong> (from candidate side): type (fluency/pronunciation/grammar/vocabulary/coherence), severity (low/medium/high), detail, and quoted example from transcript.</div>
+    <div class="req must"><span class="req-id">AI-10</span> Detect and list <strong>agent issues</strong> (from agent/AI side): type (clarity/tone/listening/flow/handling), severity, detail, and example.</div>
+    <div class="req must"><span class="req-id">AI-11</span> Detect and list <strong>communication issues</strong> (bilateral breakdowns): type (misunderstanding/overlap/silence/confusion/technical), severity, detail, and example.</div>
+
+    <h3>5.3 Dimension 2 &mdash; Sentiment Analysis</h3>
+    <div class="req must"><span class="req-id">AI-12</span> Produce overall sentiment: <code>sentiment_overall</code> (positive/neutral/negative) and <code>sentiment_score</code> (-1.00 to 1.00).</div>
+    <div class="req must"><span class="req-id">AI-13</span> Produce per-segment sentiment breakdown: array of {speaker, segment description, sentiment, score} for key conversation moments.</div>
+    <div class="req must"><span class="req-id">AI-14</span> Sentiment ranges: Positive (0.25 to 1.00), Neutral (-0.24 to 0.24), Negative (-1.00 to -0.25).</div>
+
+    <h3>5.4 Dimension 3 &mdash; Call Stage / Dropoff Analysis</h3>
+    <div class="req must"><span class="req-id">AI-15</span> Map the interview into stages: <code>introduction</code>, <code>question_1</code> through <code>question_N</code>, <code>closing</code>, <code>finished</code>.</div>
+    <div class="req must"><span class="req-id">AI-16</span> For each stage, output: <code>stage</code> name, <code>reached</code> (boolean), <code>timestamp</code> (MM:SS), <code>duration_seconds</code>.</div>
+    <div class="req must"><span class="req-id">AI-17</span> Determine <code>last_stage_reached</code>, <code>total_questions_asked</code>, <code>total_questions_expected</code> (inferred from context, or null), <code>call_completed</code> (true only if reached "finished").</div>
+    <div class="req must"><span class="req-id">AI-18</span> Identify <code>dropout_reason</code> if call didn't complete: <code>candidate_hangup</code>, <code>silence_timeout</code>, <code>error</code>, <code>completed</code>, or <code>unknown</code>.</div>
+
+    <h3>5.5 Dimension 4 &mdash; Candidate Questions</h3>
+    <div class="req must"><span class="req-id">AI-19</span> Extract every question the <strong>candidate</strong> asks the agent (not the agent's interview questions).</div>
+    <div class="req must"><span class="req-id">AI-20</span> For each candidate question, capture: exact question text, timestamp (MM:SS), context (what prompted it), and interview stage where it occurred.</div>
+    <div class="req must"><span class="req-id">AI-21</span> Store as <code>candidate_questions</code> JSONB array, and set <code>candidate_question_count</code>.</div>
+
+    <h3>5.6 Response Format</h3>
+    <div class="req must"><span class="req-id">AI-22</span> The AI must respond in <strong>valid JSON only</strong>. No markdown, no explanation outside JSON.</div>
+    <div class="req must"><span class="req-id">AI-23</span> The AI response must include a 2-3 sentence <code>summary</code> field covering call quality and key findings.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 6. AI ANALYSIS — AGENT QUALITY -->
+  <!-- ================================================================ -->
+  <section class="section" id="ai-quality">
+    <h2>6. AI Analysis &mdash; Agent Quality Flags</h2>
+
+    <p>The second of two parallel AI analyses. Detects quality issues in the AI interviewer agent's behavior.</p>
+
+    <div class="req must"><span class="req-id">AQ-01</span> Detect <strong>33 flag types</strong> across three categories: agent failures, bias/fairness violations, and candidate behavior signals.</div>
+    <div class="req must"><span class="req-id">AQ-02</span> For each flag detected, output: <code>flag_id</code>, <code>category</code>, <code>timestamp</code> in transcript, <code>evidence</code> (exact quote), <code>explanation</code>.</div>
+    <div class="req must"><span class="req-id">AQ-03</span> Produce <code>quality_summary</code>: 2-3 sentence quality assessment of agent performance.</div>
+    <div class="req must"><span class="req-id">AQ-04</span> Set <code>has_critical_flags = true</code> if any critical flags are detected (e.g., agent_loop, hallucination, bias).</div>
+    <div class="req must"><span class="req-id">AQ-05</span> Respond in valid JSON only. No markdown.</div>
+
+    <h3>6.1 Parallel Execution</h3>
+    <div class="req must"><span class="req-id">AQ-06</span> TalkScore prompt (Section 5) and Agent Quality prompt MUST run as <strong>parallel <code>Promise.all</code> calls</strong> to OpenRouter. Wall-clock time = max(call_1, call_2), NOT sum.</div>
+    <div class="req must"><span class="req-id">AQ-07</span> Both analyses must complete successfully before the call status is updated from <code>'enriched'</code> to <code>'analyzed'</code>.</div>
+    <div class="req must"><span class="req-id">AQ-08</span> If one analysis fails but the other succeeds, the entire call should be retried (not partial).</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 7. DYNAMIC SKILL EVALUATIONS -->
+  <!-- ================================================================ -->
+  <section class="section" id="skills">
+    <h2>7. Dynamic Skill Evaluations</h2>
+
+    <h3>7.1 Assessment Configuration</h3>
+    <div class="req must"><span class="req-id">SK-01</span> Each assessment can be configured with a custom set of skills to evaluate (via <code>assessments.skills</code> JSONB).</div>
+    <div class="req must"><span class="req-id">SK-02</span> Skills are dynamic &mdash; different assessments for different campaigns can evaluate completely different skills.</div>
+    <div class="req must"><span class="req-id">SK-03</span> Each skill must have: <code>skill_id</code> (unique within assessment), <code>name</code>, <code>description</code>, <code>scoring_criteria</code>, <code>max_score</code> (integer).</div>
+
+    <h3>7.2 Dynamic Prompt Injection</h3>
+    <div class="req must"><span class="req-id">SK-04</span> <code>buildSkillsPromptSection(skills)</code> function must dynamically generate a prompt section listing all skills to evaluate, their descriptions, scoring criteria, and max scores.</div>
+    <div class="req must"><span class="req-id">SK-05</span> If no assessment is configured for a call (<code>assessmentId = null</code>), no skills section is appended to the prompt, and all skill fields in the analysis are null.</div>
+    <div class="req must"><span class="req-id">SK-06</span> The skills prompt section must request: per-skill score (0 to max_score), description of performance, and reasoning with evidence from transcript.</div>
+
+    <h3>7.3 Skill Score Storage</h3>
+    <div class="req must"><span class="req-id">SK-07</span> Store AI skill results in <code>analyses.skill_evaluations</code> JSONB: array of {skill_id, name, score, max_score, description, reasoning}.</div>
+    <div class="req must"><span class="req-id">SK-08</span> Compute <code>skill_average_score</code> server-side: normalize each skill score to 0-10 scale (<code>(score / max_score) * 10</code>), then average across all skills. Round to 2 decimal places.</div>
+    <div class="req must"><span class="req-id">SK-09</span> Store <code>skill_summary</code>: overall 2-3 sentence assessment of candidate's skill performance (from AI).</div>
+
+    <h3>7.4 Assessment Management API</h3>
+    <div class="req must"><span class="req-id">SK-10</span> <code>GET /api/assessments</code> &mdash; List assessments for tenant (RLS-filtered).</div>
+    <div class="req must"><span class="req-id">SK-11</span> <code>GET /api/assessments/:id</code> &mdash; Assessment detail with full skills config.</div>
+    <div class="req must"><span class="req-id">SK-12</span> <code>POST /api/assessments</code> &mdash; Create assessment (admin/manager only). Required: <code>talkpush_campaign_id</code>, <code>name</code>, <code>skills</code> array.</div>
+    <div class="req must"><span class="req-id">SK-13</span> <code>PUT /api/assessments/:id</code> &mdash; Update assessment skills config (admin/manager only).</div>
+    <div class="req must"><span class="req-id">SK-14</span> <code>GET /api/metrics/skills</code> &mdash; Skill score averages across calls, filterable by assessment.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 8. JOB QUEUE -->
+  <!-- ================================================================ -->
+  <section class="section" id="job-queue">
+    <h2>8. Job Queue &amp; Async Processing</h2>
+
+    <h3>8.1 Queue Architecture</h3>
+    <div class="req must"><span class="req-id">JQ-01</span> Two BullMQ queues, chained sequentially: <code>enrichment</code> &rarr; <code>analysis</code>.</div>
+    <div class="req must"><span class="req-id">JQ-02</span> Redis backend: Upstash Redis with TLS enabled and <code>maxRetriesPerRequest: null</code> (required for BullMQ).</div>
+
+    <h3>8.2 Enrichment Queue Configuration</h3>
+    <table>
+      <tr><th>Parameter</th><th>Value</th></tr>
+      <tr><td>Concurrency</td><td>5 parallel workers</td></tr>
+      <tr><td>Rate Limit</td><td>None (Talkpush API is internal)</td></tr>
+      <tr><td>Retry attempts</td><td>3</td></tr>
+      <tr><td>Backoff</td><td>Exponential, 5s base (5s, 10s, 20s)</td></tr>
+      <tr><td>Completed job retention</td><td>Last 1,000</td></tr>
+      <tr><td>Failed job retention</td><td>Last 5,000</td></tr>
+    </table>
+
+    <h3>8.3 Analysis Queue Configuration</h3>
+    <table>
+      <tr><th>Parameter</th><th>Value</th></tr>
+      <tr><td>Concurrency</td><td>3 parallel workers</td></tr>
+      <tr><td>Rate Limit</td><td>30 jobs/minute</td></tr>
+      <tr><td>Retry attempts</td><td>3</td></tr>
+      <tr><td>Backoff</td><td>Exponential, 10s base (10s, 20s, 40s)</td></tr>
+      <tr><td>Completed job retention</td><td>Last 1,000</td></tr>
+      <tr><td>Failed job retention</td><td>Last 5,000</td></tr>
+    </table>
+
+    <h3>8.4 Model Fallback on Retry</h3>
+    <div class="req must"><span class="req-id">JQ-03</span> On the 3rd (final) retry attempt, switch from the default model (Claude Sonnet) to the fallback model (GPT-4o).</div>
+
+    <h3>8.5 Throughput Requirements</h3>
+    <div class="req must"><span class="req-id">JQ-04</span> Must handle ~2 calls/minute peak incoming rate without accumulating backlog.</div>
+    <div class="req must"><span class="req-id">JQ-05</span> Enrichment throughput: 5 concurrent &times; ~2s each = ~150/min capacity.</div>
+    <div class="req must"><span class="req-id">JQ-06</span> Analysis throughput: 30/min rate-limited &mdash; sufficient for peak with margin.</div>
+    <div class="req must"><span class="req-id">JQ-07</span> End-to-end latency target: webhook received to analyzed status in ~15-30 seconds typical.</div>
+    <div class="req must"><span class="req-id">JQ-08</span> Daily Redis commands must stay within Upstash free tier (~9,000 commands = 3K calls &times; 3 queue ops). If volume exceeds 10K calls/day, upgrade to Pay-as-you-go.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 9. AUTHENTICATION & PAM -->
+  <!-- ================================================================ -->
+  <section class="section" id="auth">
+    <h2>9. Authentication &amp; PAM Integration</h2>
+
+    <h3>9.1 PAM Registration</h3>
+    <div class="req must"><span class="req-id">AU-01</span> Register TalkScore Hub as a product in PAM with slug: <code>talkscore-hub</code>.</div>
+    <div class="req must"><span class="req-id">AU-02</span> Obtain a product API key from PAM admin and store as <code>ACCESS_MANAGER_API_KEY</code>.</div>
+    <div class="req must"><span class="req-id">AU-03</span> Set the Login URL in PAM to <code>https://[replit-url]/auth/crm-bridge</code>.</div>
+    <div class="req must"><span class="req-id">AU-04</span> Link initial client companies to the product in PAM UI.</div>
+
+    <h3>9.2 CRM Bridge SSO Login</h3>
+    <div class="req must"><span class="req-id">AU-05</span> <code>GET /auth/crm-bridge?token=xxx</code> &mdash; SSO entry point from Talkpush CRM.</div>
+    <div class="req must"><span class="req-id">AU-06</span> <strong>Login flow:</strong> User clicks "TalkScore Hub" in CRM &rarr; CRM generates single-use token (60s TTL) via PAM &rarr; CRM redirects to TalkScore Hub &rarr; TalkScore Hub validates token with PAM <code>POST /api/v1/auth/validate</code> &rarr; creates/updates local profile + session &rarr; redirects to dashboard.</div>
+    <div class="req must"><span class="req-id">AU-07</span> Handle expired tokens: if PAM returns 410, show user-friendly "Login link expired. Please try again from the CRM." message.</div>
+    <div class="req must"><span class="req-id">AU-08</span> On successful validation, resolve or auto-create the <code>companies</code> record from PAM data (using <code>tenant_id</code>).</div>
+    <div class="req must"><span class="req-id">AU-09</span> Create or find the Supabase Auth user via admin API. Do not require normal signup flow for CRM Bridge users.</div>
+    <div class="req must"><span class="req-id">AU-10</span> Upsert <code>profiles</code> record with <code>auth_source = 'crm_bridge'</code>.</div>
+    <div class="req must"><span class="req-id">AU-11</span> Upsert <code>user_roles</code> record with the role from PAM (admin/manager/user) for the resolved company.</div>
+    <div class="req must"><span class="req-id">AU-12</span> Generate Supabase session (magic link) and set session cookie (<code>sb-access-token</code>, httpOnly, secure, sameSite: lax, 24h expiry).</div>
+
+    <h3>9.3 PAM Sync Endpoints (Pull)</h3>
+    <div class="req must"><span class="req-id">AU-13</span> <code>GET /api/access-manager/clients</code> &mdash; Returns all companies with <code>name</code>, <code>tenant_id</code>, <code>status</code>. Authenticated via <code>ACCESS_MANAGER_API_KEY</code> Bearer token.</div>
+    <div class="req must"><span class="req-id">AU-14</span> <code>GET /api/access-manager/users</code> &mdash; Returns users with <code>email</code>, <code>full_name</code>, <code>role</code>, <code>tenant_id</code>. MUST exclude <code>auth_source = 'crm_bridge'</code> users to prevent sync loops.</div>
+
+    <h3>9.4 PAM Push Sync</h3>
+    <div class="req must"><span class="req-id">AU-15</span> When a user is created/updated/deleted in TalkScore Hub's admin panel, push changes to PAM via <code>POST /api/v1/users/register</code> (or DELETE).</div>
+    <div class="req must"><span class="req-id">AU-16</span> PAM sync is <strong>fire-and-forget</strong>: never block TalkScore Hub operations. If PAM is down, log the error and continue. PAM can catch up via pull endpoints.</div>
+    <div class="req must"><span class="req-id">AU-17</span> Users with <code>auth_source = 'crm_bridge'</code> must NEVER be synced back to PAM (prevents infinite loop).</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 10. MULTI-TENANCY -->
+  <!-- ================================================================ -->
+  <section class="section" id="multi-tenancy">
+    <h2>10. Multi-Tenancy &amp; Row Level Security</h2>
+
+    <div class="req must"><span class="req-id">MT-01</span> All data access must be tenant-isolated. A user can only see data for companies they have a role in (via <code>user_roles</code> junction table).</div>
+    <div class="req must"><span class="req-id">MT-02</span> RLS policies on <code>calls</code>, <code>analyses</code>, <code>companies</code>, <code>assessments</code>, <code>calibration_reports</code>: <code>USING (company_id IN (SELECT client_id FROM user_roles WHERE user_id = auth.uid()))</code>.</div>
+    <div class="req must"><span class="req-id">MT-03</span> Supabase Realtime must respect RLS &mdash; each tenant only receives events for their own company's data.</div>
+    <div class="req must"><span class="req-id">MT-04</span> The webhook handler and background workers use <code>supabaseAdmin</code> (service role key, bypasses RLS) since they process data for all tenants.</div>
+    <div class="req must"><span class="req-id">MT-05</span> Dashboard API endpoints use Supabase JWT (respects RLS) &mdash; no additional tenant filtering needed in code.</div>
+    <div class="req must"><span class="req-id">MT-06</span> Foreign keys use <code>company_id</code> (UUID), not <code>tenant_id</code> (string). The <code>tenant_id</code> is only used for PAM sync and webhook company matching.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 11. DASHBOARD & REAL-TIME UI -->
+  <!-- ================================================================ -->
+  <section class="section" id="dashboard">
+    <h2>11. Dashboard &amp; Real-Time UI</h2>
+
+    <h3>11.1 Frontend Stack</h3>
+    <div class="req must"><span class="req-id">UI-01</span> React frontend with Tailwind CSS, following the Talkpush Visual Language (Sage, Lavender, Pink, Amber palette, warm cream backgrounds, DM Sans font).</div>
+    <div class="req must"><span class="req-id">UI-02</span> Supabase client library for auth state management and Realtime subscriptions.</div>
+
+    <h3>11.2 Pages</h3>
+    <div class="req must"><span class="req-id">UI-03</span> <strong>Dashboard</strong> (<code>Dashboard.tsx</code>) &mdash; Overview metrics: average TalkScore, call volume, sentiment distribution, trends over time, quality flag counts.</div>
+    <div class="req must"><span class="req-id">UI-04</span> <strong>Call List</strong> (<code>CallList.tsx</code>) &mdash; Paginated list of all calls with status badges, TalkScore, sentiment, candidate name, campaign, date. Filterable by status, date range, campaign.</div>
+    <div class="req must"><span class="req-id">UI-05</span> <strong>Call Detail</strong> (<code>CallDetail.tsx</code>) &mdash; Full analysis view for a single call: TalkScore breakdown, sentiment chart, issues list, quality flags, call stage timeline, candidate questions, skill evaluations, transcript access, recording playback link.</div>
+    <div class="req must"><span class="req-id">UI-06</span> <strong>Reports</strong> (<code>Reports.tsx</code>) &mdash; Daily summary reports, per-agent performance breakdown.</div>
+    <div class="req should"><span class="req-id">UI-07</span> <strong>Assessment Management</strong> &mdash; UI for creating/editing assessments and configuring skills per campaign (admin/manager only).</div>
+    <div class="req must"><span class="req-id">UI-08</span> <strong>Scoring Calibration Audit</strong> &mdash; Full calibration view (see Section 12).</div>
+
+    <h3>11.3 Real-Time Updates</h3>
+    <div class="req must"><span class="req-id">UI-09</span> <code>useRealtimeCalls(companyId)</code> hook: subscribe to <code>calls</code> table changes filtered by company_id. Listen for INSERT and UPDATE events.</div>
+    <div class="req must"><span class="req-id">UI-10</span> <code>useRealtimeAnalyses(companyId)</code> hook: subscribe to <code>analyses</code> table INSERT events filtered by company_id.</div>
+
+    <div class="callout callout-sage">
+      <strong>Real-time behavior by event:</strong>
+    </div>
+    <table>
+      <tr><th>Event</th><th>Dashboard Behavior</th></tr>
+      <tr><td>New call inserted (status: raw)</td><td>Call appears in list with "Processing" badge</td></tr>
+      <tr><td>Call updated to <code>enriched</code></td><td>Candidate name, campaign, agent info populates</td></tr>
+      <tr><td>Call updated to <code>analyzed</code></td><td>"Processing" badge changes to TalkScore badge with score</td></tr>
+      <tr><td>New analysis inserted</td><td>Dashboard metrics (avg score, sentiment chart) update live</td></tr>
+      <tr><td>Call status becomes <code>error</code></td><td>Error badge appears with retry option</td></tr>
+    </table>
+
+    <h3>11.4 Dashboard API Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr><td><code>GET</code></td><td><code>/api/calls</code></td><td>Supabase JWT</td><td>List calls (paginated, RLS-filtered)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/calls/:id</code></td><td>Supabase JWT</td><td>Call detail with analysis</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/metrics/overview</code></td><td>Supabase JWT</td><td>Aggregate metrics (avg score, volume, trends)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/metrics/issues</code></td><td>Supabase JWT</td><td>Top communication issues</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/metrics/sentiment</code></td><td>Supabase JWT</td><td>Sentiment distribution</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/reports/daily</code></td><td>Supabase JWT</td><td>Daily summary report</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/reports/agent-performance</code></td><td>Supabase JWT</td><td>Per-agent breakdown</td></tr>
+    </table>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 12. SCORING CALIBRATION -->
+  <!-- ================================================================ -->
+  <section class="section" id="calibration">
+    <h2>12. Scoring Calibration Audit</h2>
+
+    <h3>12.1 Purpose</h3>
+    <div class="req must"><span class="req-id">SC-01</span> Detect <strong>score compression</strong> &mdash; when AI scores cluster in a narrow range, making it impossible to distinguish strong from weak candidates.</div>
+
+    <h3>12.2 Scope &amp; Filters</h3>
+    <div class="req must"><span class="req-id">SC-02</span> <strong>Date range filter:</strong> last 7 days, 14 days, 30 days, or custom range.</div>
+    <div class="req must"><span class="req-id">SC-03</span> <strong>Assessment filter:</strong> specific assessment or all assessments under the tenant.</div>
+    <div class="req must"><span class="req-id">SC-04</span> <strong>Skill filter:</strong> overall assessment score or drill into a specific skill.</div>
+    <div class="req must"><span class="req-id">SC-05</span> <strong>Minimum sample size:</strong> require at least 20 analyzed calls to generate a calibration report. Show clear message if insufficient data.</div>
+
+    <h3>12.3 Core Metrics</h3>
+    <table>
+      <tr><th>Metric</th><th>Healthy Target</th><th>Red Flag</th></tr>
+      <tr><td><strong>Standard Deviation</strong> &mdash; How spread out scores are</td><td>&gt; 1.5 (on 0-10 scale)</td><td>&lt; 0.8 &mdash; compressed</td></tr>
+      <tr><td><strong>Score Range Used</strong> &mdash; % of 0-10 scale used</td><td>&gt; 60% (6+ point spread)</td><td>&lt; 30% &mdash; narrow band</td></tr>
+      <tr><td><strong>Differentiation Power</strong> &mdash; Top 20% avg minus bottom 20% avg</td><td>&gt; 2 points gap</td><td>&lt; 1 point &mdash; can't distinguish</td></tr>
+      <tr><td><strong>Distribution Shape</strong> &mdash; Bell curve or lopsided</td><td>Roughly normal</td><td>Extreme clustering</td></tr>
+      <tr><td><strong>Kurtosis</strong> &mdash; Peaked or flat</td><td>Near 3 (normal, excess ~0)</td><td>&gt; 6 &mdash; hyper-concentrated</td></tr>
+    </table>
+    <div class="req must"><span class="req-id">SC-06</span> All metrics must be computed both for <code>talkscore_overall</code> and for each configured skill individually.</div>
+
+    <h3>12.4 Target SD by Scale</h3>
+    <div class="req must"><span class="req-id">SC-07</span> Auto-adjust target SD based on the scoring scale: 0-5 scale &rarr; target &gt;0.9, threshold &lt;0.5. 0-10 scale &rarr; target &gt;1.5, threshold &lt;0.8. 1-5 IELTS-style &rarr; target &gt;0.7, threshold &lt;0.4.</div>
+
+    <h3>12.5 Health Status Classification</h3>
+    <div class="req must"><span class="req-id">SC-08</span> <code>healthy</code>: SD &ge; target SD. <code>warning</code>: SD &ge; compression threshold but &lt; target. <code>compressed</code>: SD &lt; compression threshold.</div>
+
+    <h3>12.6 Computation Engine</h3>
+    <div class="req must"><span class="req-id">SC-09</span> <strong>Step 1 &mdash; Gather Scores:</strong> Query <code>analyses</code> + <code>calls</code> (inner join) filtered by company_id, date range, and optional assessment_id. Extract <code>talkscore_overall</code> and <code>skill_evaluations</code>.</div>
+    <div class="req must"><span class="req-id">SC-10</span> <strong>Step 2 &mdash; Compute Statistics:</strong> For the overall scores array, compute: mean, standard deviation (sample variance n-1), min, max, range %, excess kurtosis, skewness, differentiation gap (top 20% avg &minus; bottom 20% avg), health status, histogram bins (one per integer unit).</div>
+    <div class="req must"><span class="req-id">SC-11</span> <strong>Step 3 &mdash; Per-Skill Analysis:</strong> For each skill in the assessment, extract that skill's scores across all analyses, compute same stats as Step 2, including <code>variance_ratio</code> (actual_sd / target_sd), <code>sample_scores</code> (last 10 for visual dots).</div>
+    <div class="req must"><span class="req-id">SC-12</span> If a skill has &lt;20 data points, mark it as <code>insufficient_data: true</code> instead of computing stats.</div>
+    <div class="req must"><span class="req-id">SC-13</span> <strong>Step 4 &mdash; AI Root Cause Analysis:</strong> Triggered when health is <code>warning</code> or <code>compressed</code>, or any skill is <code>compressed</code>, or <code>differentiation_gap &lt; 1.0</code>.</div>
+
+    <h3>12.7 AI Root Cause Analysis</h3>
+    <div class="req must"><span class="req-id">SC-14</span> Send calibration statistics (NOT transcripts) to OpenRouter for root cause diagnosis. Include: overall stats, per-skill breakdown with scoring criteria, and sample scores.</div>
+    <div class="req must"><span class="req-id">SC-15</span> AI must identify root causes categorized as: <code>rubric</code> (vague criteria), <code>question_design</code> (wrong question types), <code>ai_behavior</code> (center-defaulting), <code>scale_design</code> (wrong granularity). Each cause includes: title, description, impact level (high/medium/low), affected skills.</div>
+    <div class="req must"><span class="req-id">SC-16</span> AI must generate fix recommendations with: title, description, <code>before</code> (current problematic rubric/question), <code>after</code> (improved version), <code>expected_impact</code> (variance lift estimate), priority number.</div>
+    <div class="req must"><span class="req-id">SC-17</span> AI root cause analysis only runs when compression is detected (&lt;5% of reports). Cost target: ~$0.02 per report (~2K tokens on Claude Sonnet).</div>
+
+    <h3>12.8 Calibration API Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Purpose</th></tr>
+      <tr><td><code>POST</code></td><td><code>/api/calibration/generate</code></td><td>Generate a new calibration report (body: date_from, date_to, assessment_id optional)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/calibration/latest</code></td><td>Latest calibration report for tenant (optional assessment_id query param)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/calibration/:id</code></td><td>Specific calibration report by ID</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/calibration/history</code></td><td>Past reports to track improvement over time</td></tr>
+    </table>
+
+    <h3>12.9 Calibration UI Components</h3>
+    <div class="req must"><span class="req-id">SC-18</span> <strong>Filters bar:</strong> Date range picker, assessment selector dropdown, skill filter dropdown, "Generate Report" sage CTA button.</div>
+    <div class="req must"><span class="req-id">SC-19</span> <strong>Alert banner</strong> (conditional): only shows when health_status is <code>warning</code> or <code>compressed</code>. Shows headline ("Score compression detected"), plain-English description, current SD vs. target.</div>
+    <div class="req must"><span class="req-id">SC-20</span> <strong>Stats row</strong> (4 cards): Calls Analyzed (sample_size), Avg Score (overall_mean, colored by health), Score Range Used (min-max with range_pct), Differentiation Power (Strong/Weak/None with gap value).</div>
+    <div class="req must"><span class="req-id">SC-21</span> <strong>Score Distribution</strong> (left column): Current histogram from <code>distribution_bins</code> vs. target healthy distribution. Summary text showing compression details.</div>
+    <div class="req must"><span class="req-id">SC-22</span> <strong>Recent Candidates</strong> (right column): "Spot the Difference" table showing last 10 candidates with per-skill scores and overall. Color-coded score pills (compressed=amber, ok=sage, low=red). Compression bracket annotation.</div>
+    <div class="req must"><span class="req-id">SC-23</span> <strong>Skill Variance Analysis</strong> (left column): Per-skill breakdown with name, variance badge (Flat/OK/Healthy), colored dot strip (last 10 scores), problem description.</div>
+    <div class="req must"><span class="req-id">SC-24</span> <strong>Root Causes</strong> (right column): AI-generated cause cards with icon (red=high, amber=med, pink=info), title, description, impact level.</div>
+    <div class="req must"><span class="req-id">SC-25</span> <strong>Recalibration Recommendations</strong> (full-width): 3-column grid of fix cards. Each card: fix number, title, description, before (red strikethrough) vs. after (green), expected impact badge.</div>
+    <div class="req must"><span class="req-id">SC-26</span> Health status visual mapping: <code>healthy</code> = Sage badge, <code>warning</code> = Amber badge + amber alert banner, <code>compressed</code> = Red badge + red alert banner.</div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 13. SKILLS PROMPT EDITOR -->
+  <!-- ================================================================ -->
+  <section class="section" id="prompt-editor">
+    <h2>13. Skills Prompt Editor</h2>
+
+    <p>A dedicated UI where admins and managers can configure and refine the skills evaluated for each assessment. This is the human-facing interface to the <code>assessments.skills</code> JSONB, providing a structured editing experience instead of raw JSON manipulation.</p>
+
+    <h3>13.1 Access &amp; Permissions</h3>
+    <div class="req must"><span class="req-id">PE-01</span> Only users with <code>admin</code> or <code>manager</code> role can access the Skills Prompt Editor.</div>
+    <div class="req must"><span class="req-id">PE-02</span> The editor is scoped to a single assessment &mdash; users select an assessment first, then edit its skills.</div>
+
+    <h3>13.2 Assessment Selection</h3>
+    <div class="req must"><span class="req-id">PE-03</span> Display a list of all assessments for the tenant with: name, linked Talkpush campaign ID, number of skills configured, active/inactive status, last updated date.</div>
+    <div class="req must"><span class="req-id">PE-04</span> Allow creating a new assessment: user provides <code>name</code>, <code>description</code>, and selects a <code>talkpush_campaign_id</code> (from a dropdown or text input).</div>
+    <div class="req must"><span class="req-id">PE-05</span> Allow toggling an assessment between active and inactive (<code>is_active</code> flag). Inactive assessments stop being used for new call analyses but historical data is preserved.</div>
+
+    <h3>13.3 Skill Configuration Editor</h3>
+    <div class="req must"><span class="req-id">PE-06</span> For each skill in the assessment, the editor must provide editable fields for: <code>skill_id</code> (auto-generated slug from name, or user-editable), <code>name</code>, <code>description</code>, <code>scoring_criteria</code> (multi-line text area), <code>max_score</code> (integer, default 10).</div>
+    <div class="req must"><span class="req-id">PE-07</span> Users can <strong>add new skills</strong> to an assessment, <strong>remove skills</strong>, and <strong>reorder skills</strong> (drag-and-drop or up/down buttons).</div>
+    <div class="req must"><span class="req-id">PE-08</span> The <code>scoring_criteria</code> field should be large enough for detailed rubric text (multi-line textarea, minimum 4 rows). This is the most critical field &mdash; it directly determines AI scoring quality.</div>
+    <div class="req should"><span class="req-id">PE-09</span> Provide example/template scoring criteria for common skill types (e.g., "Communication", "Problem Solving", "Customer Empathy") as quick-start templates users can customize.</div>
+
+    <h3>13.4 Prompt Preview</h3>
+    <div class="req must"><span class="req-id">PE-10</span> <strong>Live preview panel:</strong> Show a read-only preview of the actual AI prompt that will be generated from the current skill configuration (i.e., the output of <code>buildSkillsPromptSection(skills)</code>).</div>
+    <div class="req must"><span class="req-id">PE-11</span> The preview must update in real-time as the user edits skill names, descriptions, and scoring criteria.</div>
+    <div class="req should"><span class="req-id">PE-12</span> Highlight the skill section within the full TalkScore system prompt, so users understand how their configuration fits into the complete analysis.</div>
+
+    <h3>13.5 Validation &amp; Save</h3>
+    <div class="req must"><span class="req-id">PE-13</span> Validate before save: each skill must have a non-empty <code>name</code>, <code>scoring_criteria</code>, and a <code>max_score</code> &ge; 1. <code>skill_id</code> must be unique within the assessment.</div>
+    <div class="req must"><span class="req-id">PE-14</span> On save, update the <code>assessments.skills</code> JSONB and set <code>updated_at</code>. All future calls for this campaign will use the updated skills configuration.</div>
+    <div class="req must"><span class="req-id">PE-15</span> Warn users that changing skills on an active assessment will affect future analyses but NOT retroactively change existing analyses.</div>
+    <div class="req should"><span class="req-id">PE-16</span> Maintain a version history of skill configuration changes (store previous <code>skills</code> JSONB snapshots with timestamp and user who made the change).</div>
+
+    <h3>13.6 API Endpoints</h3>
+    <p>These extend the existing Assessment CRUD endpoints (Section 7):</p>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr><td><code>GET</code></td><td><code>/api/assessments/:id/prompt-preview</code></td><td>Supabase JWT (admin/manager)</td><td>Returns the generated prompt text for the current skills config</td></tr>
+      <tr><td><code>PUT</code></td><td><code>/api/assessments/:id/skills</code></td><td>Supabase JWT (admin/manager)</td><td>Update skills array only (partial update, validates schema)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/assessments/:id/history</code></td><td>Supabase JWT (admin/manager)</td><td>List skill configuration change history</td></tr>
+    </table>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 14. USER FEEDBACK ON SCORES -->
+  <!-- ================================================================ -->
+  <section class="section" id="user-feedback">
+    <h2>14. User Feedback on Scores</h2>
+
+    <p>Users (recruiters, hiring managers, quality auditors) can provide feedback on AI-generated scores and candidate answers directly within the call analysis report. This feedback loop enables score corrections and builds a dataset for continuous AI improvement.</p>
+
+    <h3>14.1 Data Model</h3>
+
+    <h4>14.1.1 <code>score_feedback</code> Table</h4>
+    <div class="req must"><span class="req-id">FB-01</span> New table <code>score_feedback</code> with fields: <code>id</code> (UUID PK), <code>analysis_id</code> (UUID FK &rarr; analyses NOT NULL), <code>company_id</code> (UUID FK &rarr; companies NOT NULL), <code>user_id</code> (UUID FK &rarr; profiles NOT NULL), <code>feedback_type</code> (TEXT &mdash; 'score_override', 'comment', 'answer_comment'), <code>target_field</code> (TEXT &mdash; identifies which score/answer is being commented on, e.g., 'talkscore_overall', 'skill:customer_empathy', 'sentiment_score', 'candidate_answer:question_3'), <code>original_value</code> (JSONB &mdash; the original AI-generated score or content), <code>corrected_value</code> (JSONB &mdash; user's proposed correction, null for comments-only), <code>comment</code> (TEXT &mdash; user's explanation for the correction or feedback), <code>status</code> (TEXT, default 'pending' &mdash; 'pending', 'accepted', 'rejected', 'noted'), <code>created_at</code>, <code>updated_at</code>.</div>
+    <div class="req must"><span class="req-id">FB-02</span> RLS on <code>score_feedback</code>: users can see feedback for companies they have a role in. Users can create feedback. Only admins/managers can change feedback <code>status</code>.</div>
+    <div class="req must"><span class="req-id">FB-03</span> Indexes: <code>(analysis_id, created_at DESC)</code>, <code>(company_id, created_at DESC)</code>, <code>(user_id)</code>, <code>(target_field, company_id)</code> for aggregation queries.</div>
+
+    <h4>14.1.2 <code>feedback_summaries</code> Table</h4>
+    <div class="req must"><span class="req-id">FB-04</span> New table <code>feedback_summaries</code> with fields: <code>id</code> (UUID PK), <code>company_id</code> (UUID FK NOT NULL), <code>assessment_id</code> (UUID FK, nullable &mdash; null = all assessments), <code>date_from</code> (TIMESTAMPTZ NOT NULL), <code>date_to</code> (TIMESTAMPTZ NOT NULL), <code>total_feedback_count</code> (INTEGER), <code>score_overrides_count</code> (INTEGER), <code>most_corrected_fields</code> (JSONB &mdash; [{field, override_count, avg_delta}]), <code>skill_disagreement_rates</code> (JSONB &mdash; [{skill_id, skill_name, feedback_count, avg_original, avg_corrected, avg_delta}]), <code>ai_recommendations</code> (JSONB &mdash; from daily AI analyzer), <code>ai_model_used</code> (TEXT), <code>created_at</code>.</div>
+    <div class="req must"><span class="req-id">FB-05</span> RLS on <code>feedback_summaries</code>: same pattern as other tables (company_id in user_roles).</div>
+
+    <h3>14.2 Feedback Types</h3>
+    <table>
+      <tr><th>Type</th><th><code>feedback_type</code></th><th>Description</th><th>Has <code>corrected_value</code>?</th></tr>
+      <tr>
+        <td><strong>Score Override</strong></td>
+        <td><code>score_override</code></td>
+        <td>User disagrees with a score and proposes a corrected value</td>
+        <td>Yes &mdash; the user's corrected score</td>
+      </tr>
+      <tr>
+        <td><strong>Score Comment</strong></td>
+        <td><code>comment</code></td>
+        <td>User comments on a score without proposing a correction (e.g., "this seems harsh given the context")</td>
+        <td>No</td>
+      </tr>
+      <tr>
+        <td><strong>Answer Comment</strong></td>
+        <td><code>answer_comment</code></td>
+        <td>User comments on a candidate's specific answer or the AI's assessment of that answer</td>
+        <td>Optional &mdash; may include corrected assessment</td>
+      </tr>
+    </table>
+
+    <h3>14.3 Targetable Fields</h3>
+    <div class="req must"><span class="req-id">FB-06</span> Users must be able to provide feedback on the following fields in an analysis:</div>
+    <table>
+      <tr><th><code>target_field</code> Format</th><th>What It Targets</th></tr>
+      <tr><td><code>talkscore_overall</code></td><td>The overall TalkScore (0-10)</td></tr>
+      <tr><td><code>talkscore:pronunciation</code></td><td>Pronunciation sub-score</td></tr>
+      <tr><td><code>talkscore:fluency</code></td><td>Fluency sub-score</td></tr>
+      <tr><td><code>talkscore:grammar</code></td><td>Grammar sub-score</td></tr>
+      <tr><td><code>talkscore:vocabulary</code></td><td>Vocabulary sub-score</td></tr>
+      <tr><td><code>talkscore:coherence</code></td><td>Coherence sub-score</td></tr>
+      <tr><td><code>sentiment_score</code></td><td>Overall sentiment score</td></tr>
+      <tr><td><code>skill:{skill_id}</code></td><td>A specific skill evaluation score (e.g., <code>skill:customer_empathy</code>)</td></tr>
+      <tr><td><code>answer:question_{N}</code></td><td>Candidate's answer to interview question N</td></tr>
+      <tr><td><code>quality_flag:{flag_id}</code></td><td>A specific quality flag (agree/disagree it should exist)</td></tr>
+    </table>
+
+    <h3>14.4 UI &mdash; Feedback on Call Detail Page</h3>
+    <div class="req must"><span class="req-id">FB-07</span> On the <strong>Call Detail</strong> page, each score (TalkScore overall, sub-scores, skill scores, sentiment) must have a <strong>feedback icon/button</strong> next to it.</div>
+    <div class="req must"><span class="req-id">FB-08</span> Clicking the feedback button opens an inline feedback form with: the original AI score displayed, an optional corrected score input (number within valid range), a comment text area (required for score overrides, optional for comments), and a submit button.</div>
+    <div class="req must"><span class="req-id">FB-09</span> Candidate answers in the analysis must also have a comment button, allowing users to annotate specific answers.</div>
+    <div class="req must"><span class="req-id">FB-10</span> Once feedback is submitted on a score, display a visual indicator (e.g., small icon or badge) showing that feedback exists for that score.</div>
+    <div class="req must"><span class="req-id">FB-11</span> Display both the original AI score and the user's corrected score side-by-side when a score override exists (e.g., "AI: 7.5 &rarr; User: 5.0").</div>
+    <div class="req should"><span class="req-id">FB-12</span> Show a feedback history panel: all feedback items for this analysis, who submitted them, when, and their status (pending/accepted/rejected/noted).</div>
+
+    <h3>14.5 Feedback Hub (Dedicated Page)</h3>
+    <p>A central, dedicated page where <strong>all users</strong> can browse, search, and review every piece of feedback across the tenant. This is the single source of truth for all human feedback on AI scoring.</p>
+
+    <div class="req must"><span class="req-id">FB-13</span> <strong>Feedback Hub page</strong> accessible from the main navigation to all authenticated users (not just admins).</div>
+    <div class="req must"><span class="req-id">FB-14</span> <strong>Feed view:</strong> Display all feedback items in reverse chronological order as a scrollable feed. Each feedback card shows:
+      <ul>
+        <li>User who submitted (name, avatar/initials)</li>
+        <li>Date and time submitted</li>
+        <li>Feedback type badge (Score Override, Comment, Answer Comment)</li>
+        <li>Target field label (e.g., "Customer Empathy", "TalkScore Overall", "Answer to Question 3")</li>
+        <li>The comment text</li>
+        <li>Original score &rarr; Corrected score (for overrides, shown side-by-side with delta)</li>
+        <li>Status badge (pending, accepted, rejected, noted)</li>
+        <li><strong>Link to the full call report</strong> &mdash; clickable candidate name and/or "View Report" button that navigates to the Call Detail page for that analysis</li>
+      </ul>
+    </div>
+    <div class="req must"><span class="req-id">FB-15</span> <strong>Filters and search:</strong> Filter feedback by:
+      <ul>
+        <li>Assessment (dropdown)</li>
+        <li>Date range</li>
+        <li>Feedback type (score override / comment / answer comment)</li>
+        <li>Target field / skill (dropdown with all targetable fields)</li>
+        <li>Status (pending / accepted / rejected / noted)</li>
+        <li>User who submitted</li>
+        <li>Free-text search on comment content</li>
+      </ul>
+    </div>
+    <div class="req must"><span class="req-id">FB-16</span> <strong>Report link on every feedback item:</strong> Each feedback card must display the candidate name, campaign, and call date, and link directly to the Call Detail page (<code>/calls/:callId</code>) so users can view the full analysis context that the feedback refers to.</div>
+    <div class="req must"><span class="req-id">FB-17</span> <strong>Inline report preview:</strong> Clicking on a feedback item expands it to show a summary of the related analysis &mdash; the relevant score section, candidate answer, or quality flag that was commented on &mdash; without navigating away from the Feedback Hub.</div>
+
+    <h3>14.6 Feedback Management (Admin/Manager)</h3>
+    <div class="req must"><span class="req-id">FB-18</span> Admins and managers can review pending feedback directly in the Feedback Hub and change status to <code>accepted</code>, <code>rejected</code>, or <code>noted</code> via inline action buttons.</div>
+    <div class="req should"><span class="req-id">FB-19</span> When a score override is <code>accepted</code>, the corrected value becomes the "effective score" for that analysis. The original AI score is preserved in <code>original_value</code>.</div>
+    <div class="req must"><span class="req-id">FB-20</span> <strong>Feedback stats summary bar</strong> at the top of the Feedback Hub: total feedback count, pending count, override rate, average delta, most-contested skill. Updates based on active filters.</div>
+
+    <h3>14.7 API Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr><td><code>POST</code></td><td><code>/api/feedback</code></td><td>Supabase JWT</td><td>Submit feedback on an analysis score or answer</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback</code></td><td>Supabase JWT</td><td>List all feedback for tenant (paginated, filterable by assessment, type, field, status, user, date range, free-text search)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback?analysis_id=xxx</code></td><td>Supabase JWT</td><td>Get all feedback for a specific analysis</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback/:id</code></td><td>Supabase JWT</td><td>Single feedback item with full related analysis context (for inline preview)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback/summary</code></td><td>Supabase JWT</td><td>Aggregated feedback stats for tenant (filterable by assessment, date range)</td></tr>
+      <tr><td><code>PATCH</code></td><td><code>/api/feedback/:id/status</code></td><td>Supabase JWT (admin/manager)</td><td>Update feedback status (accept/reject/note)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback/overrides</code></td><td>Supabase JWT</td><td>List all accepted score overrides (for effective score calculation)</td></tr>
+    </table>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 15. AI FEEDBACK ANALYZER (DAILY) -->
+  <!-- ================================================================ -->
+  <section class="section" id="feedback-analyzer">
+    <h2>15. AI Feedback Analyzer (Daily)</h2>
+
+    <p>A scheduled AI job that runs <strong>once per day</strong>, analyzes all accumulated user feedback across each tenant, identifies patterns in score disagreements, and proposes concrete improvements to assessment questions and evaluation criteria. This is the <strong>continuous improvement loop</strong> that makes the scoring system smarter over time.</p>
+
+    <h3>15.1 Scheduling</h3>
+    <div class="req must"><span class="req-id">FA-01</span> The feedback analyzer runs as a <strong>daily scheduled job</strong> (cron), not triggered per-call. Suggested schedule: once per day during low-traffic hours (e.g., 02:00 UTC).</div>
+    <div class="req must"><span class="req-id">FA-02</span> The job runs once per tenant that has new feedback since the last run. Skip tenants with no new feedback.</div>
+    <div class="req must"><span class="req-id">FA-03</span> Use BullMQ with a repeatable job (<code>repeat: { cron: '0 2 * * *' }</code>) or a lightweight cron library (e.g., <code>node-cron</code>).</div>
+
+    <h3>15.2 Data Collection</h3>
+    <div class="req must"><span class="req-id">FA-04</span> For each tenant, gather all <code>score_feedback</code> records from the last 30 days (rolling window), grouped by assessment.</div>
+    <div class="req must"><span class="req-id">FA-05</span> Compute aggregated statistics per assessment <strong>AND</strong> include the raw feedback items:
+      <ul>
+        <li><strong>Total feedback count</strong> and <strong>score override count</strong></li>
+        <li><strong>Most corrected fields</strong>: which scores get overridden most frequently (e.g., "skill:customer_empathy" overridden 38 times, avg delta -1.8)</li>
+        <li><strong>Per-skill disagreement rate</strong>: for each skill, the average AI score vs. average user-corrected score, and the magnitude of disagreement</li>
+        <li><strong>Direction bias</strong>: is the AI consistently scoring too high or too low for each field?</li>
+        <li><strong>Comment themes</strong>: extract common phrases/themes from feedback comments</li>
+        <li><strong>Individual feedback items</strong>: include each <code>score_feedback</code> record with its <code>id</code>, <code>feedback_type</code>, <code>target_field</code>, <code>original_value</code>, <code>new_value</code>, <code>comment</code>, <code>user_id</code> (resolved to display name), and <code>created_at</code>. This allows the AI to cite specific feedback in its recommendations.</li>
+      </ul>
+    </div>
+    <div class="req must"><span class="req-id">FA-06</span> Also fetch the assessment's current skill configuration (<code>assessments.skills</code> &mdash; names, descriptions, scoring criteria) to give the AI full context.</div>
+
+    <h3>15.3 AI Analysis</h3>
+    <div class="req must"><span class="req-id">FA-07</span> Send to OpenRouter: aggregated statistics + the <strong>individual feedback items</strong> (with IDs, user names, comments, score deltas) + current assessment configuration. The AI receives <strong>both aggregate patterns AND specific feedback records</strong> so it can cite real user feedback in its recommendations. Note: call transcripts are NOT included &mdash; only the feedback metadata and user comments.</div>
+
+    <div class="req must"><span class="req-id">FA-08</span> The AI must produce recommendations across three categories:</div>
+    <table>
+      <tr><th>Category</th><th>Description</th><th>Example Output</th></tr>
+      <tr>
+        <td><strong>Question Improvements</strong></td>
+        <td>Changes to interview questions that would elicit better-differentiated candidate responses</td>
+        <td>"Replace 'Tell me about a time you showed empathy' with 'A customer calls upset about a delayed delivery. Walk me through exactly how you'd handle the call.'"</td>
+      </tr>
+      <tr>
+        <td><strong>Scoring Criteria Improvements</strong></td>
+        <td>Changes to skill rubrics that would make AI scoring more aligned with human judgment</td>
+        <td>"Add behavioral anchors to Customer Empathy: 1-3 = generic response, no personalization; 4-6 = acknowledges issue, offers solution; 7-10 = acknowledges emotions, personalizes, proactively offers alternatives"</td>
+      </tr>
+      <tr>
+        <td><strong>Assessment Structure Improvements</strong></td>
+        <td>Changes to the overall assessment design: add/remove/merge skills, adjust scales</td>
+        <td>"Merge 'Active Listening' and 'Empathy' into one skill &mdash; user feedback shows they measure the same behavior, causing score inflation across two dimensions"</td>
+      </tr>
+    </table>
+
+    <div class="req must"><span class="req-id">FA-09</span> Each recommendation must include:
+      <ul>
+        <li><code>category</code>: question_improvement, criteria_improvement, structure_improvement</li>
+        <li><code>affected_skill</code>: which skill this targets (or "overall" for assessment-level changes)</li>
+        <li><code>title</code>: short action title</li>
+        <li><code>rationale</code>: why this change is recommended, <strong>citing specific feedback items by ID and quoting user comments</strong> (e.g., "Feedback #fb-4a2c from Maria Reyes: 'The candidate just repeated company values from the website, that's not real empathy' &mdash; this was one of 38 overrides on Customer Empathy (avg delta -1.8), indicating the rubric doesn't distinguish rehearsed answers from genuine responses")</li>
+        <li><code>cited_feedback</code>: array of <code>score_feedback</code> IDs that support this recommendation. Each entry includes <code>feedback_id</code>, <code>user_name</code>, <code>comment_excerpt</code> (first 120 chars), and <code>score_delta</code>. Minimum 2 cited items per recommendation when available.</li>
+        <li><code>before</code>: current question/criteria text</li>
+        <li><code>after</code>: proposed improved text</li>
+        <li><code>confidence</code>: high, medium, low &mdash; based on volume and consistency of feedback</li>
+        <li><code>expected_impact</code>: description of how this will improve scoring alignment</li>
+      </ul>
+    </div>
+
+    <h3>15.4 AI Prompt</h3>
+    <div class="req must"><span class="req-id">FA-10</span> System prompt positions the AI as a <strong>scoring calibration and assessment design expert</strong>. It should:
+      <ul>
+        <li>Understand that user overrides represent ground truth (humans closer to correct than AI)</li>
+        <li>Identify systematic biases (AI always scores X too high/low)</li>
+        <li>Focus on actionable, specific changes (not vague advice)</li>
+        <li>Provide before/after examples for every recommendation</li>
+        <li>Consider that rubric changes affect ALL future calls, so recommendations must be robust</li>
+        <li><strong>Always cite specific feedback items by ID</strong> in the rationale &mdash; never make a recommendation based on aggregated statistics alone without referencing the actual user comments that support it</li>
+        <li>Quote user feedback comments verbatim (or excerpted) so reviewers can trace every recommendation back to real user input</li>
+      </ul>
+    </div>
+    <div class="req must"><span class="req-id">FA-11</span> Response format: valid JSON with <code>recommendations</code> array (each with <code>cited_feedback</code> array linking to specific feedback IDs), <code>executive_summary</code> (2-3 sentences referencing the most impactful feedback), and <code>feedback_health</code> (healthy/moderate/critical based on override volume and delta magnitude).</div>
+
+    <h3>15.5 Storage &amp; Output</h3>
+    <div class="req must"><span class="req-id">FA-12</span> Store results in the <code>feedback_summaries</code> table (one record per assessment per run). Include all computed statistics and AI recommendations.</div>
+    <div class="req must"><span class="req-id">FA-13</span> Preserve historical summaries for trend tracking &mdash; are recommendations being applied? Is disagreement decreasing over time?</div>
+    <div class="req should"><span class="req-id">FA-14</span> If disagreement rate is <strong>critical</strong> (e.g., &gt;30% of scores overridden, avg delta &gt;2.0), flag the assessment for urgent review by surfacing an alert on the dashboard.</div>
+
+    <h3>15.6 UI &mdash; Improvement Recommendations View</h3>
+    <div class="req must"><span class="req-id">FA-15</span> A dedicated page or section showing the latest AI recommendations per assessment.</div>
+    <div class="req must"><span class="req-id">FA-16</span> Each recommendation displayed as a card with: category badge, title, rationale with <strong>cited feedback items</strong> (showing user name, quoted comment excerpt, and score delta &mdash; each linked to its entry in the Feedback Hub), before/after comparison, confidence badge, and an "Apply" button (for criteria improvements that can be auto-applied to the assessment config). Clicking a cited feedback item navigates to that feedback entry in the Feedback Hub (Section 14.5).</div>
+    <div class="req should"><span class="req-id">FA-17</span> "Apply" button for criteria improvements: on click, pre-fills the Skills Prompt Editor (Section 13) with the proposed changes. User reviews and confirms before saving.</div>
+    <div class="req must"><span class="req-id">FA-18</span> Show trend over time: a chart or summary showing how feedback volume and disagreement rate have changed across daily runs. This validates whether applied recommendations are working.</div>
+
+    <h3>15.7 API Endpoints</h3>
+    <table>
+      <tr><th>Method</th><th>Endpoint</th><th>Auth</th><th>Purpose</th></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback-analysis/latest</code></td><td>Supabase JWT</td><td>Latest feedback analysis for tenant (optional assessment_id filter)</td></tr>
+      <tr><td><code>GET</code></td><td><code>/api/feedback-analysis/history</code></td><td>Supabase JWT</td><td>Historical trend of feedback analyses</td></tr>
+      <tr><td><code>POST</code></td><td><code>/api/feedback-analysis/run</code></td><td>Supabase JWT (admin)</td><td>Manually trigger feedback analysis (outside daily schedule)</td></tr>
+      <tr><td><code>POST</code></td><td><code>/api/feedback-analysis/:id/apply/:recIndex</code></td><td>Supabase JWT (admin/manager)</td><td>Apply a specific recommendation to the assessment config</td></tr>
+    </table>
+
+    <h3>15.8 Cost &amp; Performance</h3>
+    <div class="req must"><span class="req-id">FA-19</span> The daily analyzer sends statistics + individual feedback items (IDs, comments, score deltas), but <strong>not call transcripts</strong> &mdash; token usage is moderate (~3K-6K tokens per assessment depending on feedback volume). At 10 assessments per tenant, cost is ~$0.30-0.60/day per tenant. Cap the number of individual feedback items sent to the AI at <strong>100 per assessment</strong> (most recent), including all items in the statistics computation but only the top 100 in the raw items payload.</div>
+    <div class="req must"><span class="req-id">FA-20</span> Skip tenants/assessments with no new feedback since last run to minimize unnecessary API calls.</div>
+
+    <div class="callout callout-sage">
+      <strong>The continuous improvement loop:</strong> Users provide feedback on AI scores &rarr; daily analyzer identifies patterns <strong>and cites specific feedback items</strong> &rarr; AI proposes assessment improvements traceable to real user input &rarr; admin reviews cited feedback, clicks through to Feedback Hub for context &rarr; applies changes via Skills Prompt Editor &rarr; future calls score more accurately &rarr; fewer overrides needed. Every recommendation is grounded in specific, attributable user feedback &mdash; not abstract statistics.
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- 16. ERROR HANDLING & MONITORING -->
+  <!-- ================================================================ -->
+  <section class="section" id="error-handling">
+    <h2>16. Error Handling, Monitoring &amp; Admin</h2>
+
+    <h3>16.1 Webhook Error Handling</h3>
+    <table>
+      <tr><th>Error</th><th>Response</th><th>Recovery</th></tr>
+      <tr><td>Invalid webhook secret</td><td>401</td><td>Check WEBHOOK_SECRET matches</td></tr>
+      <tr><td>Unknown company (no tenant_id match)</td><td>422</td><td>Register company in companies table</td></tr>
+      <tr><td>Database insert failure</td><td>500</td><td>Talkpush retries webhook. Check Supabase connectivity</td></tr>
+      <tr><td>Missing required fields</td><td>400</td><td>Validate payload, log full body for debugging</td></tr>
+    </table>
+
+    <h3>16.2 Enrichment Error Handling</h3>
+    <table>
+      <tr><th>Error</th><th>BullMQ Behavior</th><th>Recovery</th></tr>
+      <tr><td>Talkpush API timeout</td><td>Retry after 5s, 10s, 20s (exponential)</td><td>If all 3 fail, call status &rarr; error</td></tr>
+      <tr><td>Talkpush API 404 (candidate not found)</td><td>No retry (permanent failure)</td><td>Skip enrichment, proceed to analysis with available data</td></tr>
+      <tr><td>Talkpush API 429 (rate limited)</td><td>Retry with longer backoff</td><td>Reduce concurrency or add delay</td></tr>
+    </table>
+
+    <h3>16.3 Analysis Error Handling</h3>
+    <table>
+      <tr><th>Error</th><th>BullMQ Behavior</th><th>Recovery</th></tr>
+      <tr><td>OpenRouter timeout</td><td>Retry after 10s, 20s, 40s</td><td>3rd attempt uses fallback model (GPT-4o)</td></tr>
+      <tr><td>OpenRouter 429 (rate limited)</td><td>Queue rate limiter prevents this</td><td>If occurs, reduce limiter.max</td></tr>
+      <tr><td>Invalid JSON in AI response</td><td>Retry (AI may produce valid JSON next time)</td><td>If persistent, switch model. Log raw response</td></tr>
+      <tr><td>All 3 attempts fail</td><td>Job moves to failed queue</td><td>Call status &rarr; error with message. Admin can reprocess</td></tr>
+    </table>
+
+    <h3>16.4 Error Status Handler</h3>
+    <div class="req must"><span class="req-id">ER-01</span> On final enrichment failure, update <code>calls.status = 'error'</code> and set <code>error_message = 'Enrichment failed: {reason}'</code>.</div>
+    <div class="req must"><span class="req-id">ER-02</span> On final analysis failure, update <code>calls.status = 'error'</code> and set <code>error_message = 'Analysis failed: {reason}'</code>.</div>
+    <div class="req must"><span class="req-id">ER-03</span> Error calls must appear in the dashboard with an error badge and option to retry.</div>
+
+    <h3>16.5 Admin Endpoints</h3>
+    <div class="req must"><span class="req-id">ER-04</span> <code>GET /api/admin/queue-status</code> (admin role) &mdash; Job queue health: pending count, active count, completed count, failed count for both queues.</div>
+    <div class="req must"><span class="req-id">ER-05</span> <code>POST /api/admin/reprocess/:callId</code> (admin role) &mdash; Re-run AI analysis for a specific call. Resets status to <code>'enriched'</code>, deletes old analysis, re-enqueues to analysis queue.</div>
+
+    <h3>16.6 Monitoring &amp; Observability</h3>
+    <table>
+      <tr><th>What to Monitor</th><th>How</th><th>Alert Threshold</th></tr>
+      <tr><td>Queue depth (pending jobs)</td><td><code>/api/admin/queue-status</code></td><td>&gt; 500 pending (processing falling behind)</td></tr>
+      <tr><td>Failed jobs count</td><td>BullMQ failed event handler</td><td>&gt; 50 failed in 1 hour</td></tr>
+      <tr><td>OpenRouter response times</td><td>Log <code>talkscore_duration_ms</code> + <code>quality_duration_ms</code></td><td>&gt; 15s average (model degradation)</td></tr>
+      <tr><td>Error rate</td><td>Count calls with <code>status = 'error'</code></td><td>&gt; 5% of daily volume</td></tr>
+      <tr><td>Daily AI cost</td><td>Track tokens per analysis (both prompts)</td><td>~$100-120/day on Claude Sonnet at 3K calls</td></tr>
+    </table>
+
+    <h3>16.7 Cost Estimation</h3>
+    <div class="callout callout-amber">
+      <strong>Daily AI cost at ~3,000 calls/day:</strong>
+      <ul style="margin: 8px 0 0 16px;">
+        <li><strong>TalkScore + Sentiment prompt:</strong> ~$0.02/call &times; 3,000 = ~$60/day</li>
+        <li><strong>Agent Quality prompt:</strong> ~$0.02/call &times; 3,000 = ~$60/day</li>
+        <li><strong>Total:</strong> ~$100-120/day (Claude Sonnet via OpenRouter)</li>
+        <li><strong>Calibration audit (AI root cause):</strong> ~$0.02/report, on-demand, negligible</li>
+      </ul>
+    </div>
+  </section>
+
+
+  <!-- ================================================================ -->
+  <!-- PROJECT STRUCTURE -->
+  <!-- ================================================================ -->
+  <section class="section" id="project-structure">
+    <h2>Appendix: Project Structure</h2>
+
+    <p>Reference file structure for the Replit project:</p>
+
+    <table>
+      <tr><th>Path</th><th>Purpose</th></tr>
+      <tr><td><code>src/server.ts</code></td><td>Express app entry point</td></tr>
+      <tr><td><code>src/config/supabase.ts</code></td><td>Supabase client (DB + Auth)</td></tr>
+      <tr><td><code>src/config/redis.ts</code></td><td>Upstash Redis connection</td></tr>
+      <tr><td><code>src/config/openrouter.ts</code></td><td>OpenRouter client config</td></tr>
+      <tr><td><code>src/routes/webhooks.ts</code></td><td>Talkpush webhook receiver</td></tr>
+      <tr><td><code>src/routes/calls.ts</code></td><td>Call CRUD (RLS-filtered)</td></tr>
+      <tr><td><code>src/routes/metrics.ts</code></td><td>Aggregation queries</td></tr>
+      <tr><td><code>src/routes/reports.ts</code></td><td>Report generation</td></tr>
+      <tr><td><code>src/routes/access-manager.ts</code></td><td>PAM endpoints (clients + users)</td></tr>
+      <tr><td><code>src/auth/crm-bridge.ts</code></td><td>CRM Bridge SSO login route</td></tr>
+      <tr><td><code>src/auth/pam-sync.ts</code></td><td>Push user changes to PAM</td></tr>
+      <tr><td><code>src/jobs/queue.ts</code></td><td>BullMQ queue setup</td></tr>
+      <tr><td><code>src/jobs/enrichment.worker.ts</code></td><td>Talkpush API enrichment</td></tr>
+      <tr><td><code>src/jobs/analysis.worker.ts</code></td><td>OpenRouter AI analysis (dual parallel)</td></tr>
+      <tr><td><code>src/services/talkpush-api.ts</code></td><td>Talkpush API client</td></tr>
+      <tr><td><code>src/services/openrouter.ts</code></td><td>AI analysis prompts + logic</td></tr>
+      <tr><td><code>src/services/calibration.ts</code></td><td>Scoring calibration computation engine</td></tr>
+      <tr><td><code>src/services/prompts/talkscore.ts</code></td><td>TalkScore prompt + buildSkillsPromptSection</td></tr>
+      <tr><td><code>src/services/scoring.ts</code></td><td>TalkScore calculation</td></tr>
+      <tr><td><code>src/services/feedback-analyzer.ts</code></td><td>Daily AI feedback analysis logic + prompt</td></tr>
+      <tr><td><code>src/jobs/feedback-analyzer.worker.ts</code></td><td>Daily cron job for feedback analysis</td></tr>
+      <tr><td><code>src/routes/feedback.ts</code></td><td>Feedback CRUD + aggregation endpoints</td></tr>
+      <tr><td><code>src/routes/feedback-analysis.ts</code></td><td>Feedback analysis results + manual trigger</td></tr>
+      <tr><td><code>src/middleware/auth.ts</code></td><td>Supabase JWT + session validation</td></tr>
+      <tr><td><code>src/middleware/tenant.ts</code></td><td>Inject company context from user_roles</td></tr>
+      <tr><td><code>src/types/index.ts</code></td><td>TypeScript interfaces</td></tr>
+      <tr><td><code>client/src/pages/Dashboard.tsx</code></td><td>Overview metrics dashboard</td></tr>
+      <tr><td><code>client/src/pages/CallList.tsx</code></td><td>Paginated call list</td></tr>
+      <tr><td><code>client/src/pages/CallDetail.tsx</code></td><td>Single call + analysis detail</td></tr>
+      <tr><td><code>client/src/pages/Reports.tsx</code></td><td>Reports view</td></tr>
+      <tr><td><code>client/src/hooks/useRealtimeUpdates.ts</code></td><td>Supabase Realtime subscription hooks</td></tr>
+    </table>
+  </section>
+
+
+  <!-- Key Architecture Decisions -->
+  <section class="section" id="decisions">
+    <h2>Appendix: Key Architecture Decisions</h2>
+
+    <table>
+      <tr><th>#</th><th>Decision</th><th>Rationale</th></tr>
+      <tr><td>1</td><td><code>company_id</code> (UUID) as FK, not <code>tenant_id</code> (string)</td><td>Clean, performant foreign keys. <code>tenant_id</code> is only for PAM sync and webhook matching.</td></tr>
+      <tr><td>2</td><td>Webhook &rarr; company mapping via <code>tenant_id</code></td><td>The webhook sends a string identifier; we resolve it to a UUID once and store all references as UUID.</td></tr>
+      <tr><td>3</td><td>CRM Bridge users NOT synced back to PAM</td><td>Prevents infinite sync loops. PAM already knows about these users.</td></tr>
+      <tr><td>4</td><td>RLS via <code>user_roles</code> junction table</td><td>Same pattern used by Contract Hub. Supports multi-company access per user.</td></tr>
+      <tr><td>5</td><td>Webhook responds 200 immediately</td><td>At ~2 calls/min, can't wait for AI analysis (3-10s per call).</td></tr>
+      <tr><td>6</td><td>Separate <code>analyses</code> table (not inline on <code>calls</code>)</td><td>Supports re-analysis without duplicating call data. Schema evolves independently. Enables future multi-model comparison.</td></tr>
+      <tr><td>7</td><td>Supabase over Neon (Replit native)</td><td>Auth + RLS + Realtime built-in. Consistent with other Talkpush products. PAM integration patterns already established.</td></tr>
+      <tr><td>8</td><td>Upstash Redis over in-process queue</td><td>Jobs survive Replit restarts. Built-in retry/backoff. Rate limiting for OpenRouter. Monitoring dashboard. Free tier handles 10K commands/day.</td></tr>
+    </table>
+  </section>
+
+</div>
+
+<div class="footer">
+  TalkScore Hub &mdash; Requirements Document v1.0 &mdash; March 2026 &mdash; Talkpush
+</div>
+
+</body>
+</html>
